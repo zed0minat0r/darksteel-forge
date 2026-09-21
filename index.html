@@ -449,20 +449,20 @@ const Display = (() => {
     // the card: 63 x 88 mm ratio, a hair of thickness
     const w = 2.52, h = 3.52, d = .022; const aMap = alphaMap();
     cardGroup = new THREE.Group(); card = new THREE.Group(); cardGroup.add(card); scene.add(cardGroup);
-    const mat = t => new THREE.MeshPhysicalMaterial({ map: t, alphaMap: aMap, transparent: true, roughness: .42, metalness: .04, clearcoat: .75, clearcoatRoughness: .28, envMapIntensity: .8, side: THREE.FrontSide });
+    const mat = t => new THREE.MeshPhysicalMaterial({ map: t, alphaMap: aMap, alphaTest: .5, transparent: false, roughness: .42, metalness: .04, clearcoat: .75, clearcoatRoughness: .28, envMapIntensity: .8, side: THREE.FrontSide });
     front = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat(null)); front.position.z = d / 2;
     back = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat(backTexture())); back.position.z = -d / 2; back.rotation.y = Math.PI;
-    edge = new THREE.Mesh(new THREE.BoxGeometry(w - .02, h - .02, d), new THREE.MeshStandardMaterial({ color: 0xf1ecdf, roughness: .8 }));
+    edge = new THREE.Mesh(new THREE.BoxGeometry(w - .03, h - .03, d * .7), new THREE.MeshStandardMaterial({ color: 0xf1ecdf, roughness: .8 }));
     card.add(edge, front, back);
     // reflection on the floor: a mirrored copy, faded
-    const floorY = -2.35; const mirror = card.clone(); mirror.scale.y = -1; mirror.position.y = 2 * floorY; mirror.traverse(o => { if (o.material) { o.material = o.material.clone(); o.material.opacity = .22; o.material.transparent = true; o.material.envMapIntensity = .4; } }); cardGroup.add(mirror); cardGroup.userData.mirror = mirror;
+    const floorY = -2.35; const mirror = card.clone(); mirror.scale.y = -1; mirror.position.y = 2 * floorY; mirror.traverse(o => { if (o.material) { o.material = o.material.clone(); o.material.opacity = .22; o.material.transparent = true; o.material.depthWrite = false; o.material.envMapIntensity = .4; } }); cardGroup.add(mirror); cardGroup.userData.mirror = mirror;
     const shadow = new THREE.Mesh(new THREE.CircleGeometry(1.9, 48), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .55 })); shadow.rotation.x = -Math.PI / 2; shadow.position.y = floorY + .01; shadow.scale.x = 1.25; scene.add(shadow);
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshStandardMaterial({ color: 0x0b0d10, roughness: .9, metalness: .1 })); floor.rotation.x = -Math.PI / 2; floor.position.y = floorY; scene.add(floor);
     // pointer: drag to turn, tap to flip
     const el = renderer.domElement; let downT = 0, moved = 0;
     const px = e => (e.touches ? e.touches[0].clientX : e.clientX), py = e => (e.touches ? e.touches[0].clientY : e.clientY);
-    const down = e => { dragging = true; lastX = px(e); lastY = py(e); velY = 0; downT = performance.now(); moved = 0; };
-    const move = e => { if (!dragging) { const r = el.getBoundingClientRect(); targetRotX = ((py(e) - r.top) / r.height - .5) * -.35; return; } const dx = px(e) - lastX, dy = py(e) - lastY; moved += Math.abs(dx) + Math.abs(dy); userY += dx * .012; userX = Math.max(-.6, Math.min(.6, userX + dy * .006)); velY = dx * .012; lastX = px(e); lastY = py(e); };
+    const down = e => { if (swapping) return; dragging = true; lastX = px(e); lastY = py(e); velY = 0; downT = performance.now(); moved = 0; };
+    const move = e => { if (swapping) return; if (!dragging) { if (e.touches) return; const r = el.getBoundingClientRect(); const inside = px(e) >= r.left && px(e) <= r.right && py(e) >= r.top && py(e) <= r.bottom; targetRotX = inside ? ((py(e) - r.top) / r.height - .5) * -.22 : 0; return; } const dx = px(e) - lastX, dy = py(e) - lastY; moved += Math.abs(dx) + Math.abs(dy); userY += dx * .012; userX = Math.max(-.6, Math.min(.6, userX + dy * .006)); velY = dx * .012; lastX = px(e); lastY = py(e); };
     const up = () => { if (!dragging) return; dragging = false; if (performance.now() - downT < 260 && moved < 8) flip(); };
     el.addEventListener("mousedown", down); addEventListener("mousemove", move); addEventListener("mouseup", up);
     el.addEventListener("touchstart", down, { passive: true }); el.addEventListener("touchmove", e => { move(e); }, { passive: true }); el.addEventListener("touchend", up);
@@ -472,10 +472,10 @@ const Display = (() => {
     (function loop(now) {
       raf = requestAnimationFrame(loop); const t = (now - t0) / 1000;
       if (!dragging) { userY += velY; velY *= .95; autoT += .0035; }
-      const bob = Math.sin(t * 1.1) * .06;
+      const bob = Math.sin(t * .9) * .04;
       card.rotation.y = autoT + userY + (flipped ? Math.PI : 0);
       card.rotation.x += ((dragging ? userX : targetRotX + userX * .5) - card.rotation.x) * .08;
-      card.rotation.z = Math.sin(t * .7) * .015;
+      card.rotation.z = 0;
       card.position.y = bob; const m = cardGroup.userData.mirror; m.rotation.copy(card.rotation); m.rotation.x *= -1; m.position.y = 2 * -2.35 - bob;
       if (!dragging) userX *= .98;
       renderer.render(scene, camera);
@@ -488,12 +488,12 @@ const Display = (() => {
     if (!first) {
       // spin the old one out (fast turn + rise + fade), the new one in
       const start = performance.now(), dur = 520; const y0 = autoT;
-      await new Promise(res => (function a(n) { const k = Math.min(1, (n - start) / dur); const e = k * k * (3 - 2 * k); autoT = y0 + e * Math.PI * 2; card.scale.setScalar(1 - e * .25); cardGroup.position.y = e * .9; card.traverse(o => { if (o.material && o !== edge) o.material.opacity = 1 - e; }); k < 1 ? requestAnimationFrame(a) : res(); })(start));
+      await new Promise(res => (function a(n) { const k = Math.min(1, (n - start) / dur); const e = k * k * (3 - 2 * k); autoT = y0 + e * Math.PI * 2; card.scale.setScalar(1 - e * .3); cardGroup.position.y = e * 1.4; k < 1 ? requestAnimationFrame(a) : res(); })(start));
     }
     if (t) { front.material.map = t; front.material.needsUpdate = true; const m = cardGroup.userData.mirror.children[1]; m.material.map = t; m.material.needsUpdate = true; }
     flipped = false; userY = 0;
     const start = performance.now(), dur = 620; const y0 = autoT;
-    await new Promise(res => (function a(n) { const k = Math.min(1, (n - start) / dur); const e = 1 - Math.pow(1 - k, 3); autoT = y0 - Math.PI * 2 * (1 - e); card.scale.setScalar(.75 + e * .25); cardGroup.position.y = (1 - e) * -.9; card.traverse(o => { if (o.material && o !== edge) o.material.opacity = e; }); k < 1 ? requestAnimationFrame(a) : res(); })(start));
+    await new Promise(res => (function a(n) { const k = Math.min(1, (n - start) / dur); const e = 1 - Math.pow(1 - k, 3); autoT = y0 - Math.PI * 2 * (1 - e); card.scale.setScalar(.7 + e * .3); cardGroup.position.y = (1 - e) * -1.4; k < 1 ? requestAnimationFrame(a) : res(); })(start));
     swapping = false;
   }
   return { init, show, flip, warm: url => tex(url) };
