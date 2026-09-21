@@ -491,9 +491,10 @@ const Display = (() => {
       await new Promise(res => (function a(n) { const k = Math.min(1, (n - start) / dur); const e = k * k * (3 - 2 * k); autoT = y0 + e * Math.PI * 2; card.scale.setScalar(1 - e * .3); cardGroup.position.y = e * 1.4; k < 1 ? requestAnimationFrame(a) : res(); })(start));
     }
     if (t) { front.material.map = t; front.material.needsUpdate = true; const m = cardGroup.userData.mirror.children[1]; m.material.map = t; m.material.needsUpdate = true; }
-    flipped = false; userY = 0;
-    const start = performance.now(), dur = 620; const y0 = autoT;
-    await new Promise(res => (function a(n) { const k = Math.min(1, (n - start) / dur); const e = 1 - Math.pow(1 - k, 3); autoT = y0 - Math.PI * 2 * (1 - e); card.scale.setScalar(.7 + e * .3); cardGroup.position.y = (1 - e) * -1.4; k < 1 ? requestAnimationFrame(a) : res(); })(start));
+    flipped = false; userY = 0; userX = 0; velY = 0;
+    // the new card always lands FACING FRONT (rotation 0), then the slow turn resumes from there
+    const start = performance.now(), dur = 620;
+    await new Promise(res => (function a(n) { const k = Math.min(1, (n - start) / dur); const e = 1 - Math.pow(1 - k, 3); autoT = -Math.PI * 2 * (1 - e); card.scale.setScalar(.7 + e * .3); cardGroup.position.y = (1 - e) * -1.4; k < 1 ? requestAnimationFrame(a) : res(); })(start));
     swapping = false;
   }
   return { init, show, flip, warm: url => tex(url) };
