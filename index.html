@@ -178,7 +178,28 @@ nav.solid{background:rgba(7,8,9,.86);backdrop-filter:blur(14px);border-bottom:1p
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1.2rem .9rem}
 @media(max-width:480px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .grid .tile{width:auto;min-width:0}
-.more{display:flex;justify-content:center;margin-top:2rem}
+.row{border-top:1px solid var(--line);padding:.9rem 0 .2rem}
+.row .rail{display:none}
+.row.show .rail{display:flex}
+.row .peek{display:flex;gap:.35rem;margin-left:.2rem}
+.row .peek img{width:26px;aspect-ratio:63/88;object-fit:cover;border-radius:3px;box-shadow:0 2px 6px rgba(0,0,0,.6)}
+.row.show .peek{display:none}
+.row-head{cursor:pointer;user-select:none;min-height:var(--tap)}
+.row-head .arrow{width:10px;height:10px;border-right:1px solid var(--ink-2);border-bottom:1px solid var(--ink-2);transform:rotate(45deg);transition:transform .3s;margin:0 .3rem 0 .5rem;flex:0 0 auto}
+.row.show .row-head .arrow{transform:rotate(-135deg)}
+.row-head .x{display:none}.row.show .row-head .x{display:inline-flex}
+@media(max-width:759px){.row-head .n{display:none}.row-head h3{white-space:normal;font-size:.92rem;line-height:1.2}.row-head .t{flex:1 1 auto}.row-head .peek{flex:0 0 auto}}
+.row-head{display:flex;align-items:center;gap:1rem;margin-bottom:.4rem}
+.row-head .t{display:flex;flex-direction:column;gap:.15rem;min-width:0}
+.row-head .g{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-3)}
+.row-head h3{font-family:var(--display);font-size:1rem;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-head .n{margin-left:auto;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap}
+.row-head .x{min-height:36px;padding:0 .9rem;border:1px solid var(--line);background:transparent;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2);border-radius:999px;white-space:nowrap}
+.row-head .x:hover{border-color:rgba(255,255,255,.3);color:var(--ink)}
+.row .rail{padding-bottom:.9rem}
+.row.open.show .rail{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1.2rem .9rem;overflow:visible;scroll-snap-type:none}
+@media(max-width:480px){.row.open .rail{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.row.open .rail .tile{width:auto;min-width:0}
 
 /* ============================================================ STRIP + FOOTER */
 .strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.03),transparent)}
@@ -311,10 +332,9 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
   <div class="wrap">
     <div class="inv-head reveal">
       <div><div class="eyebrow">In stock</div><h2 class="metal">Full inventory</h2></div>
-      <div class="sort"><span>Sort</span><select id="sort"><option value="price-desc">Price: high to low</option><option value="price-asc">Price: low to high</option><option value="name">Name A - Z</option><option value="year">Newest set</option></select></div>
+      <div class="sort"><span>Sort</span><select id="sort"><option value="price-desc">Price: high to low</option><option value="price-asc">Price: low to high</option><option value="name">Name A - Z</option></select></div>
     </div>
-    <div class="grid" id="grid"></div>
-    <div class="more"><button class="btn" id="more">Show more</button></div>
+    <div id="rows"></div>
   </div>
 </section>
 
@@ -515,7 +535,24 @@ function tile(c) {
   return b;
 }
 function renderRail() { const r = $("#rail"); r.innerHTML = ""; const a = visible().slice(0, 40); if (!a.length) r.innerHTML = '<div class="empty">Nothing matches that. Try another name or set.</div>'; a.forEach(c => r.appendChild(tile(c))); }
-function renderGrid() { const g = $("#grid"); g.innerHTML = ""; const a = visible(); a.slice(0, shown).forEach(c => g.appendChild(tile(c))); $("#more").style.display = shown < a.length ? "" : "none"; }
+const openRows = new Set(), shownRows = new Set();   // shown = rail visible (collapsed by default, first two open); open = rail expanded to a grid
+function renderGrid() {
+  // one horizontal row per set (Matt: "way too much vertically") - each row expands into a grid on demand
+  const host = $("#rows"); host.innerHTML = ""; const a = visible(); const by = new Map();
+  a.forEach(c => { const k = c.game + "|" + c.set; if (!by.has(k)) by.set(k, []); by.get(k).push(c); });
+  const rows = [...by.entries()].sort((x, y) => Math.max(...y[1].map(c => c.price)) - Math.max(...x[1].map(c => c.price)));
+  if (!rows.length) { host.innerHTML = '<div class="empty">Nothing matches that. Try another name or set.</div>'; return; }
+  if (!shownRows.size && !query) rows.slice(0, 2).forEach(([k]) => shownRows.add(k));
+  rows.forEach(([k, cards]) => {
+    const [game, set] = k.split("|"); const r = document.createElement("div"); const show = shownRows.has(k) || (query && rows.length <= 4);
+    r.className = "row" + (openRows.has(k) ? " open" : "") + (show ? " show" : "");
+    r.innerHTML = `<div class="row-head"><div class="t"><span class="g">${game === "magic" ? "Magic" : "Pokemon"}</span><h3>${set}</h3></div><div class="peek">${cards.slice(0, 3).map(c => `<img src="${c.imgSmall}" alt="" loading="lazy">`).join("")}</div><span class="n">${cards.length} card${cards.length > 1 ? "s" : ""}</span><button class="x" type="button">${openRows.has(k) ? "Collapse" : "See all"}</button><i class="arrow"></i></div><div class="rail"></div>`;
+    const rail = r.querySelector(".rail"); cards.forEach(c => rail.appendChild(tile(c)));
+    r.querySelector(".x").addEventListener("click", e => { e.stopPropagation(); openRows.has(k) ? openRows.delete(k) : openRows.add(k); r.classList.toggle("open"); r.querySelector(".x").textContent = openRows.has(k) ? "Collapse" : "See all"; });
+    r.querySelector(".row-head").addEventListener("click", () => { shownRows.has(k) ? shownRows.delete(k) : shownRows.add(k); r.classList.toggle("show"); });
+    host.appendChild(r);
+  });
+}
 function mark() { document.querySelectorAll(".tile").forEach(t => t.classList.toggle("on", current && t.dataset.id === current.id)); const on = $("#rail .tile.on"); if (on) { const r = $("#rail"); r.scrollTo({ left: on.offsetLeft - r.clientWidth / 2 + on.offsetWidth / 2, behavior: "smooth" }); } }
 function sheet(c) {
   const s = $("#sheet"); s.classList.add("swap");
@@ -532,7 +569,6 @@ function feature(c, first) { if (current && current.id === c.id && !first) retur
 $("#filters").addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; document.querySelectorAll("#filters .chip").forEach(x => x.classList.toggle("on", x === b)); filterG = b.dataset.g; shown = 24; renderRail(); renderGrid(); });
 $("#q").addEventListener("input", e => { query = e.target.value.trim().toLowerCase(); shown = 24; renderRail(); renderGrid(); });
 $("#sort").addEventListener("change", e => { sortBy = e.target.value; renderGrid(); });
-$("#more").addEventListener("click", () => { shown += 24; renderGrid(); });
 $("#cond").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; document.querySelectorAll("#cond button").forEach(x => x.classList.toggle("on", x === b)); condMult = +b.dataset.m; price(); });
 $("#shFlip").addEventListener("click", () => Display.flip());
 
