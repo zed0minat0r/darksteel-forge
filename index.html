@@ -38,8 +38,8 @@ h1,h2,h3{margin:0;font-weight:600}
 #splash .ground{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 110%,#1a0d05 0%,var(--bg) 55%);transition:opacity 1s ease}
 #splash.out{pointer-events:none}#splash.out .ground{opacity:0}
 #splash canvas{position:absolute;inset:0;width:100%;height:100%}
-#splash.out .wordmark,#splash.out .tag,#splash.out .enter{opacity:0!important;transform:translateY(-10px);transition:opacity .4s ease,transform .4s ease;animation:none!important}
-#splash.out .wordmark span{animation:none!important}
+.splash-text{transition:opacity .55s ease,transform .55s ease}
+#splash.out .splash-text{opacity:0;transform:translateY(-14px)}   /* the wrapper fades; the children keep their own filled animations so nothing snaps */
 .forge-mark{transform-origin:center;will-change:transform}
 .splash-in{position:relative;z-index:2;padding:0 1.5rem}
 .forge-mark{width:min(200px,42vw);margin:0 auto 1.6rem}
@@ -251,9 +251,11 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
         <circle cx="112" cy="70" r="1.6"/><circle cx="118" cy="62" r="1.1"/><circle cx="123" cy="74" r="1.3"/><circle cx="84" cy="66" r="1.2"/><circle cx="79" cy="74" r=".9"/><circle cx="108" cy="58" r="1"/>
       </g>
     </svg>
+    <div class="splash-text">
     <h1 class="wordmark metal" id="wordmark"><span>D</span><span>A</span><span>R</span><span>K</span>&nbsp;<span>S</span><span>T</span><span>E</span><span>E</span><span>L</span><br><span>F</span><span>O</span><span>R</span><span>G</span><span>E</span><span class="sub">Gaming</span></h1>
     <p class="tag">Pokemon &amp; Magic: The Gathering. Singles, sealed, and the chase cards you actually want.</p>
     <button class="enter" id="enter"><i></i> Enter the forge</button>
+    </div>
   </div>
 </div>
 
