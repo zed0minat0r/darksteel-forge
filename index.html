@@ -155,12 +155,12 @@ nav.solid{background:rgba(7,8,9,.86);backdrop-filter:blur(14px);border-bottom:1p
 .sheet .set,.sheet .specs,.sheet .price{transition:opacity .35s,transform .35s}
 
 /* the rail of other cards */
-.rail-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:2.2rem 0 .9rem;flex-wrap:wrap}
+.rail-head{display:flex;align-items:center;justify-content:center;gap:1rem;margin:2.2rem 0 .9rem;flex-wrap:wrap}
 .filters{display:flex;gap:.5rem;flex-wrap:wrap}
 .chip{min-height:38px;padding:0 1rem;border:1px solid var(--line);background:rgba(255,255,255,.02);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2);border-radius:999px;transition:all .25s}
 .chip.on,.chip:hover{color:var(--ink);border-color:rgba(255,255,255,.3)}
 .chip.on{background:rgba(255,106,26,.14);border-color:var(--ember)}
-.search{display:flex;align-items:center;gap:.6rem;border:1px solid var(--line);border-radius:999px;padding:0 1rem;min-height:38px;background:rgba(255,255,255,.02);flex:1 1 220px;max-width:340px}
+.search{display:flex;align-items:center;gap:.6rem;border:1px solid var(--line);border-radius:999px;padding:0 1rem;min-height:38px;background:rgba(255,255,255,.02);flex:0 1 300px}
 .search input{background:none;border:0;outline:0;color:var(--ink);font:inherit;font-size:.9rem;width:100%}
 .search svg{width:14px;height:14px;opacity:.5}
 .rail{display:flex;gap:.9rem;overflow-x:auto;overflow-y:hidden;padding:.6rem .2rem 1.2rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:thin;scrollbar-color:var(--steel-2) transparent}
@@ -179,13 +179,22 @@ nav.solid{background:rgba(7,8,9,.86);backdrop-filter:blur(14px);border-bottom:1p
 
 /* ============================================================ FULL INVENTORY */
 #inventory{padding:3rem 0 5rem}
-.inv-head{display:flex;align-items:end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem}
+.inv-head{display:flex;flex-direction:column;align-items:center;text-align:center;gap:1rem;margin-bottom:1.6rem}
 .inv-head h2{font-family:var(--display);font-size:clamp(1.3rem,3.4vw,2rem);letter-spacing:.12em;text-transform:uppercase;margin-top:.5rem}
-.sort{display:flex;gap:.5rem;align-items:center;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3)}
+.sort{display:flex;gap:.5rem;align-items:center;justify-content:center;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3)}
 .sort select{background:#111317;border:1px solid var(--line);color:var(--ink);font:inherit;font-size:.72rem;letter-spacing:.12em;padding:.5rem .7rem;border-radius:3px;min-height:38px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1.2rem .9rem}
 @media(max-width:480px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .grid .tile{width:auto;min-width:0}
+.game-group{margin-top:2.6rem}
+.game-group:first-child{margin-top:1.2rem}
+.game-title{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1rem;text-align:center}
+.game-title h3{font-family:var(--display);font-size:clamp(1.05rem,2.6vw,1.4rem);letter-spacing:.16em;text-transform:uppercase}
+.game-title i{width:8px;height:8px;border-radius:50%;background:var(--ember);box-shadow:0 0 10px var(--ember);flex:0 0 auto}
+.game-title.magic i{background:#6fb3ff;box-shadow:0 0 10px #6fb3ff}
+.game-title .line{flex:1 1 20px;max-width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--line-2))}
+.game-title .line.r{background:linear-gradient(90deg,var(--line-2),transparent)}
+.game-title .c{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-3)}
 .row{border-top:1px solid var(--line);padding:.9rem 0 .2rem}
 .row .rail{display:none}
 .row.show .rail{display:flex}
@@ -198,7 +207,7 @@ nav.solid{background:rgba(7,8,9,.86);backdrop-filter:blur(14px);border-bottom:1p
 .row-head .x{display:none}.row.show .row-head .x{display:inline-flex}
 @media(max-width:759px){.row-head .n{display:none}.row-head h3{white-space:normal;font-size:.92rem;line-height:1.2}.row-head .t{flex:1 1 auto}.row-head .peek{flex:0 0 auto}}
 .row-head{display:flex;align-items:center;gap:1rem;margin-bottom:.4rem}
-.row-head .t{display:flex;flex-direction:column;gap:.15rem;min-width:0}
+.row-head .t{display:flex;flex-direction:column;gap:.15rem;min-width:0;flex:1 1 auto}
 .row-head .g{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-3)}
 .row-head h3{font-family:var(--display);font-size:1rem;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row-head .n{margin-left:auto;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap}
@@ -341,7 +350,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 <section id="inventory">
   <div class="wrap">
     <div class="inv-head reveal">
-      <div><div class="eyebrow">In stock</div><h2 class="metal">Full inventory</h2></div>
+      <div><div class="eyebrow">In stock</div><h2 class="metal">The library</h2></div>
       <div class="sort"><span>Sort</span><select id="sort"><option value="price-desc">Price: high to low</option><option value="price-asc">Price: low to high</option><option value="name">Name A - Z</option></select></div>
     </div>
     <div id="rows"></div>
@@ -567,15 +576,17 @@ function renderGrid() {
   a.forEach(c => { const k = c.game + "|" + c.set; if (!by.has(k)) by.set(k, []); by.get(k).push(c); });
   const rows = [...by.entries()].sort((x, y) => Math.max(...y[1].map(c => c.price)) - Math.max(...x[1].map(c => c.price)));
   if (!rows.length) { host.innerHTML = '<div class="empty">Nothing matches that. Try another name or set.</div>'; return; }
-  if (!shownRows.size && !query) rows.slice(0, 2).forEach(([k]) => shownRows.add(k));
+  if (!shownRows.size && !query) [...new Set(rows.map(([k]) => k.split("|")[0]))].forEach(g => { const first = rows.find(([k]) => k.startsWith(g + "|")); if (first) shownRows.add(first[0]); });
+  const groups = {}; ["pokemon", "magic"].forEach(g => { groups[g] = document.createElement("div"); groups[g].className = "game-group"; const n = rows.filter(([k]) => k.startsWith(g + "|")).reduce((t, [, c]) => t + c.length, 0);
+    groups[g].innerHTML = `<div class="game-title ${g}"><span class="line"></span><i></i><h3>${g === "magic" ? "Magic: The Gathering" : "Pokemon TCG"}</h3><span class="c">${n} cards</span><span class="line r"></span></div>`; if (n) host.appendChild(groups[g]); });
   rows.forEach(([k, cards]) => {
     const [game, set] = k.split("|"); const r = document.createElement("div"); const show = shownRows.has(k) || (query && rows.length <= 4);
     r.className = "row" + (openRows.has(k) ? " open" : "") + (show ? " show" : "");
-    r.innerHTML = `<div class="row-head"><div class="t"><span class="g">${game === "magic" ? "Magic" : "Pokemon"}</span><h3>${set}</h3></div><div class="peek">${cards.slice(0, 3).map(c => `<img src="${c.imgSmall}" alt="" loading="lazy">`).join("")}</div><span class="n">${cards.length} card${cards.length > 1 ? "s" : ""}</span><button class="x" type="button">${openRows.has(k) ? "Collapse" : "See all"}</button><i class="arrow"></i></div><div class="rail"></div>`;
+    r.innerHTML = `<div class="row-head"><div class="t"><h3>${set}</h3></div><div class="peek">${cards.slice(0, 3).map(c => `<img src="${c.imgSmall}" alt="" loading="lazy">`).join("")}</div><span class="n">${cards.length} card${cards.length > 1 ? "s" : ""}</span><button class="x" type="button">${openRows.has(k) ? "Collapse" : "See all"}</button><i class="arrow"></i></div><div class="rail"></div>`;
     const rail = r.querySelector(".rail"); cards.forEach(c => rail.appendChild(tile(c)));
     r.querySelector(".x").addEventListener("click", e => { e.stopPropagation(); openRows.has(k) ? openRows.delete(k) : openRows.add(k); r.classList.toggle("open"); r.querySelector(".x").textContent = openRows.has(k) ? "Collapse" : "See all"; });
     r.querySelector(".row-head").addEventListener("click", () => { shownRows.has(k) ? shownRows.delete(k) : shownRows.add(k); r.classList.toggle("show"); });
-    host.appendChild(r);
+    groups[game].appendChild(r);
   });
 }
 function mark() { document.querySelectorAll(".tile").forEach(t => t.classList.toggle("on", current && t.dataset.id === current.id)); const on = $("#rail .tile.on"); if (on) { const r = $("#rail"); r.scrollTo({ left: on.offsetLeft - r.clientWidth / 2 + on.offsetWidth / 2, behavior: "smooth" }); } }
