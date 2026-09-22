@@ -35,26 +35,20 @@ h1,h2,h3{margin:0;font-weight:600}
 .metal.ember{background-image:linear-gradient(180deg,#fff2d6 0%,#ffb347 35%,#ff6a1a 62%,#b83a00 100%)}   /* background-image, not the shorthand: the shorthand resets background-clip and paints a solid bar */
 
 /* ============================================================ THE LOGO (client artwork) + LIVE FIRE
-   logo.png is their logo cut off its marble background; fire.png is the flame pixels pulled out of the
-   same artwork. The flame layers ride on top in screen blend at different speeds so the fire writhes,
-   a canvas adds rising embers, and the glow behind the blade breathes. */
+   logo.png is their logo cut off its marble background, with its PAINTED flames dimmed 72% so the LIVE
+   flame is the fire: a WebGL shader burns over the blade (see the fire() block below), a canvas adds
+   rising embers, and the glow behind the blade breathes. */
 .mark{position:relative;display:block;width:100%;isolation:isolate}
 .mark img{display:block;width:100%;height:auto}
 .mark .base{position:relative;z-index:2;filter:brightness(1.42) contrast(1.05) saturate(1.06) drop-shadow(0 18px 40px rgba(0,0,0,.75))}
-.mark .fl{position:absolute;inset:0;z-index:3;mix-blend-mode:screen;pointer-events:none;transform-origin:50% 88%;will-change:transform,opacity}
-.mark .f1{animation:flame1 2.3s ease-in-out infinite alternate}
-.mark .f2{animation:flame2 1.7s ease-in-out infinite alternate;opacity:.34}
-.mark .f3{animation:flame3 3.1s ease-in-out infinite alternate;opacity:.22;filter:blur(6px) saturate(1.4)}
-@keyframes flame1{0%{transform:scale(1.005,1) translateY(0) skewX(0deg)}35%{transform:scale(.99,1.035) translateY(-.6%) skewX(-.7deg)}70%{transform:scale(1.02,.985) translateY(.3%) skewX(.8deg)}100%{transform:scale(1,1.02) translateY(-.3%) skewX(-.3deg)}}
-@keyframes flame2{0%{transform:scale(1.03,1.06) translateY(-1.2%) skewX(1.2deg);opacity:.5}50%{transform:scale(.96,1.1) translateY(-2%) skewX(-1.4deg);opacity:.72}100%{transform:scale(1.05,1.02) translateY(-.4%) skewX(.6deg);opacity:.45}}
-@keyframes flame3{0%{transform:scale(1.12,1.16) translateY(-2.5%);opacity:.28}50%{transform:scale(1.18,1.26) translateY(-4%);opacity:.5}100%{transform:scale(1.1,1.14) translateY(-2%);opacity:.3}}
 .mark .back{position:absolute;inset:-14% -10%;z-index:0;pointer-events:none;background:radial-gradient(50% 42% at 50% 52%,rgba(150,170,195,.16),rgba(120,140,170,.07) 55%,transparent 78%);filter:blur(10px)}
 .mark .glow{position:absolute;left:50%;top:0;width:46%;height:104%;transform:translateX(-50%);z-index:1;pointer-events:none;
   background:radial-gradient(48% 40% at 50% 46%,rgba(255,150,60,.5),rgba(255,90,20,.18) 45%,transparent 72%);filter:blur(12px);animation:glowbreath 2.6s ease-in-out infinite alternate}
 @keyframes glowbreath{0%{opacity:.75;transform:translateX(-50%) scale(.97)}100%{opacity:1;transform:translateX(-50%) scale(1.06)}}
 .mark .emb{position:absolute;inset:-12% -6% 0 -6%;width:112%;height:112%;z-index:5;pointer-events:none}
-.mark .fx{position:absolute;left:52%;bottom:15%;width:31%;height:104%;transform:translateX(-50%);z-index:4;pointer-events:none;mix-blend-mode:screen}
-@media (prefers-reduced-motion:reduce){.mark .fl,.mark .glow{animation:none}}
+.mark .fx{position:absolute;left:52%;bottom:13%;width:44%;height:100%;transform:translateX(-50%);z-index:1;pointer-events:none;mix-blend-mode:screen}
+.mark .fx2{position:absolute;left:52%;bottom:13%;width:34%;height:96%;transform:translateX(-50%);z-index:3;pointer-events:none;mix-blend-mode:screen;opacity:.42}
+@media (prefers-reduced-motion:reduce){.mark .glow{animation:none}.mark .fx,.mark .emb{display:none}}
 
 /* ============================================================ SPLASH */
 #splash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;text-align:center;pointer-events:auto}
@@ -324,7 +318,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 <div id="splash" aria-label="Welcome">
   <div class="ground"><canvas id="embers"></canvas></div>
   <div class="splash-in">
-<span class="mark forge-mark"><span class="back"></span><span class="glow"></span><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="900" height="894" fetchpriority="high"><img class="fl f3" src="img/fire.png" alt="" aria-hidden="true"><img class="fl f2" src="img/fire.png" alt="" aria-hidden="true"><img class="fl f1" src="img/fire.png" alt="" aria-hidden="true"><canvas class="fx"></canvas><canvas class="emb"></canvas></span>
+<span class="mark forge-mark"><span class="back"></span><span class="glow"></span><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="900" height="894" fetchpriority="high"><canvas class="fx"></canvas><canvas class="fx2"></canvas><canvas class="emb"></canvas></span>
     <div class="splash-text">
     <p class="tag">Pokemon &amp; Magic: The Gathering. Singles, sealed, and the chase cards you actually want.</p>
     <button class="enter" id="enter"><i></i> Enter the forge</button>
@@ -343,7 +337,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 <header id="hero"><a id="top"></a>
   <canvas id="heroFx"></canvas>
   <div class="hero-in">
-<span class="mark logo-anim"><span class="back"></span><span class="glow"></span><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="900" height="894" id="logoAnim"><img class="fl f3" src="img/fire.png" alt="" aria-hidden="true"><img class="fl f2" src="img/fire.png" alt="" aria-hidden="true"><img class="fl f1" src="img/fire.png" alt="" aria-hidden="true"><canvas class="fx"></canvas><canvas class="emb"></canvas></span>
+<span class="mark logo-anim"><span class="back"></span><span class="glow"></span><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="900" height="894" id="logoAnim"><canvas class="fx"></canvas><canvas class="fx2"></canvas><canvas class="emb"></canvas></span>
     <h1 class="hero-title metal" id="heroTitle"><span class="w" style="animation-delay:.05s">Forged</span> <span class="w" style="animation-delay:.2s">for</span> <span class="w" style="animation-delay:.35s">collectors.</span></h1>
     <p class="slogan">Every card <b>hand-checked</b>, <b>sleeved</b> and <b>priced to market</b> the day it lands. Pokemon and Magic, from playsets to grails.</p>
     <div class="hero-cta"><a class="btn hot" href="#vault">Open the vault</a><a class="btn" href="#inventory">Browse inventory</a></div>
@@ -569,27 +563,27 @@ embers(document.getElementById("openFx"), 70, { speed: .5 });
     vec2 n2 = vec2(q.x*5.2 + 11.0, q.y*2.1 - t*1.75);
     float warp = fbm(n1) * 0.55 + fbm(n2) * 0.3;
     // flame body: a column that narrows with height, pushed around by the noise
-    float cx = 0.5 + (warp - 0.42) * 0.46 * smoothstep(0.02, 1.0, y);
-    float width = mix(0.26, 0.035, pow(y, 0.55));
+    float cx = 0.5 + (warp - 0.45) * 0.34 * smoothstep(0.02, 1.0, y);
+    float width = mix(0.40, 0.10, pow(y, 0.58));
     float d = abs(q.x - cx) / max(width, 0.001);
-    float body = 1.0 - smoothstep(0.15, 1.0, d);
+    float body = 1.0 - smoothstep(0.10, 1.15, d);
     // vertical envelope: anchored at the blade, torn apart near the top
     float tear = fbm(vec2(q.x*4.2, q.y*2.6 - t*1.45));
-    float top = smoothstep(0.92, 0.18, y + (tear - 0.5) * 0.95);
-    float base = smoothstep(0.0, 0.14, y);
+    float top = smoothstep(0.96, 0.22, y + (tear - 0.5) * 0.85);
+    float base = smoothstep(-0.02, 0.22, y);
     float f = body * top * base;
-    f *= 0.55 + 0.75 * fbm(vec2(q.x*6.0 + 3.0, q.y*3.4 - t*2.3));
+    f *= 0.62 + 0.70 * fbm(vec2(q.x*5.2 + 3.0, q.y*3.0 - t*2.3));
     f = clamp(f, 0.0, 1.0);
     // blackbody-ish ramp
     vec3 col = vec3(0.0);
-    col += vec3(1.00, 0.97, 0.88) * smoothstep(0.72, 0.95, f);
-    col += vec3(1.00, 0.72, 0.22) * smoothstep(0.42, 0.78, f) * 0.95;
+    col += vec3(1.00, 0.96, 0.86) * smoothstep(0.80, 0.99, f) * 0.9;
+    col += vec3(1.00, 0.70, 0.20) * smoothstep(0.46, 0.84, f) * 0.85;
     col += vec3(1.00, 0.34, 0.05) * smoothstep(0.20, 0.52, f) * 0.85;
     col += vec3(0.55, 0.10, 0.02) * smoothstep(0.06, 0.28, f) * 0.6;
-    float a = smoothstep(0.10, 0.40, f);
+    float a = smoothstep(0.10, 0.46, f) * 0.92;
     gl_FragColor = vec4(col * a, a);
   }`;
-  document.querySelectorAll(".mark .fx").forEach(cv => {
+  document.querySelectorAll(".mark .fx, .mark .fx2").forEach(cv => {
     const gl = cv.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false });
     if (!gl) { cv.remove(); return; }
     const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); return o; };
