@@ -119,7 +119,7 @@ nav.solid{background:rgba(7,8,9,.86);backdrop-filter:blur(14px);border-bottom:1p
   radial-gradient(60% 50% at 50% 100%,rgba(255,106,26,.10),transparent 70%),
   radial-gradient(80% 60% at 50% 0%,rgba(255,255,255,.05),transparent 60%),
   linear-gradient(180deg,#0c0e11,#07080a);overflow:hidden;border-radius:6px;touch-action:pan-y}
-@media(max-width:759px){.display{min-height:72vh}}
+@media(max-width:759px){.display{min-height:60vh}}
 .display canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block}
 .display .rim{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04),inset 0 -80px 120px -60px rgba(0,0,0,.9)}
 .display .plate{position:absolute;left:50%;bottom:118px;transform:translateX(-50%);width:44%;height:9px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,140,60,.35),rgba(255,106,26,.08) 60%,transparent);filter:blur(4px);pointer-events:none}
@@ -131,7 +131,7 @@ nav.solid{background:rgba(7,8,9,.86);backdrop-filter:blur(14px);border-bottom:1p
 .mini{position:absolute;left:0;right:0;bottom:0;padding:.7rem .9rem .8rem;background:linear-gradient(transparent,rgba(7,8,9,.85) 30%,rgba(7,8,9,.95));display:flex;align-items:center;gap:.5rem}
 .mini .strip{display:flex;gap:.45rem;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;touch-action:pan-x;flex:1 1 auto;padding:4px 2px;scrollbar-width:none}
 .mini .strip::-webkit-scrollbar{display:none}
-.mini .m{flex:0 0 auto;width:46px;aspect-ratio:63/88;border-radius:4px;overflow:hidden;border:0;padding:0;background:#15181c;scroll-snap-align:center;opacity:.55;transition:opacity .25s,transform .25s,box-shadow .25s;position:relative}
+.mini .m{flex:0 0 auto;width:46px;aspect-ratio:63/88;border-radius:4px;overflow:hidden;border:0;padding:0;background:#15181c;scroll-snap-align:center;opacity:.55;transition:opacity .15s,transform .15s,box-shadow .15s;position:relative}
 .mini .m img{width:100%;height:100%;object-fit:cover}
 .mini .m:hover{opacity:.9;transform:translateY(-3px)}
 .mini .m.on{opacity:1;transform:translateY(-4px) scale(1.08);box-shadow:0 0 0 1.5px var(--ember),0 8px 20px rgba(255,106,26,.35)}
@@ -142,14 +142,15 @@ nav.solid{background:rgba(7,8,9,.86);backdrop-filter:blur(14px);border-bottom:1p
 .display .loading{position:absolute;inset:0;display:grid;place-items:center;font-size:.66rem;letter-spacing:.32em;text-transform:uppercase;color:var(--ink-3);pointer-events:none;transition:opacity .4s}
 .display .loading.off{opacity:0}
 /* spec sheet */
-.sheet{display:flex;flex-direction:column;gap:1.2rem;padding:1.6rem;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));border-radius:6px;position:relative;overflow:hidden}
+.sheet{display:flex;flex-direction:column;gap:1rem;padding:1.4rem;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));border-radius:6px;position:relative;overflow:hidden}
 .sheet::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--ember-2),transparent);opacity:.7}
 .sheet .game{display:inline-flex;align-items:center;gap:.5rem;font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-2)}
 .sheet .game i{width:7px;height:7px;border-radius:50%;background:var(--ember);box-shadow:0 0 10px var(--ember)}
 .sheet .game.magic i{background:#6fb3ff;box-shadow:0 0 10px #6fb3ff}
-.sheet h3{font-family:var(--display);font-size:clamp(1.4rem,3vw,2rem);letter-spacing:.04em;line-height:1.15;transition:opacity .35s,transform .35s}
+.sheet h3{font-family:var(--display);font-size:clamp(1.4rem,3vw,2rem);letter-spacing:.04em;line-height:1.15;transition:opacity .2s,transform .2s}
 .sheet .set{color:var(--ink-2);font-size:.92rem}
-.specs{display:grid;grid-template-columns:1fr 1fr;gap:.9rem 1.2rem;border-top:1px solid var(--line);padding-top:1.1rem}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:.7rem 1.2rem;border-top:1px solid var(--line);padding-top:.9rem}
+@media(max-width:759px){.specs{grid-template-columns:repeat(4,minmax(0,1fr));gap:.5rem}.specs dd{font-size:.82rem}.cond button{min-height:32px;padding:0 .6rem;font-size:.6rem}.sheet .actions .btn{min-height:44px}}
 .specs div{display:flex;flex-direction:column;gap:.15rem}
 .specs dt{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-3)}
 .specs dd{margin:0;font-size:.95rem;color:var(--ink)}
@@ -162,8 +163,8 @@ nav.solid{background:rgba(7,8,9,.86);backdrop-filter:blur(14px);border-bottom:1p
 .cond{display:flex;gap:.4rem;flex-wrap:wrap}
 .cond button{min-height:36px;padding:0 .8rem;border:1px solid var(--line);background:transparent;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-2);border-radius:3px}
 .cond button.on{border-color:var(--ember);color:var(--ink);background:rgba(255,106,26,.12)}
-.sheet.swap h3,.sheet.swap .set,.sheet.swap .specs,.sheet.swap .price{opacity:0;transform:translateY(8px)}
-.sheet .set,.sheet .specs,.sheet .price{transition:opacity .35s,transform .35s}
+.sheet.swap h3,.sheet.swap .set,.sheet.swap .specs,.sheet.swap .price{opacity:0;transform:translateY(6px)}
+.sheet .set,.sheet .specs,.sheet .price{transition:opacity .2s,transform .2s}
 
 /* the rail of other cards */
 .rail-head{display:flex;align-items:center;justify-content:center;gap:1rem;margin:2.2rem 0 .9rem;flex-wrap:wrap}
@@ -321,7 +322,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
     <div class="vault-head reveal">
       <div class="eyebrow">The display case</div>
       <h2 class="metal">Featured card</h2>
-      <p>Live market pricing. Tap any card on the rail to bring it onto the display.</p>
+      <p>Live market pricing. Tap a thumbnail under the display to swap cards.</p>
     </div>
     <div class="stage">
       <div class="display" id="display">
@@ -350,11 +351,10 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
       </aside>
     </div>
 
-    <div class="rail-head">
+    <div class="rail-head" style="margin-top:1.4rem">
       <div class="filters" id="filters"><button class="chip on" data-g="all">All</button><button class="chip" data-g="magic">Magic</button><button class="chip" data-g="pokemon">Pokemon</button></div>
       <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Search a card or set" autocomplete="off"></label>
     </div>
-    <div class="rail" id="rail"></div>
   </div>
 </section>
 
@@ -553,13 +553,13 @@ const Display = (() => {
     const t = await tex(c.img);
     if (!first) {
       // spin the old one out (fast turn + rise + fade), the new one in
-      const start = performance.now(), dur = 520; const y0 = autoT;
+      const start = performance.now(), dur = 300; const y0 = autoT;
       await new Promise(res => (function a(n) { const k = Math.min(1, (n - start) / dur); const e = k * k * (3 - 2 * k); autoT = y0 + e * Math.PI * 2; card.scale.setScalar(1 - e * .3); cardGroup.position.y = e * 1.4; k < 1 ? requestAnimationFrame(a) : res(); })(start));
     }
     if (t) { front.material.map = t; front.material.needsUpdate = true; const m = cardGroup.userData.mirror.children[1]; m.material.map = t; m.material.needsUpdate = true; }
     flipped = false; userY = 0; userX = 0; velY = 0;
     // the new card always lands FACING FRONT (rotation 0), then the slow turn resumes from there
-    const start = performance.now(), dur = 620;
+    const start = performance.now(), dur = 380;
     await new Promise(res => (function a(n) { const k = Math.min(1, (n - start) / dur); const e = 1 - Math.pow(1 - k, 3); autoT = -Math.PI * 2 * (1 - e); card.scale.setScalar(.7 + e * .3); cardGroup.position.y = (1 - e) * -1.4; k < 1 ? requestAnimationFrame(a) : res(); })(start));
     swapping = false;
   }
@@ -580,10 +580,16 @@ function tile(c) {
   b.addEventListener("mouseenter", () => Display.warm(c.img), { once: true });
   return b;
 }
-function renderMini() { const m = $("#mini"); m.innerHTML = ""; visible().slice(0, 40).forEach(c => { const b = document.createElement("button"); b.className = "m" + (current && current.id === c.id ? " on" : ""); b.dataset.id = c.id; b.type = "button"; b.title = c.name; b.innerHTML = `<img src="${c.imgSmall}" alt="${c.name}" loading="lazy">`; b.addEventListener("click", () => feature(c)); m.appendChild(b); }); }
-function step(d) { const a = visible().slice(0, 40); const i = a.findIndex(c => current && c.id === current.id); const n = a[(i + d + a.length) % a.length]; if (n) feature(n); }
+function stripList() {
+  // the wheel under the display stays in the picked card's lane: its set first, then the rest of that game
+  const g = current ? current.game : null; let a = visible().filter(c => !g || c.game === g);
+  if (current) a = [...a.filter(c => c.set === current.set), ...a.filter(c => c.set !== current.set)];
+  return a.slice(0, 60);
+}
+function renderMini() { const m = $("#mini"); m.innerHTML = ""; stripList().forEach(c => { const b = document.createElement("button"); b.className = "m" + (current && current.id === c.id ? " on" : ""); b.dataset.id = c.id; b.type = "button"; b.title = c.name; b.innerHTML = `<img src="${c.imgSmall}" alt="${c.name}" loading="lazy">`; b.addEventListener("click", () => feature(c)); m.appendChild(b); }); }
+function step(d) { const a = stripList(); const i = a.findIndex(c => current && c.id === current.id); const n = a[(i + d + a.length) % a.length]; if (n) feature(n); }
 $("#mPrev").addEventListener("click", () => step(-1)); $("#mNext").addEventListener("click", () => step(1));
-function renderRail() { const r = $("#rail"); r.innerHTML = ""; const a = visible().slice(0, 40); if (!a.length) r.innerHTML = '<div class="empty">Nothing matches that. Try another name or set.</div>'; a.forEach(c => r.appendChild(tile(c))); }
+function renderRail() {}
 const openRows = new Set(), shownRows = new Set();   // shown = rail visible (collapsed by default, first two open); open = rail expanded to a grid
 function renderGrid() {
   // one horizontal row per set (Matt: "way too much vertically") - each row expands into a grid on demand
@@ -614,10 +620,10 @@ function sheet(c) {
     $("#shArt").textContent = c.artist || "—"; $("#shYear").textContent = c.year || "—"; $("#shFoil").textContent = c.priceFoil ? "Foil " + money(c.priceFoil) : "";
     $("#shInquire").href = "mailto:hello@darksteelforge.gg?subject=" + encodeURIComponent("Inquiry: " + c.name + " (" + c.set + " " + c.number + ")");
     price(); s.classList.remove("swap");
-  }, 260);
+  }, 160);
 }
 function price() { if (current) $("#shPrice").textContent = money(current.price * condMult); }
-function feature(c, first) { if (current && current.id === c.id && !first) return; current = c; sheet(c); mark(); Display.show(c, first); const i = CARDS.indexOf(c); [CARDS[i + 1], CARDS[i + 2], CARDS[i - 1]].forEach(n => n && Display.warm(n.img)); }
+function feature(c, first) { if (current && current.id === c.id && !first) return; const relane = !current || current.game !== c.game || current.set !== c.set; current = c; sheet(c); if (relane) renderMini(); mark(); Display.show(c, first); const i = CARDS.indexOf(c); [CARDS[i + 1], CARDS[i + 2], CARDS[i - 1]].forEach(n => n && Display.warm(n.img)); }
 $("#filters").addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; document.querySelectorAll("#filters .chip").forEach(x => x.classList.toggle("on", x === b)); filterG = b.dataset.g; shown = 24; renderRail(); renderMini(); renderGrid(); });
 $("#q").addEventListener("input", e => { query = e.target.value.trim().toLowerCase(); shown = 24; renderRail(); renderMini(); renderGrid(); });
 $("#sort").addEventListener("change", e => { sortBy = e.target.value; renderGrid(); });
