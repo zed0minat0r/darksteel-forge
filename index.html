@@ -35,8 +35,9 @@ h1,h2,h3{margin:0;font-weight:600}
 .metal.ember{background-image:linear-gradient(180deg,#fff2d6 0%,#ffb347 35%,#ff6a1a 62%,#b83a00 100%)}   /* background-image, not the shorthand: the shorthand resets background-clip and paints a solid bar */
 
 /* ============================================================ THE LOGO (client artwork) + LIVE FIRE
-   logo.png is their logo, cut off its marble background AND with the painted flames erased (warm saturated
-   pixels keyed out) so the only fire is the live one. The live fire is a WebGL
+   logo.png is their logo, cut off its marble background and OTHERWISE UNTOUCHED. Keying the painted fire
+   out of it tore the letters it crosses (Matt, 2026-09-22: "the text is all messed up") - a clean version
+   needs the layered source file from their designer, so do not try again from the flat JPEG. The live fire is a WebGL
    shader (see the fire() block below) burning BEHIND the blade, with a faint copy in front for licks over
    the steel; a canvas adds rising embers and the glow behind the blade breathes. */
 .mark{position:relative;display:block;width:100%;isolation:isolate}
@@ -48,7 +49,7 @@ h1,h2,h3{margin:0;font-weight:600}
 @keyframes glowbreath{0%{opacity:.75;transform:translateX(-50%) scale(.97)}100%{opacity:1;transform:translateX(-50%) scale(1.06)}}
 .mark .emb{position:absolute;inset:-12% -6% 0 -6%;width:112%;height:112%;z-index:5;pointer-events:none}
 .mark .fx{position:absolute;left:58%;bottom:8%;width:38%;height:116%;transform:translateX(-50%);z-index:1;pointer-events:none;mix-blend-mode:screen}
-.mark .fx2{position:absolute;left:58%;bottom:8%;width:26%;height:112%;transform:translateX(-50%);z-index:3;pointer-events:none;mix-blend-mode:screen;opacity:.3}
+.mark .fx2{position:absolute;left:58%;bottom:8%;width:26%;height:112%;transform:translateX(-50%);z-index:3;pointer-events:none;mix-blend-mode:screen;opacity:.42}
 @media (prefers-reduced-motion:reduce){.mark .glow{animation:none}.mark .fx,.mark .emb{display:none}}
 
 /* ============================================================ SPLASH */
@@ -581,7 +582,7 @@ embers(document.getElementById("openFx"), 70, { speed: .5 });
     col += vec3(1.00, 0.68, 0.18) * smoothstep(0.52, 0.90, f) * 0.8;
     col += vec3(1.00, 0.34, 0.05) * smoothstep(0.20, 0.52, f) * 0.85;
     col += vec3(0.55, 0.10, 0.02) * smoothstep(0.06, 0.28, f) * 0.6;
-    float a = smoothstep(0.14, 0.52, f) * 0.86;
+    float a = smoothstep(0.12, 0.50, f) * 0.92;
     gl_FragColor = vec4(col * a, a);
   }`;
   document.querySelectorAll(".mark .fx, .mark .fx2").forEach(cv => {
