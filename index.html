@@ -40,25 +40,27 @@ h1,h2,h3{margin:0;font-weight:600}
    a canvas adds rising embers, and the glow behind the blade breathes. */
 .mark{position:relative;display:block;width:100%;isolation:isolate}
 .mark img{display:block;width:100%;height:auto}
-.mark .base{position:relative;z-index:2;filter:drop-shadow(0 18px 40px rgba(0,0,0,.75))}
+.mark .base{position:relative;z-index:2;filter:brightness(1.42) contrast(1.05) saturate(1.06) drop-shadow(0 18px 40px rgba(0,0,0,.75))}
 .mark .fl{position:absolute;inset:0;z-index:3;mix-blend-mode:screen;pointer-events:none;transform-origin:50% 88%;will-change:transform,opacity}
 .mark .f1{animation:flame1 2.3s ease-in-out infinite alternate}
-.mark .f2{animation:flame2 1.7s ease-in-out infinite alternate;opacity:.55}
-.mark .f3{animation:flame3 3.1s ease-in-out infinite alternate;opacity:.35;filter:blur(6px) saturate(1.4)}
+.mark .f2{animation:flame2 1.7s ease-in-out infinite alternate;opacity:.34}
+.mark .f3{animation:flame3 3.1s ease-in-out infinite alternate;opacity:.22;filter:blur(6px) saturate(1.4)}
 @keyframes flame1{0%{transform:scale(1.005,1) translateY(0) skewX(0deg)}35%{transform:scale(.99,1.035) translateY(-.6%) skewX(-.7deg)}70%{transform:scale(1.02,.985) translateY(.3%) skewX(.8deg)}100%{transform:scale(1,1.02) translateY(-.3%) skewX(-.3deg)}}
 @keyframes flame2{0%{transform:scale(1.03,1.06) translateY(-1.2%) skewX(1.2deg);opacity:.5}50%{transform:scale(.96,1.1) translateY(-2%) skewX(-1.4deg);opacity:.72}100%{transform:scale(1.05,1.02) translateY(-.4%) skewX(.6deg);opacity:.45}}
 @keyframes flame3{0%{transform:scale(1.12,1.16) translateY(-2.5%);opacity:.28}50%{transform:scale(1.18,1.26) translateY(-4%);opacity:.5}100%{transform:scale(1.1,1.14) translateY(-2%);opacity:.3}}
+.mark .back{position:absolute;inset:-14% -10%;z-index:0;pointer-events:none;background:radial-gradient(50% 42% at 50% 52%,rgba(150,170,195,.16),rgba(120,140,170,.07) 55%,transparent 78%);filter:blur(10px)}
 .mark .glow{position:absolute;left:50%;top:0;width:46%;height:104%;transform:translateX(-50%);z-index:1;pointer-events:none;
   background:radial-gradient(48% 40% at 50% 46%,rgba(255,150,60,.5),rgba(255,90,20,.18) 45%,transparent 72%);filter:blur(12px);animation:glowbreath 2.6s ease-in-out infinite alternate}
 @keyframes glowbreath{0%{opacity:.75;transform:translateX(-50%) scale(.97)}100%{opacity:1;transform:translateX(-50%) scale(1.06)}}
-.mark canvas{position:absolute;inset:-12% -6% 0 -6%;width:112%;height:112%;z-index:4;pointer-events:none}
+.mark .emb{position:absolute;inset:-12% -6% 0 -6%;width:112%;height:112%;z-index:5;pointer-events:none}
+.mark .fx{position:absolute;left:52%;bottom:15%;width:31%;height:104%;transform:translateX(-50%);z-index:4;pointer-events:none;mix-blend-mode:screen}
 @media (prefers-reduced-motion:reduce){.mark .fl,.mark .glow{animation:none}}
 
 /* ============================================================ SPLASH */
 #splash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;text-align:center;pointer-events:auto}
 #splash .ground{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 110%,#1a0d05 0%,var(--bg) 55%);transition:opacity 1s ease}
 #splash.out{pointer-events:none}#splash.out .ground{opacity:0}
-#splash canvas{position:absolute;inset:0;width:100%;height:100%}
+#splash .ground canvas{position:absolute;inset:0;width:100%;height:100%}
 .splash-text{transition:opacity .55s ease,transform .55s ease}
 #splash.out .splash-text{opacity:0;transform:translateY(-14px)}   /* the wrapper fades; the children keep their own filled animations so nothing snaps */
 .forge-mark{transform-origin:center;will-change:transform}
@@ -93,7 +95,7 @@ footer .brand .swd{height:52px}
 
 /* ============================================================ HERO */
 #hero{position:relative;min-height:100svh;display:grid;place-items:center;text-align:center;overflow:hidden;padding:6rem 1rem 4rem}
-#hero canvas{position:absolute;inset:0;width:100%;height:100%}
+#hero > canvas{position:absolute;inset:0;width:100%;height:100%}
 #hero::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 45% at 50% 40%,rgba(255,106,26,.16),transparent 70%),radial-gradient(90% 60% at 50% 100%,rgba(0,0,0,.6),transparent)}
 .hero-in{position:relative;z-index:2;max-width:980px}
 .logo-anim{width:min(330px,66vw);margin:0 auto 1.4rem}
@@ -322,7 +324,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 <div id="splash" aria-label="Welcome">
   <div class="ground"><canvas id="embers"></canvas></div>
   <div class="splash-in">
-<span class="mark forge-mark"><span class="glow"></span><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="900" height="894" fetchpriority="high"><img class="fl f3" src="img/fire.png" alt="" aria-hidden="true"><img class="fl f2" src="img/fire.png" alt="" aria-hidden="true"><img class="fl f1" src="img/fire.png" alt="" aria-hidden="true"><canvas class="emb"></canvas></span>
+<span class="mark forge-mark"><span class="back"></span><span class="glow"></span><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="900" height="894" fetchpriority="high"><img class="fl f3" src="img/fire.png" alt="" aria-hidden="true"><img class="fl f2" src="img/fire.png" alt="" aria-hidden="true"><img class="fl f1" src="img/fire.png" alt="" aria-hidden="true"><canvas class="fx"></canvas><canvas class="emb"></canvas></span>
     <div class="splash-text">
     <p class="tag">Pokemon &amp; Magic: The Gathering. Singles, sealed, and the chase cards you actually want.</p>
     <button class="enter" id="enter"><i></i> Enter the forge</button>
@@ -341,7 +343,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 <header id="hero"><a id="top"></a>
   <canvas id="heroFx"></canvas>
   <div class="hero-in">
-<span class="mark logo-anim"><span class="glow"></span><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="900" height="894" id="logoAnim"><img class="fl f3" src="img/fire.png" alt="" aria-hidden="true"><img class="fl f2" src="img/fire.png" alt="" aria-hidden="true"><img class="fl f1" src="img/fire.png" alt="" aria-hidden="true"><canvas class="emb"></canvas></span>
+<span class="mark logo-anim"><span class="back"></span><span class="glow"></span><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="900" height="894" id="logoAnim"><img class="fl f3" src="img/fire.png" alt="" aria-hidden="true"><img class="fl f2" src="img/fire.png" alt="" aria-hidden="true"><img class="fl f1" src="img/fire.png" alt="" aria-hidden="true"><canvas class="fx"></canvas><canvas class="emb"></canvas></span>
     <h1 class="hero-title metal" id="heroTitle"><span class="w" style="animation-delay:.05s">Forged</span> <span class="w" style="animation-delay:.2s">for</span> <span class="w" style="animation-delay:.35s">collectors.</span></h1>
     <p class="slogan">Every card <b>hand-checked</b>, <b>sleeved</b> and <b>priced to market</b> the day it lands. Pokemon and Magic, from playsets to grails.</p>
     <div class="hero-cta"><a class="btn hot" href="#vault">Open the vault</a><a class="btn" href="#inventory">Browse inventory</a></div>
@@ -547,8 +549,74 @@ embers(document.getElementById("heroFx"), 55, { speed: .6 });
 embers(document.getElementById("openFx"), 70, { speed: .5 });
 
 
+
+/* ============================================================ REAL FIRE (WebGL)
+   A fragment shader over the blade: fbm noise scrolling upward, domain-warped, shaped into a flame
+   column and coloured through a blackbody ramp (white core -> yellow -> orange -> red -> smoke).
+   This is the live fire; the painted flames in the artwork sit under it as the base glow. */
+(function fire() {
+  const VS = "attribute vec2 p;varying vec2 uv;void main(){uv=p*.5+.5;gl_Position=vec4(p,0.,1.);}";
+  const FS = `precision highp float; varying vec2 uv; uniform float t; uniform vec2 res;
+  float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+  float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+    return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
+  float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*noise(p);p*=2.03;a*=.5;}return v;}
+  void main(){
+    vec2 q = uv;
+    float y = q.y;                                  // 0 bottom, 1 top
+    // rising, stretched noise - two octopus layers at different speeds so the flame licks
+    vec2 n1 = vec2(q.x*2.6, q.y*1.15 - t*1.05);
+    vec2 n2 = vec2(q.x*5.2 + 11.0, q.y*2.1 - t*1.75);
+    float warp = fbm(n1) * 0.55 + fbm(n2) * 0.3;
+    // flame body: a column that narrows with height, pushed around by the noise
+    float cx = 0.5 + (warp - 0.42) * 0.46 * smoothstep(0.02, 1.0, y);
+    float width = mix(0.26, 0.035, pow(y, 0.55));
+    float d = abs(q.x - cx) / max(width, 0.001);
+    float body = 1.0 - smoothstep(0.15, 1.0, d);
+    // vertical envelope: anchored at the blade, torn apart near the top
+    float tear = fbm(vec2(q.x*4.2, q.y*2.6 - t*1.45));
+    float top = smoothstep(0.92, 0.18, y + (tear - 0.5) * 0.95);
+    float base = smoothstep(0.0, 0.14, y);
+    float f = body * top * base;
+    f *= 0.55 + 0.75 * fbm(vec2(q.x*6.0 + 3.0, q.y*3.4 - t*2.3));
+    f = clamp(f, 0.0, 1.0);
+    // blackbody-ish ramp
+    vec3 col = vec3(0.0);
+    col += vec3(1.00, 0.97, 0.88) * smoothstep(0.72, 0.95, f);
+    col += vec3(1.00, 0.72, 0.22) * smoothstep(0.42, 0.78, f) * 0.95;
+    col += vec3(1.00, 0.34, 0.05) * smoothstep(0.20, 0.52, f) * 0.85;
+    col += vec3(0.55, 0.10, 0.02) * smoothstep(0.06, 0.28, f) * 0.6;
+    float a = smoothstep(0.10, 0.40, f);
+    gl_FragColor = vec4(col * a, a);
+  }`;
+  document.querySelectorAll(".mark .fx").forEach(cv => {
+    const gl = cv.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false });
+    if (!gl) { cv.remove(); return; }
+    const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); return o; };
+    const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr);
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) { cv.remove(); return; }
+    gl.useProgram(pr);
+    const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(pr, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const uT = gl.getUniformLocation(pr, "t"), uR = gl.getUniformLocation(pr, "res");
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    let run = true, W = 0, H = 0;
+    const size = () => { const r = cv.getBoundingClientRect(); const d = Math.min(devicePixelRatio, 2);
+      W = cv.width = Math.max(2, Math.round(r.width * d)); H = cv.height = Math.max(2, Math.round(r.height * d)); gl.viewport(0, 0, W, H); };
+    new IntersectionObserver(e => { run = e[0].isIntersecting; }, { threshold: 0 }).observe(cv.parentElement);
+    addEventListener("resize", size); size();
+    const t0 = performance.now();
+    (function draw(now) {
+      requestAnimationFrame(draw); if (!run || !W) return;
+      gl.uniform1f(uT, (now - t0) / 1000); gl.uniform2f(uR, W, H);
+      gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLES, 0, 3);
+    })(t0);
+  });
+})();
+
 /* embers rising off the burning blade, one canvas per logo */
-document.querySelectorAll(".mark canvas").forEach(cv => {
+document.querySelectorAll(".mark .emb").forEach(cv => {
   const ctx = cv.getContext("2d"); const host = cv.parentElement; let W = 0, H = 0, P = [], run = true;
   const size = () => { const r = cv.getBoundingClientRect(); W = cv.width = Math.max(1, r.width * devicePixelRatio); H = cv.height = Math.max(1, r.height * devicePixelRatio); };
   const mk = () => ({ x: W * (.48 + (Math.random() - .5) * .10), y: H * (.30 + Math.random() * .58), r: (Math.random() * 1.7 + .6) * devicePixelRatio,
