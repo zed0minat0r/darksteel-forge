@@ -122,12 +122,23 @@ nav.solid{background:rgba(7,8,9,.86);backdrop-filter:blur(14px);border-bottom:1p
 @media(max-width:759px){.display{min-height:72vh}}
 .display canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block}
 .display .rim{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04),inset 0 -80px 120px -60px rgba(0,0,0,.9)}
-.display .plate{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);width:44%;height:9px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,140,60,.35),rgba(255,106,26,.08) 60%,transparent);filter:blur(4px);pointer-events:none}
-.display .hint{position:absolute;left:1rem;bottom:1rem;font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-3);pointer-events:none}
+.display .plate{position:absolute;left:50%;bottom:118px;transform:translateX(-50%);width:44%;height:9px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,140,60,.35),rgba(255,106,26,.08) 60%,transparent);filter:blur(4px);pointer-events:none}
+.display .hint{position:absolute;right:3rem;top:1.1rem;font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-3);pointer-events:none}
 .display .hint b{color:var(--ink-2);font-weight:600}
 .display .corner{position:absolute;width:26px;height:26px;border:1px solid rgba(255,255,255,.22);pointer-events:none}
 .display .c1{top:14px;left:14px;border-right:0;border-bottom:0}.display .c2{top:14px;right:14px;border-left:0;border-bottom:0}
 .display .c3{bottom:14px;left:14px;border-right:0;border-top:0}.display .c4{bottom:14px;right:14px;border-left:0;border-top:0}
+.mini{position:absolute;left:0;right:0;bottom:0;padding:.7rem .9rem .8rem;background:linear-gradient(transparent,rgba(7,8,9,.85) 30%,rgba(7,8,9,.95));display:flex;align-items:center;gap:.5rem}
+.mini .strip{display:flex;gap:.45rem;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;touch-action:pan-x;flex:1 1 auto;padding:4px 2px;scrollbar-width:none}
+.mini .strip::-webkit-scrollbar{display:none}
+.mini .m{flex:0 0 auto;width:46px;aspect-ratio:63/88;border-radius:4px;overflow:hidden;border:0;padding:0;background:#15181c;scroll-snap-align:center;opacity:.55;transition:opacity .25s,transform .25s,box-shadow .25s;position:relative}
+.mini .m img{width:100%;height:100%;object-fit:cover}
+.mini .m:hover{opacity:.9;transform:translateY(-3px)}
+.mini .m.on{opacity:1;transform:translateY(-4px) scale(1.08);box-shadow:0 0 0 1.5px var(--ember),0 8px 20px rgba(255,106,26,.35)}
+.mini .arr{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:1px solid var(--line-2);background:rgba(255,255,255,.05);display:grid;place-items:center;color:var(--ink-2)}
+.mini .arr:hover{color:var(--ink);border-color:rgba(255,255,255,.35)}
+.mini .arr svg{width:14px;height:14px}
+@media(max-width:759px){.mini .arr{display:none}.mini{padding:.6rem .6rem .7rem}}
 .display .loading{position:absolute;inset:0;display:grid;place-items:center;font-size:.66rem;letter-spacing:.32em;text-transform:uppercase;color:var(--ink-3);pointer-events:none;transition:opacity .4s}
 .display .loading.off{opacity:0}
 /* spec sheet */
@@ -318,6 +329,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
         <div class="plate"></div><div class="rim"></div>
         <i class="corner c1"></i><i class="corner c2"></i><i class="corner c3"></i><i class="corner c4"></i>
         <div class="hint"><b>Drag</b> to turn &nbsp;·&nbsp; <b>Tap</b> to flip</div>
+        <div class="mini"><button class="arr" id="mPrev" type="button" aria-label="Previous card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 5-7 7 7 7"/></svg></button><div class="strip" id="mini"></div><button class="arr" id="mNext" type="button" aria-label="Next card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 5 7 7-7 7"/></svg></button></div>
       </div>
       <aside class="sheet" id="sheet">
         <span class="game" id="shGame"><i></i><span>Pokemon</span></span>
@@ -339,7 +351,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
     </div>
 
     <div class="rail-head">
-      <div class="filters" id="filters"><button class="chip on" data-g="all">All</button><button class="chip" data-g="pokemon">Pokemon</button><button class="chip" data-g="magic">Magic</button></div>
+      <div class="filters" id="filters"><button class="chip on" data-g="all">All</button><button class="chip" data-g="magic">Magic</button><button class="chip" data-g="pokemon">Pokemon</button></div>
       <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Search a card or set" autocomplete="off"></label>
     </div>
     <div class="rail" id="rail"></div>
@@ -493,7 +505,7 @@ const Display = (() => {
     host.insertBefore(renderer.domElement, host.firstChild);
     scene = new THREE.Scene();
     const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromEquirectangular(envMap()).texture;
-    camera = new THREE.PerspectiveCamera(30, W / H, .1, 100); camera.position.set(0, .1, 9.4); camera.lookAt(0, 0, 0);
+    camera = new THREE.PerspectiveCamera(30, W / H, .1, 100); camera.position.set(0, -.25, 9.4); camera.lookAt(0, -.25, 0);
     scene.add(new THREE.AmbientLight(0xffffff, .25));
     const key = new THREE.SpotLight(0xfff1e0, 1.6, 30, .6, .6); key.position.set(3, 5, 6); scene.add(key);
     const rim = new THREE.SpotLight(0x8fc2ff, 1.0, 30, .7, .8); rim.position.set(-4, 2, -4); scene.add(rim);
@@ -568,6 +580,9 @@ function tile(c) {
   b.addEventListener("mouseenter", () => Display.warm(c.img), { once: true });
   return b;
 }
+function renderMini() { const m = $("#mini"); m.innerHTML = ""; visible().slice(0, 40).forEach(c => { const b = document.createElement("button"); b.className = "m" + (current && current.id === c.id ? " on" : ""); b.dataset.id = c.id; b.type = "button"; b.title = c.name; b.innerHTML = `<img src="${c.imgSmall}" alt="${c.name}" loading="lazy">`; b.addEventListener("click", () => feature(c)); m.appendChild(b); }); }
+function step(d) { const a = visible().slice(0, 40); const i = a.findIndex(c => current && c.id === current.id); const n = a[(i + d + a.length) % a.length]; if (n) feature(n); }
+$("#mPrev").addEventListener("click", () => step(-1)); $("#mNext").addEventListener("click", () => step(1));
 function renderRail() { const r = $("#rail"); r.innerHTML = ""; const a = visible().slice(0, 40); if (!a.length) r.innerHTML = '<div class="empty">Nothing matches that. Try another name or set.</div>'; a.forEach(c => r.appendChild(tile(c))); }
 const openRows = new Set(), shownRows = new Set();   // shown = rail visible (collapsed by default, first two open); open = rail expanded to a grid
 function renderGrid() {
@@ -577,7 +592,7 @@ function renderGrid() {
   const rows = [...by.entries()].sort((x, y) => Math.max(...y[1].map(c => c.price)) - Math.max(...x[1].map(c => c.price)));
   if (!rows.length) { host.innerHTML = '<div class="empty">Nothing matches that. Try another name or set.</div>'; return; }
   if (!shownRows.size && !query) [...new Set(rows.map(([k]) => k.split("|")[0]))].forEach(g => { const first = rows.find(([k]) => k.startsWith(g + "|")); if (first) shownRows.add(first[0]); });
-  const groups = {}; ["pokemon", "magic"].forEach(g => { groups[g] = document.createElement("div"); groups[g].className = "game-group"; const n = rows.filter(([k]) => k.startsWith(g + "|")).reduce((t, [, c]) => t + c.length, 0);
+  const groups = {}; ["magic", "pokemon"].forEach(g => { groups[g] = document.createElement("div"); groups[g].className = "game-group"; const n = rows.filter(([k]) => k.startsWith(g + "|")).reduce((t, [, c]) => t + c.length, 0);
     groups[g].innerHTML = `<div class="game-title ${g}"><span class="line"></span><i></i><h3>${g === "magic" ? "Magic: The Gathering" : "Pokemon TCG"}</h3><span class="c">${n} cards</span><span class="line r"></span></div>`; if (n) host.appendChild(groups[g]); });
   rows.forEach(([k, cards]) => {
     const [game, set] = k.split("|"); const r = document.createElement("div"); const show = shownRows.has(k) || (query && rows.length <= 4);
@@ -589,7 +604,8 @@ function renderGrid() {
     groups[game].appendChild(r);
   });
 }
-function mark() { document.querySelectorAll(".tile").forEach(t => t.classList.toggle("on", current && t.dataset.id === current.id)); const on = $("#rail .tile.on"); if (on) { const r = $("#rail"); r.scrollTo({ left: on.offsetLeft - r.clientWidth / 2 + on.offsetWidth / 2, behavior: "smooth" }); } }
+function mark() { document.querySelectorAll(".tile").forEach(t => t.classList.toggle("on", current && t.dataset.id === current.id));
+  document.querySelectorAll(".mini .m").forEach(t => t.classList.toggle("on", current && t.dataset.id === current.id)); const mo = $(".mini .m.on"); if (mo) { const st = $("#mini"); st.scrollTo({ left: mo.offsetLeft - st.clientWidth / 2 + mo.offsetWidth / 2, behavior: "smooth" }); } const on = $("#rail .tile.on"); if (on) { const r = $("#rail"); r.scrollTo({ left: on.offsetLeft - r.clientWidth / 2 + on.offsetWidth / 2, behavior: "smooth" }); } }
 function sheet(c) {
   const s = $("#sheet"); s.classList.add("swap");
   setTimeout(() => {
@@ -602,8 +618,8 @@ function sheet(c) {
 }
 function price() { if (current) $("#shPrice").textContent = money(current.price * condMult); }
 function feature(c, first) { if (current && current.id === c.id && !first) return; current = c; sheet(c); mark(); Display.show(c, first); const i = CARDS.indexOf(c); [CARDS[i + 1], CARDS[i + 2], CARDS[i - 1]].forEach(n => n && Display.warm(n.img)); }
-$("#filters").addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; document.querySelectorAll("#filters .chip").forEach(x => x.classList.toggle("on", x === b)); filterG = b.dataset.g; shown = 24; renderRail(); renderGrid(); });
-$("#q").addEventListener("input", e => { query = e.target.value.trim().toLowerCase(); shown = 24; renderRail(); renderGrid(); });
+$("#filters").addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; document.querySelectorAll("#filters .chip").forEach(x => x.classList.toggle("on", x === b)); filterG = b.dataset.g; shown = 24; renderRail(); renderMini(); renderGrid(); });
+$("#q").addEventListener("input", e => { query = e.target.value.trim().toLowerCase(); shown = 24; renderRail(); renderMini(); renderGrid(); });
 $("#sort").addEventListener("change", e => { sortBy = e.target.value; renderGrid(); });
 $("#cond").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; document.querySelectorAll("#cond button").forEach(x => x.classList.toggle("on", x === b)); condMult = +b.dataset.m; price(); });
 $("#shFlip").addEventListener("click", () => Display.flip());
@@ -612,7 +628,7 @@ const readyForDisplay = () => new Promise(res => { const f = () => { if (display
 fetch("data/cards.json").then(r => r.json()).then(async d => {
   CARDS = d.cards; await readyForDisplay(); Display.init();
   const top = CARDS.slice(0, 14); $("#tick").innerHTML = (top.map(c => `<span>${c.name} <em style="color:var(--ember-2);font-style:normal">${money(c.price)}</em></span>`).join("")).repeat(2);
-  renderRail(); renderGrid(); feature(CARDS[0], true); setTimeout(() => $("#dispLoad").classList.add("off"), 900);
+  renderRail(); renderMini(); renderGrid(); feature(CARDS[0], true); setTimeout(() => $("#dispLoad").classList.add("off"), 900);
 }).catch(e => { console.error(e); $("#dispLoad").textContent = "Inventory offline"; });
 </script>
 </body>
