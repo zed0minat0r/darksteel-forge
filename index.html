@@ -240,10 +240,33 @@ nav.solid{background:rgba(7,8,9,.86);backdrop-filter:blur(14px);border-bottom:1p
 @media(max-width:859px){.story{grid-template-columns:1fr;gap:2rem}}
 .story .lead{font-family:var(--ui);font-weight:500;font-size:clamp(1.12rem,2vw,1.4rem);line-height:1.5;color:var(--ink);margin:0}
 .story p{color:var(--ink-2);margin:1rem 0 0}
-.story .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
-.story .stats div{background:var(--bg2);padding:1.3rem 1rem;text-align:center}
-.story .stats b{display:block;font-family:var(--display);font-size:clamp(1.4rem,3vw,2rem);letter-spacing:.02em}
-.story .stats span{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-3)}
+.smith{width:100%;max-width:520px;margin:0 auto;aspect-ratio:350/410;position:relative}
+.smith svg{width:100%;height:100%;overflow:visible}
+.smith::after{content:"";position:absolute;inset:auto 10% -6% 10%;height:30px;background:radial-gradient(closest-side,rgba(255,106,26,.25),transparent);filter:blur(6px)}
+/* ---- rig: every joint is a <g> with its own pivot; the cycle is 1.3s */
+.smith .arm{transform-box:view-box;transform-origin:212px 148px;animation:arm 1.3s cubic-bezier(.5,0,.3,1) infinite}
+.smith .fore{transform-box:view-box;transform-origin:250px 190px;animation:fore 1.3s cubic-bezier(.5,0,.3,1) infinite}
+.smith .torso{transform-box:view-box;transform-origin:200px 250px;animation:torso 1.3s ease-in-out infinite}
+.smith .head{transform-box:view-box;transform-origin:196px 128px;animation:head 1.3s ease-in-out infinite}
+.smith .larm{transform-box:view-box;transform-origin:186px 150px;animation:larm 1.3s ease-in-out infinite}
+@keyframes arm{0%{transform:rotate(-6deg)}12%{transform:rotate(-6deg)}46%{transform:rotate(-112deg)}54%{transform:rotate(-118deg)}62%{transform:rotate(0deg)}66%{transform:rotate(-8deg)}72%,100%{transform:rotate(-6deg)}}
+@keyframes fore{0%{transform:rotate(-8deg)}12%{transform:rotate(-8deg)}46%{transform:rotate(-58deg)}54%{transform:rotate(-66deg)}62%{transform:rotate(0deg)}66%{transform:rotate(-6deg)}72%,100%{transform:rotate(-8deg)}}
+@keyframes torso{0%,12%,72%,100%{transform:rotate(2deg)}50%{transform:rotate(-7deg)}62%{transform:rotate(4deg)}}
+@keyframes head{0%,12%,72%,100%{transform:rotate(4deg)}50%{transform:rotate(8deg)}62%{transform:rotate(-2deg)}}
+@keyframes larm{0%,12%,72%,100%{transform:rotate(0)}50%{transform:rotate(-5deg)}62%{transform:rotate(3deg)}}
+/* impact: flash on the billet, sparks, anvil glint, ground shadow */
+.smith .flash{transform-box:view-box;transform-origin:330px 236px;opacity:0;animation:flash 1.3s linear infinite}
+@keyframes flash{0%,61%{opacity:0;transform:scale(.3)}63%{opacity:1;transform:scale(1)}76%{opacity:0;transform:scale(1.6)}100%{opacity:0}}
+.smith .billet{animation:billet 1.3s linear infinite}
+@keyframes billet{0%,60%{fill:#ff6a1a;filter:drop-shadow(0 0 6px #ff6a1a)}63%{fill:#fff1c4;filter:drop-shadow(0 0 16px #ffd08a)}79%,100%{fill:#ff7a2a;filter:drop-shadow(0 0 8px #ff6a1a)}}
+.smith .spark{transform-box:view-box;transform-origin:330px 236px;opacity:0;animation:spark 1.3s cubic-bezier(.1,.6,.4,1) infinite}
+@keyframes spark{0%,61%{opacity:0;transform:translate(0,0) scale(.4)}64%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1)}}
+.smith .glint{opacity:0;animation:glint 1.3s linear infinite}
+@keyframes glint{0%,61%{opacity:0}63%{opacity:.9}74%{opacity:0}100%{opacity:0}}
+.smith .heat{transform-box:view-box;transform-origin:330px 236px;animation:heat 1.3s linear infinite}
+@keyframes heat{0%,60%{opacity:.35;transform:scale(1)}63%{opacity:.9;transform:scale(1.5)}100%{opacity:.35;transform:scale(1)}}
+.smith .smoke{transform-box:view-box;transform-origin:335px 220px;animation:smoke 3.4s ease-out infinite}
+@keyframes smoke{0%{opacity:0;transform:translateY(0) scale(.6)}20%{opacity:.35}100%{opacity:0;transform:translateY(-90px) scale(1.5)}}
 .services{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
 .svc{position:relative;padding:1.6rem;border:1px solid var(--line);border-radius:6px;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01));overflow:hidden;transition:transform .3s,border-color .3s}
 .svc:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.22)}
@@ -267,11 +290,27 @@ nav.solid{background:rgba(7,8,9,.86);backdrop-filter:blur(14px);border-bottom:1p
 .faq summary i::after{transform:translateY(-50%) rotate(90deg)}
 .faq details[open] summary i::after{transform:translateY(-50%) rotate(0)}
 .faq details p{color:var(--ink-2);margin:0 0 1.2rem;font-size:.95rem;max-width:64ch}
-.opening{position:relative;text-align:center;padding:5rem 0;overflow:hidden;background:radial-gradient(70% 60% at 50% 100%,rgba(255,106,26,.16),transparent 70%),linear-gradient(180deg,var(--bg),#0b0c0f)}
+.opening{position:relative;text-align:center;padding:7rem 0 6rem;min-height:92svh;display:grid;place-items:center;overflow:hidden;background:radial-gradient(70% 55% at 50% 100%,rgba(255,106,26,.22),transparent 70%),linear-gradient(180deg,var(--bg),#0b0c0f)}
+.opening canvas{position:absolute;inset:0;width:100%;height:100%}
+.opening .bp{position:absolute;left:50%;top:50%;width:min(1100px,150vw);transform:translate(-50%,-56%);opacity:.5;pointer-events:none}
+.opening .bp path,.opening .bp rect,.opening .bp line{fill:none;stroke:rgba(255,179,71,.55);stroke-width:1.2;stroke-dasharray:1400;stroke-dashoffset:1400;animation:bpdraw 6s ease-in-out infinite alternate}
+.opening .bp .g{stroke:rgba(255,255,255,.14);stroke-dasharray:none;animation:none}
+@keyframes bpdraw{to{stroke-dashoffset:0}}
 .opening .wrap{position:relative;z-index:1}
-.opening h2{font-family:var(--display);font-size:clamp(1.7rem,5vw,3rem);letter-spacing:.12em;text-transform:uppercase;margin-top:.7rem}
-.opening p{color:var(--ink-2);max-width:560px;margin:1rem auto 0}
-.opening .news{margin-top:1.8rem}
+.opening .eyebrow{font-size:.78rem}
+.soon{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.16em;font-size:clamp(2.6rem,11vw,7.5rem);line-height:.95;margin:.6rem 0 .4rem;display:flex;justify-content:center;gap:.3em;flex-wrap:wrap}
+.soon span{display:inline-block;position:relative;background-image:linear-gradient(100deg,#b83a00 0%,#ff6a1a 25%,#ffb347 42%,#fff2d6 50%,#ffb347 58%,#ff6a1a 75%,#b83a00 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 18px rgba(255,106,26,.35));animation:shimmer 3.4s linear infinite,heatpulse 3.4s ease-in-out infinite}
+@keyframes shimmer{from{background-position:120% 0}to{background-position:-140% 0}}
+.soon span:nth-child(2){animation-delay:.4s}
+@keyframes heatpulse{0%,100%{filter:drop-shadow(0 6px 18px rgba(255,106,26,.25)) brightness(1)}50%{filter:drop-shadow(0 8px 34px rgba(255,140,60,.7)) brightness(1.25)}}
+.opening h2{font-family:var(--display);font-size:clamp(1.2rem,3vw,1.8rem);letter-spacing:.24em;text-transform:uppercase;color:var(--ink-2);font-weight:500}
+.opening h2 i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ember);box-shadow:0 0 12px var(--ember);margin:0 .8rem;vertical-align:middle;animation:pulse 1.8s ease-in-out infinite}
+.opening p{color:var(--ink-2);max-width:600px;margin:1.4rem auto 0;font-size:clamp(1rem,2vw,1.15rem)}
+.opening .news{margin-top:2rem}
+.opening .feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;max-width:900px;margin:3rem auto 0;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.opening .feats div{background:rgba(7,8,9,.75);backdrop-filter:blur(6px);padding:1.2rem .9rem}
+.opening .feats b{display:block;font-family:var(--display);letter-spacing:.1em;text-transform:uppercase;font-size:.92rem;margin-bottom:.3rem}
+.opening .feats span{font-size:.8rem;color:var(--ink-3)}
 .opening .marks{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-top:2.2rem;font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-3)}
 .opening .marks b{color:var(--ink-2);font-weight:600}
 
@@ -424,7 +463,96 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
         <p class="lead">Dark Steel Forge started the way most card shops do: a binder, a folding table and too many trades that should have gone the other way. It grew into a stocked inventory of Magic and Pokemon singles, sealed product and the chase cards that never seem to be in stock anywhere else.</p>
         <p>Every card that comes through the door is inspected under light, sleeved and stored in a climate-controlled room. Condition is graded honestly, prices track the market daily, and if we do not have the card you want we will source it. When the storefront opens it will have play space, weekly events and a buylist counter. Until then, everything here ships.</p>
       </div>
-      <div class="stats reveal"><div><b>170+</b><span>Singles in stock</span></div><div><b>2</b><span>Games, deep</span></div><div><b>Daily</b><span>Market repricing</span></div></div>
+      <div class="smith reveal" aria-hidden="true">
+<svg viewBox="100 -50 350 410" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="st" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e7ebef"/><stop offset=".45" stop-color="#8f979f"/><stop offset=".6" stop-color="#cfd4d9"/><stop offset="1" stop-color="#5d656d"/></linearGradient>
+    <linearGradient id="dk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3f46"/><stop offset="1" stop-color="#15181c"/></linearGradient>
+    <linearGradient id="skin" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2a2e34"/><stop offset=".7" stop-color="#3a3f46"/><stop offset="1" stop-color="#7a4a2a"/></linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffb347" stop-opacity=".9"/><stop offset=".5" stop-color="#ff6a1a" stop-opacity=".35"/><stop offset="1" stop-color="#ff6a1a" stop-opacity="0"/></radialGradient>
+    <radialGradient id="ground" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#000" stop-opacity=".7"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="2"/></filter>
+  </defs>
+  <!-- ground -->
+  <ellipse cx="270" cy="332" rx="190" ry="18" fill="url(#ground)"/>
+  <!-- heat glow behind the anvil -->
+  <circle class="heat" cx="330" cy="236" r="70" fill="url(#glow)"/>
+  <!-- smoke -->
+  <g class="smoke" fill="#9aa3ad" opacity=".3"><circle cx="335" cy="220" r="9"/><circle cx="345" cy="212" r="6"/><circle cx="326" cy="212" r="5"/></g>
+
+  <!-- anvil on a stump -->
+  <path d="M300 268 h60 v58 h-60 z" fill="url(#dk)"/>
+  <path d="M296 262 h68 l4 8 h-76 z" fill="#2a2e34"/>
+  <path d="M282 236 h96 v10 h-26 l-4 16 h-36 l-4 -16 h-26 z" fill="url(#st)"/>
+  <path d="M256 238 c-10 -2 -14 -8 -12 -14 h38 v22 h-14 c-6 0 -9 -3 -12 -8 z" fill="url(#st)"/>
+  <path d="M378 236 h20 c4 3 4 8 0 10 h-20 z" fill="url(#st)"/>
+  <path d="M282 236 h96 v3 h-96 z" fill="#f2f4f6" opacity=".7"/>
+  <!-- glint on the face at impact -->
+  <path class="glint" d="M282 236 h96 v10 h-96 z" fill="#fff" opacity="0"/>
+  <!-- the hot billet -->
+  <rect class="billet" x="306" y="228" width="48" height="9" rx="1.5" fill="#ff6a1a"/>
+
+  <!-- the smith: torso group carries everything -->
+  <g class="torso">
+    <!-- legs -->
+    <path d="M176 250 l-18 78 h20 l16 -60 z" fill="url(#skin)"/>
+    <path d="M214 250 l22 78 h-22 l-18 -62 z" fill="url(#skin)"/>
+    <path d="M156 326 h26 v8 h-30 z M212 326 h28 v8 h-32 z" fill="#0d0f12"/>
+    <!-- apron + body -->
+    <path d="M168 160 c0 -14 14 -22 32 -22 s32 8 32 22 v92 h-64 z" fill="url(#skin)"/>
+    <path d="M178 170 h44 v78 h-44 z" fill="#3a2a1c"/>
+    <path d="M188 170 v-16 h24 v16 z" fill="#3a2a1c" opacity=".8"/>
+    <!-- shoulders -->
+    <ellipse cx="184" cy="150" rx="18" ry="14" fill="url(#skin)"/>
+    <ellipse cx="216" cy="150" rx="18" ry="14" fill="url(#skin)"/>
+    <!-- head -->
+    <g class="head">
+      <rect x="188" y="100" width="6" height="16" fill="url(#skin)"/>
+      <circle cx="196" cy="102" r="20" fill="url(#skin)"/>
+      <path d="M176 100 c2 -14 12 -22 24 -20 c6 4 10 8 16 8 c-2 6 -6 10 -12 10 c-8 0 -14 2 -18 8 z" fill="#0d0f12"/>
+      <!-- brow highlight from the forge -->
+      <path d="M182 108 c6 -4 14 -4 22 -1" stroke="#ff8a3d" stroke-width="1.5" opacity=".7"/>
+    </g>
+    <!-- left arm (steadying the tongs) -->
+    <g class="larm">
+      <path d="M186 150 l-6 40 l72 -18 l6 12 l-84 24 c-6 2 -12 -4 -10 -10 l6 -50 z" fill="url(#skin)"/>
+      <path d="M244 170 l58 58" stroke="#5d656d" stroke-width="4" stroke-linecap="round"/>
+      <path d="M298 224 l14 6" stroke="#5d656d" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <!-- right arm, DRAWN IN THE STRIKE POSE (hammer face on the billet); the wind-up rotates it back.
+         upper arm pivots at the shoulder (212,148), forearm at the elbow (250,190), hammer is fixed in the hand (292,214) -->
+    <g class="arm">
+      <path d="M204 140 c6 -6 16 -6 22 2 l32 40 l-14 12 l-36 -40 c-6 -6 -8 -10 -4 -14 z" fill="url(#skin)"/>
+      <circle cx="250" cy="190" r="10" fill="url(#skin)"/>
+      <g class="fore">
+        <path d="M244 182 l52 24 l-6 14 l-52 -22 c-6 -3 -6 -12 6 -16 z" fill="url(#skin)"/>
+        <circle cx="292" cy="214" r="9" fill="url(#skin)"/>
+        <!-- hammer: handle runs through the hand to the head, head face sits on the billet -->
+        <path d="M272 205 l58 23" stroke="#3a2a1c" stroke-width="7" stroke-linecap="round"/>
+        <g transform="rotate(23 330 222)">
+          <rect x="319" y="204" width="24" height="38" rx="3" fill="url(#st)"/>
+          <rect x="321" y="206" width="4" height="34" rx="2" fill="#f2f4f6" opacity=".5"/>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- impact flash + sparks -->
+  <circle class="flash" cx="330" cy="236" r="22" fill="#fff3d6" filter="url(#blur)"/>
+  <g fill="#ffb347">
+    <circle class="spark" style="--dx:-46px;--dy:-64px" cx="330" cy="236" r="2.2"/>
+    <circle class="spark" style="--dx:-24px;--dy:-78px;animation-delay:.02s" cx="330" cy="236" r="1.6"/>
+    <circle class="spark" style="--dx:8px;--dy:-84px;animation-delay:.01s" cx="330" cy="236" r="2"/>
+    <circle class="spark" style="--dx:38px;--dy:-70px" cx="330" cy="236" r="1.8"/>
+    <circle class="spark" style="--dx:62px;--dy:-44px;animation-delay:.03s" cx="330" cy="236" r="2.4"/>
+    <circle class="spark" style="--dx:78px;--dy:-14px" cx="330" cy="236" r="1.5"/>
+    <circle class="spark" style="--dx:-70px;--dy:-30px;animation-delay:.02s" cx="330" cy="236" r="1.7"/>
+    <circle class="spark" style="--dx:54px;--dy:-90px;animation-delay:.04s" cx="330" cy="236" r="1.3" fill="#fff1c4"/>
+    <circle class="spark" style="--dx:-12px;--dy:-100px;animation-delay:.03s" cx="330" cy="236" r="1.4" fill="#fff1c4"/>
+    <circle class="spark" style="--dx:88px;--dy:-58px;animation-delay:.05s" cx="330" cy="236" r="1.2" fill="#ff6a1a"/>
+  </g>
+</svg>
+      </div>
     </div>
   </div>
 </section>
@@ -473,13 +601,31 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 
 <!-- ============================================================ OPENING -->
 <section class="opening" id="opening">
+  <canvas id="openFx"></canvas>
+  <svg class="bp" viewBox="0 0 1100 520" aria-hidden="true">
+    <line class="g" x1="0" y1="470" x2="1100" y2="470"/>
+    <path d="M150 470 V200 L550 60 L950 200 V470"/>
+    <path d="M190 470 V230 H910 V470"/>
+    <rect x="240" y="270" width="150" height="130"/><rect x="710" y="270" width="150" height="130"/>
+    <path d="M470 470 V260 H630 V470"/><path d="M550 260 V470"/>
+    <path d="M410 200 H690 M440 170 H660"/>
+    <path d="M470 215 H630" style="stroke-width:2"/>
+    <path d="M330 120 L550 45 L770 120"/>
+  </svg>
   <div class="wrap reveal">
-    <div class="eyebrow">Coming soon</div>
-    <h2 class="metal ember">The storefront</h2>
-    <p>A real counter, real play space, weekly events and the full inventory in glass. Location and date announced to the list first.</p>
+    <div class="eyebrow">The storefront</div>
+    <div class="soon"><span>Coming</span><span>Soon</span></div>
+    <h2>Opening <i></i> 2026</h2>
+    <p>A real counter, real play space, weekly events and the full inventory in glass. The address and the date go to the list first - and the first hundred names on it get opening-week store credit.</p>
     <form class="news" onsubmit="event.preventDefault();this.querySelector('input').value='';this.querySelector('button').textContent='You are on the list'">
       <input type="email" required placeholder="Email for the opening and drops"><button class="btn hot" type="submit">Keep me posted</button>
     </form>
+    <div class="feats">
+      <div><b>Glass counter</b><span>Every chase card in hand, under light</span></div>
+      <div><b>Play space</b><span>Tables for Commander and league nights</span></div>
+      <div><b>Buylist desk</b><span>Cash or credit, offer on the spot</span></div>
+      <div><b>Grading drop-off</b><span>Monthly PSA / CGC group subs</span></div>
+    </div>
     <div class="marks"><span><b>Magic</b> · Commander nights</span><span><b>Pokemon</b> · League play</span><span><b>Prereleases</b> · Every set</span></div>
   </div>
 </section>
@@ -535,6 +681,7 @@ function embers(canvas, count, opts = {}) {
 }
 const stopSplashEmbers = embers(document.getElementById("embers"), 90);
 embers(document.getElementById("heroFx"), 55, { speed: .6 });
+embers(document.getElementById("openFx"), 70, { speed: .5 });
 
 /* ============================================================ splash sequence */
 (function splash() {
