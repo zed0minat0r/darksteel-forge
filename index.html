@@ -612,6 +612,8 @@ document.querySelectorAll(".reveal").forEach(el => io.observe(el));
 const Display = (() => {
   const host = $("#display"); let renderer, scene, camera, card, cardGroup, front, back, edge, raf, W, H;
   let targetRotX = 0, targetRotY = 0, dragging = false, lastX = 0, lastY = 0, velY = 0, userY = 0, userX = 0, flipped = false, autoT = 0, swapping = false;
+  // swap state machine, stepped by the render loop only. phase: 0 idle, 1 spinning out, 2 spinning in
+  const SW = { phase: 0, t: 0, out: .30, in: .42, next: null, y0: 0, done: null };
   const loader = new THREE.TextureLoader(); loader.setCrossOrigin("anonymous");
   const texCache = new Map();
   const tex = url => texCache.get(url) || (texCache.set(url, new Promise(res => loader.load(url, t => { t.encoding = THREE.sRGBEncoding; t.anisotropy = renderer.capabilities.getMaxAnisotropy(); res(t); }, undefined, () => res(null)))), texCache.get(url));
@@ -681,34 +683,45 @@ const Display = (() => {
     addEventListener("resize", () => { W = host.clientWidth; H = host.clientHeight; camera.aspect = W / H; camera.updateProjectionMatrix(); renderer.setSize(W, H); });
     renderer.compile(scene, camera);
     let onScreen = true; new IntersectionObserver(es => { onScreen = es[0].isIntersecting; }, { threshold: 0 }).observe(host);
-    const t0 = performance.now();
+    const t0 = performance.now(); let prev = t0;
     (function loop(now) {
       raf = requestAnimationFrame(loop); if (!onScreen && !swapping) return; const t = (now - t0) / 1000;
-      if (!dragging) { userY += velY; velY *= .95; autoT += .0035; }
+      const dt = Math.min(.05, (now - prev) / 1000); prev = now;
+      if (SW.phase) step(dt); else if (!dragging) { userY += velY * (dt * 60); velY *= Math.pow(.95, dt * 60); autoT += 0.21 * dt; }   // 0.21 rad/s = the old 0.0035/frame at 60fps, now frame-rate independent
       const bob = Math.sin(t * .9) * .04;
       card.rotation.y = autoT + userY + (flipped ? Math.PI : 0);
       card.rotation.x += ((dragging ? userX : targetRotX + userX * .5) - card.rotation.x) * .08;
       card.rotation.z = 0;
       card.position.y = bob; const m = cardGroup.userData.mirror; m.rotation.copy(card.rotation); m.rotation.x *= -1; m.position.y = 2 * -2.35 - bob;
-      if (!dragging) userX *= .98;
+      if (!dragging) userX *= Math.pow(.98, dt * 60);
       renderer.render(scene, camera);
     })(t0);
   }
   function flip() { flipped = !flipped; }
-  async function show(c, first) {
-    if (swapping) return; swapping = true;
-    const t = await tex(c.img);
-    if (!first) {
-      // spin the old one out (fast turn + rise + fade), the new one in
-      const start = performance.now(), dur = 300; const y0 = autoT;
-      await new Promise(res => (function a(n) { const k = Math.min(1, (n - start) / dur); const e = k * k * (3 - 2 * k); autoT = y0 + e * Math.PI * 2; card.scale.setScalar(1 - e * .3); cardGroup.position.y = e * 1.4; k < 1 ? requestAnimationFrame(a) : res(); })(start));
+  function step(dt) {
+    SW.t += dt;
+    if (SW.phase === 1) {
+      const k = Math.min(1, SW.t / SW.out), e = k * k * (3 - 2 * k);
+      autoT = SW.y0 + e * Math.PI * 2; card.scale.setScalar(1 - e * .3); cardGroup.position.y = e * 1.4;
+      if (k >= 1) { apply(SW.next); SW.next = null; SW.phase = 2; SW.t = 0; }
+    } else {
+      const k = Math.min(1, SW.t / SW.in), e = 1 - Math.pow(1 - k, 3);
+      autoT = -Math.PI * 2 * (1 - e); card.scale.setScalar(.7 + e * .3); cardGroup.position.y = (1 - e) * -1.4;
+      if (k >= 1) { SW.phase = 0; card.scale.setScalar(1); cardGroup.position.y = 0; swapping = false; }
     }
-    if (t) { front.material.map = t; front.material.needsUpdate = true; const m = cardGroup.userData.mirror.children[1]; m.material.map = t; m.material.needsUpdate = true; }
-    flipped = false; userY = 0; userX = 0; velY = 0;
-    // the new card always lands FACING FRONT (rotation 0), then the slow turn resumes from there
-    const start = performance.now(), dur = 380;
-    await new Promise(res => (function a(n) { const k = Math.min(1, (n - start) / dur); const e = 1 - Math.pow(1 - k, 3); autoT = -Math.PI * 2 * (1 - e); card.scale.setScalar(.7 + e * .3); cardGroup.position.y = (1 - e) * -1.4; k < 1 ? requestAnimationFrame(a) : res(); })(start));
-    swapping = false;
+  }
+  function apply(t) {
+    if (!t) return;
+    front.material.map = t; front.material.needsUpdate = true;
+    const mm = cardGroup.userData.mirror.children[1]; mm.material.map = t; mm.material.needsUpdate = true;
+    flipped = false; userY = 0; velY = 0; userX = 0;
+  }
+  async function show(c, first) {
+    const t = await tex(c.img);
+    if (t && renderer.initTexture) renderer.initTexture(t);   // upload before the animation, not during it (that upload was a dropped frame mid-spin)
+    if (first) { apply(t); card.scale.setScalar(1); cardGroup.position.y = 0; return; }
+    if (SW.phase) { SW.next = t; return; }                    // a click mid-swap just retargets it
+    swapping = true; SW.phase = 1; SW.t = 0; SW.y0 = autoT; SW.next = t;
   }
   return { init, show, flip, warm: url => tex(url) };
 })();
