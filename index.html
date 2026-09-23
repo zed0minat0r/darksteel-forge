@@ -91,6 +91,8 @@ h1,h2,h3{margin:0;font-weight:600}
 nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:.9rem clamp(1rem,3vw,2.2rem);
   background:linear-gradient(rgba(7,8,9,.92),rgba(7,8,9,0));backdrop-filter:blur(2px);transition:background .4s}
 nav.solid{background:rgba(7,8,9,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand span{transition:opacity .35s ease,max-width .45s ease;white-space:nowrap}
+nav:not(.solid) .brand span{opacity:0;max-width:0;overflow:hidden}
 .brand{display:flex;align-items:center;gap:.7rem;font-family:var(--display);font-weight:700;letter-spacing:.2em;text-transform:uppercase;font-size:.78rem}
 .brand .swd{width:auto;height:34px;filter:drop-shadow(0 0 10px rgba(255,106,26,.45))}
 footer .brand .swd{height:52px}
@@ -104,7 +106,7 @@ footer .brand .swd{height:52px}
 #hero > canvas{position:absolute;inset:0;width:100%;height:100%}
 #hero::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 45% at 50% 40%,rgba(255,106,26,.16),transparent 70%),radial-gradient(90% 60% at 50% 100%,rgba(0,0,0,.6),transparent)}
 .hero-in{position:relative;z-index:2;max-width:980px}
-.logo-anim{width:min(330px,66vw);margin:0 auto 1.4rem;opacity:0}
+.logo-anim{width:min(310px,62vw);margin:0 auto 2.6rem;opacity:0}
 #hero.go .logo-anim{opacity:1}   /* revealed only when the flying splash mark lands on it */
 .forge-mark{width:min(300px,62vw);margin:0 auto 1.6rem}
 .hero-title{font-size:clamp(2rem,7.6vw,4.9rem);line-height:1.02}
@@ -114,16 +116,16 @@ footer .brand .swd{height:52px}
 .hero-title .w{display:inline-block;opacity:0;transform:translateY(.4em) rotateX(40deg);transform-origin:bottom}
 #hero.go .hero-title .w{animation:wordin 1s cubic-bezier(.2,.8,.2,1) forwards}
 @keyframes wordin{to{opacity:1;transform:none}}
-.slogan{margin:1.4rem auto 0;max-width:560px;color:var(--ink-2);font-size:clamp(1rem,2.2vw,1.2rem);letter-spacing:.02em;opacity:0}
+.slogan{margin:1.5rem auto 0;max-width:430px;color:var(--ink-2);font-size:clamp(1rem,2.2vw,1.2rem);letter-spacing:.02em;opacity:0}
 #hero.go .slogan{animation:up 1s .7s ease forwards}
 .slogan b{color:var(--ink);font-weight:600}
-.hero-cta{margin-top:2.4rem;display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap;opacity:0}
+.hero-cta{margin-top:2.6rem;display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap;opacity:0}
 #hero.go .hero-cta{animation:up 1s 1s ease forwards}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.7rem;min-height:var(--tap);padding:0 1.5rem;font-size:.74rem;letter-spacing:.26em;text-transform:uppercase;font-weight:700;border:1px solid var(--line-2);background:rgba(255,255,255,.04);transition:background .3s,border-color .3s,transform .3s}
 .btn:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
 .btn.hot{border-color:transparent;background:linear-gradient(180deg,#ff8a3d,#ff5a12);color:#1a0a02;box-shadow:0 10px 30px rgba(255,106,26,.28)}
 .btn.hot:hover{background:linear-gradient(180deg,#ffa05c,#ff6a1a)}
-.scroll-hint{position:relative;margin:3.2rem auto 0;z-index:2;display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--ink-3);font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;opacity:0}
+.scroll-hint{position:relative;margin:2.8rem auto 0;z-index:2;display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--ink-3);font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;opacity:0}
 #hero.go .scroll-hint{animation:up 1s 1.3s ease forwards}
 .scroll-hint i{width:1px;height:38px;background:linear-gradient(var(--ember),transparent);animation:drop 1.8s ease-in-out infinite}
 @keyframes drop{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
@@ -377,9 +379,9 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
   <div class="hero-in">
 <span class="mark logo-anim"><span class="back"></span><span class="glow"></span><img class="rglow" src="img/runeglow.png" alt="" aria-hidden="true"><img class="rhot" src="img/runehot.png" alt="" aria-hidden="true"><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="855" height="668" id="logoAnim"><canvas class="fx"></canvas><canvas class="fx2"></canvas><canvas class="emb"></canvas></span>
     <h1 class="hero-title metal" id="heroTitle"><span class="w" style="animation-delay:.05s"><span class="molten">Forge</span></span> <span class="w" style="animation-delay:.18s">your</span> <span class="w" style="animation-delay:.31s">game</span> <span class="w" style="animation-delay:.44s">night<span class="dot">.</span></span></h1>
-    <p class="slogan">Singles, sealed and the chase cards that decide the table. Pokemon and Magic, hand-checked and priced to market the day they land.</p>
-    <div class="hero-cta"><a class="btn hot" href="#vault">Open the vault</a><a class="btn" href="#inventory">Browse inventory</a></div>
-    <div class="scroll-hint"><span>Scroll</span><i></i></div>
+    <p class="slogan">Pokemon &amp; Magic singles, sealed and chase cards.</p>
+    <div class="hero-cta"><a class="btn hot" href="#vault">Open the vault</a></div>
+    <div class="scroll-hint"><i></i></div>
   </div>
   </header>
 <div class="ticker"><div id="tick"></div></div>
