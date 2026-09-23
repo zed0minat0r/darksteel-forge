@@ -310,11 +310,33 @@ footer .brand .swd{height:52px}
 .opening .marks b{color:var(--ink-2);font-weight:600}
 
 /* ============================================================ STRIP + FOOTER */
-.strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.03),transparent)}
-.strip .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;padding:3rem 0}
-.strip h3{font-family:var(--display);font-size:1.05rem;letter-spacing:.1em;text-transform:uppercase;margin:.6rem 0 .4rem}
-.strip p{color:var(--ink-2);margin:0;font-size:.92rem}
-.strip .ic{width:34px;height:34px;color:var(--ember-2)}
+/* ============================================================ SLOGAN BAND
+   Their line, "Forge your game night", as the centrepiece between the library and the storefront:
+   the words are struck in one at a time on scroll and a molten sweep runs through FORGE. */
+.slogan-band{position:relative;overflow:hidden;padding:clamp(5rem,14vh,9rem) 0;text-align:center;
+  background:radial-gradient(64% 52% at 50% 50%,rgba(255,106,26,.10),transparent 72%),linear-gradient(180deg,var(--bg),#0a0b0e 55%,var(--bg));
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.slogan-band canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.slogan-band .wrap{position:relative;z-index:1}
+.slogan-band .eyebrow{margin:0 0 1.4rem}
+.slogan-line{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.10em;line-height:1.02;
+  font-size:clamp(2.1rem,9vw,5.6rem);display:flex;flex-wrap:wrap;justify-content:center;gap:0 .34em;margin:0}
+.slogan-line .w{display:inline-block;opacity:0;transform:translateY(.42em) rotateX(38deg);transform-origin:bottom;
+  background-image:linear-gradient(180deg,#f7f8fa 0%,#cbd0d6 32%,#7e868e 52%,#d7dbe0 66%,#8f979f 82%,#f1f3f5 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  transition:opacity .75s cubic-bezier(.2,.8,.2,1),transform .75s cubic-bezier(.2,.8,.2,1)}
+.slogan-line .w.in{opacity:1;transform:none}
+.slogan-line .w:nth-child(2).in{transition-delay:.10s}.slogan-line .w:nth-child(3).in{transition-delay:.20s}.slogan-line .w:nth-child(4).in{transition-delay:.30s}
+.slogan-line .molten{background-image:linear-gradient(100deg,#8a2f06 0%,#ff6a1a 22%,#ffc06a 42%,#fff3d8 50%,#ffc06a 58%,#ff6a1a 78%,#8a2f06 100%);
+  background-size:280% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:molten 5.4s linear infinite;filter:drop-shadow(0 0 22px rgba(255,106,26,.34))}
+@keyframes molten{from{background-position:150% 0}to{background-position:-150% 0}}
+.slogan-line .dot{color:var(--ember);-webkit-text-fill-color:var(--ember)}
+.slogan-rule{width:0;height:1px;margin:2.2rem auto 0;background:linear-gradient(90deg,transparent,var(--ember-2),transparent);transition:width 1.1s cubic-bezier(.2,.8,.2,1) .35s}
+.slogan-rule.in{width:min(420px,72%)}
+.slogan-sub{max-width:620px;margin:1.6rem auto 0;color:var(--ink-2);font-size:clamp(1rem,2.1vw,1.15rem)}
+.slogan-cta{margin-top:2.2rem;display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap}
+@media (prefers-reduced-motion:reduce){.slogan-line .molten{animation:none}}
 footer{padding:4rem 0 2.5rem;text-align:center}
 footer .brand{justify-content:center;margin-bottom:1rem}
 footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
@@ -502,13 +524,20 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
   </div>
 </section>
 
-<!-- ============================================================ ABOUT STRIP -->
-<section class="strip" id="about">
+<!-- ============================================================ SLOGAN -->
+<section class="slogan-band" id="about">
+  <canvas class="sfx" aria-hidden="true"></canvas>
   <div class="wrap">
-    <div class="reveal"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m3 7 9-4 9 4-9 4-9-4Z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg><h3>Hand-checked</h3><p>Every single is inspected under light, sleeved and stored in a climate-controlled room. Condition is graded honestly, never optimistically.</p></div>
-    <div class="reveal"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><h3>Priced to market</h3><p>Pricing tracks TCGplayer and Scryfall market data. No mystery mark-ups, no stale price stickers.</p></div>
-    <div class="reveal"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg><h3>Singles to grails</h3><p>Playset commons to Special Illustration Rares and Mythic chase cards. If we do not have it, we will source it.</p></div>
-    <div class="reveal"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg><h3>Storefront coming</h3><p>A physical store is in the works. Until then the inventory is online and every card ships double-sleeved in a rigid mailer.</p></div>
+    <p class="eyebrow reveal">Darksteel Forge Gaming</p>
+    <h2 class="slogan-line">
+      <span class="w reveal"><span class="molten">Forge</span></span>
+      <span class="w reveal">your</span>
+      <span class="w reveal">game</span>
+      <span class="w reveal">night<span class="dot">.</span></span>
+    </h2>
+    <div class="slogan-rule reveal"></div>
+    <p class="slogan-sub reveal">Singles, sealed and the chase cards that decide the table. Pulled, checked and priced the day they land.</p>
+    <div class="slogan-cta reveal"><a class="btn hot" href="#vault">Open the vault</a><a class="btn" href="#inventory">Browse the library</a></div>
   </div>
 </section>
 
@@ -677,6 +706,26 @@ document.querySelectorAll(".mark .emb").forEach(cv => {
   })(0);
 });
 
+/* a few embers drifting behind the slogan */
+(() => { const cv = document.querySelector(".slogan-band .sfx"); if (!cv) return;
+  const ctx = cv.getContext("2d"); let W = 0, H = 0, run = false, last = 0;
+  const size = () => { const r = cv.getBoundingClientRect(); W = cv.width = Math.max(1, Math.round(r.width)); H = cv.height = Math.max(1, Math.round(r.height)); };
+  const mk = () => ({ x: Math.random() * W, y: H + Math.random() * 60, r: 1 + Math.random() * 2.4, v: .25 + Math.random() * .7, a: .25 + Math.random() * .5, d: Math.random() * 6.28 });
+  new IntersectionObserver(e => { run = e[0].isIntersecting; }, { threshold: 0 }).observe(cv.parentElement);
+  addEventListener("resize", size); size();
+  const P = Array.from({ length: 26 }, () => { const p = mk(); p.y = Math.random() * H; return p; });
+  ctx.globalCompositeOperation = "lighter";
+  (function tick(now) { requestAnimationFrame(tick); if (!run || !W || document.hidden) return;
+    if (now - last < 32) return; last = now;
+    ctx.clearRect(0, 0, W, H);
+    for (const p of P) { p.y -= p.v; p.x += Math.sin(p.d += .02) * .28; p.a -= .0016;
+      if (p.y < -10 || p.a <= 0) Object.assign(p, mk());
+      ctx.globalAlpha = Math.max(0, p.a) * .5; const r = p.r * 2.1;
+      ctx.drawImage(EMBER_SPRITE, p.x - r, p.y - r, r * 2, r * 2); }
+    ctx.globalAlpha = 1;
+  })(0);
+})();
+
 /* ============================================================ splash sequence */
 (function splash() {
   // the logo lands with a heat bloom, then the tagline and the button rise
@@ -690,7 +739,7 @@ document.querySelectorAll(".mark .emb").forEach(cv => {
   /* Four splash -> hero transitions. Pick one with ?tx=fly|zoom|strike|burn|ember (default fly).
      All of them end the same way: the hero logo is revealed exactly when the splash's copy lands or dies,
      so you never see two logos. */
-  const TX = (location.search.match(/[?&]tx=([a-z]+)/) || [, "fly"])[1];
+  const TX = (location.search.match(/[?&]tx=([a-z]+)/) || [, "burn"])[1];   // BURN THROUGH is the default
   const finish = (sp, hero, delay) => {
     setTimeout(() => { hero.classList.add("go"); }, delay);
     setTimeout(() => { sp.remove(); stopSplashEmbers(); }, delay + 140);
@@ -767,34 +816,53 @@ document.querySelectorAll(".mark .emb").forEach(cv => {
     }
 
     if (TX === "burn") {
-      /* BURN THROUGH: fire eats the splash away from the blade outward on a noise edge, and the hero is
-         behind it. The mark still travels, so the logo rides up through the burn. */
+      /* BURN THROUGH, both ways: fire eats the splash away from the BLADE outward (the hole is centred on
+         the blade, not the page), the logo rides up through the burn, and then the same edge runs back in
+         reverse over the hero and closes on the blade - the fire returning to the sword. */
       mark.style.transition = "transform 1.0s cubic-bezier(.5,0,.25,1)";
       requestAnimationFrame(() => requestAnimationFrame(() => { mark.style.transform = `translate(${dx}px,${dy}px) scale(${k})`; }));
-      if (txt) { txt.style.transition = "opacity .3s ease"; txt.style.opacity = "0"; }
+      if (txt) { txt.style.transition = "opacity .28s ease"; txt.style.opacity = "0"; }
       const cv = fxCanvas(), ctx = cv.getContext("2d");
-      const cx = b.left + b.width / 2, cy = a.top + a.height * .6, t0 = performance.now();
+      const BLADE = 0.608;                                   // the blade sits at 60.8% of the artwork's width
+      const cx0 = a.left + a.width * BLADE, cy0 = a.top + a.height * .55;
+      const cx1 = b.left + b.width * BLADE, cy1 = b.top + b.height * .55;
       const N = 420, seeds = Array.from({ length: N }, () => .92 + Math.random() * .16);
+      const OUT = 1150, BACK = 620, t0 = performance.now();
       sp.style.transition = "none";
-      (function burn(now) {
-        const t = Math.min(1, (now - t0) / 1150);
-        const maxR = Math.hypot(Math.max(cx, cv.width - cx), Math.max(cy, cv.height - cy)) * 1.15;
-        ctx.clearRect(0, 0, cv.width, cv.height);
-        // the hole that eats the splash: a ragged star polygon growing outward
-        ctx.save(); ctx.beginPath();
-        for (let i = 0; i <= N; i++) { const ang = i / N * 6.283; const rr = maxR * t * seeds[i % N] * (0.97 + 0.05 * Math.sin(ang * 9 + t * 7) + 0.04 * Math.sin(ang * 23 - t * 11));
+      const radiusAt = (ang, f, cx, cy) => {
+        const maxR = Math.hypot(Math.max(cx, cv.width - cx), Math.max(cy, cv.height - cy)) * 1.16;
+        const i2 = Math.floor(ang / 6.283 * N) % N;
+        return maxR * f * seeds[i2] * (0.97 + 0.05 * Math.sin(ang * 9 + f * 7) + 0.04 * Math.sin(ang * 23 - f * 11));
+      };
+      const drawRim = (f, cx, cy, fade) => {
+        ctx.beginPath();
+        for (let i = 0; i <= 180; i++) { const ang = i / 180 * 6.283, rr = radiusAt(ang, f, cx, cy);
           const x = cx + Math.cos(ang) * rr, y = cy + Math.sin(ang) * rr * .92; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
         ctx.closePath();
-        // burning rim
-        ctx.shadowColor = "rgba(255,110,25,.95)"; ctx.shadowBlur = 55; ctx.strokeStyle = `rgba(255,185,90,${.95 - t * .35})`; ctx.lineWidth = 14 * (1 - t * .55); ctx.stroke();
-        ctx.shadowBlur = 18; ctx.strokeStyle = `rgba(255,245,215,${.8 - t * .5})`; ctx.lineWidth = 3.5 * (1 - t * .5); ctx.stroke();
-        ctx.restore();
-        // punch the hole in the splash with a CSS clip-path in sync
+        ctx.shadowColor = "rgba(255,110,25,.95)"; ctx.shadowBlur = 55;
+        ctx.strokeStyle = `rgba(255,185,90,${fade})`; ctx.lineWidth = 14 * fade; ctx.stroke();
+        ctx.shadowBlur = 18; ctx.strokeStyle = `rgba(255,245,215,${fade * .85})`; ctx.lineWidth = 3.5 * fade; ctx.stroke();
+        ctx.shadowBlur = 0;
+      };
+      (function phase1(now) {
+        const t = Math.min(1, (now - t0) / OUT);
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        drawRim(t, cx0, cy0, Math.max(0, .95 - t * .35));
         const pts = [];
-        for (let i = 0; i <= 48; i++) { const ang = i / 48 * 6.283; const rr = maxR * t * seeds[(i * 7) % N] * (0.97 + 0.05 * Math.sin(ang * 9 + t * 7));
-          pts.push(`${((cx + Math.cos(ang) * rr) / cv.width * 100).toFixed(2)}% ${((cy + Math.sin(ang) * rr * .92) / cv.height * 100).toFixed(2)}%`); }
+        for (let i = 0; i <= 56; i++) { const ang = i / 56 * 6.283, rr = radiusAt(ang, t, cx0, cy0);
+          pts.push(`${((cx0 + Math.cos(ang) * rr) / cv.width * 100).toFixed(2)}% ${((cy0 + Math.sin(ang) * rr * .92) / cv.height * 100).toFixed(2)}%`); }
         sp.style.clipPath = `polygon(evenodd, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, ${pts.join(", ")})`;
-        if (t < 1) requestAnimationFrame(burn); else cv.remove();
+        if (t < 1) requestAnimationFrame(phase1);
+        else {
+          const t1 = performance.now();
+          (function phase2(n2) {                              // the same edge runs back in and closes on the blade
+            const u = Math.min(1, (n2 - t1) / BACK); const f = 0.82 * (1 - (u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2));
+            ctx.clearRect(0, 0, cv.width, cv.height);
+            drawRim(Math.max(0.001, f), cx1, cy1, Math.max(0, .8 * (1 - Math.pow(u, 1.5))));
+            if (u > .86) { const g = (u - .86) / .14; ctx.fillStyle = `rgba(255,190,110,${(1 - Math.abs(g * 2 - 1)) * .22})`; ctx.beginPath(); ctx.ellipse(cx1, cy1, 120 * (1 - g), 160 * (1 - g), 0, 0, 6.28); ctx.fill(); }
+            if (u < 1) requestAnimationFrame(phase2); else cv.remove();
+          })(t1);
+        }
       })(t0);
       setTimeout(() => { mark.style.visibility = "hidden"; }, 1000);
       finish(sp, hero, 1000);
