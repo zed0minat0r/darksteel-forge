@@ -95,9 +95,11 @@ nav.solid{background:rgba(7,8,9,.86);backdrop-filter:blur(14px);border-bottom:1p
 .brand span{transition:opacity .35s ease,max-width .45s ease;white-space:nowrap}
 nav:not(.solid) .brand span{opacity:0;max-width:0;overflow:hidden}
 .brand{display:flex;align-items:center;gap:.7rem;font-family:var(--display);font-weight:700;letter-spacing:.2em;text-transform:uppercase;font-size:.78rem}
+.brand{min-height:44px}
 .brand .swd{width:auto;height:34px;filter:drop-shadow(0 0 10px rgba(255,106,26,.45))}
 footer .brand .swd{height:52px}
-.nav-links{display:flex;gap:1.6rem;font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2)}
+.nav-links a{display:inline-block;padding:.7rem 0}
+.nav-links{display:flex;gap:1.6rem;align-items:center;font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2)}
 .nav-links a:hover{color:var(--ink)}
 @media(max-width:759px){.nav-links{display:none}}
 .nav-cta{min-height:40px;padding:0 1rem;border:1px solid var(--line-2);background:rgba(255,255,255,.04);font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;font-weight:700;display:inline-flex;align-items:center}
@@ -126,7 +128,7 @@ footer .brand .swd{height:52px}
 .btn:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
 .btn.hot{border-color:transparent;background:linear-gradient(180deg,#ff8a3d,#ff5a12);color:#1a0a02;box-shadow:0 10px 30px rgba(255,106,26,.28)}
 .btn.hot:hover{background:linear-gradient(180deg,#ffa05c,#ff6a1a)}
-.scroll-hint{position:relative;margin:2.8rem auto 0;z-index:2;display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--ink-3);font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;opacity:0}
+.scroll-hint{position:relative;margin:2.8rem auto 0;z-index:2;display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--ink-3);font-size:0.7rem;letter-spacing:.3em;text-transform:uppercase;opacity:0}
 #hero.go .scroll-hint{animation:up 1s 1.3s ease forwards}
 .scroll-hint i{width:1px;height:38px;background:linear-gradient(var(--ember),transparent);animation:drop 1.8s ease-in-out infinite}
 @keyframes drop{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
@@ -150,7 +152,7 @@ footer .brand .swd{height:52px}
 .display canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block}
 .display .rim{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04),inset 0 -80px 120px -60px rgba(0,0,0,.9)}
 .display .plate{position:absolute;left:50%;bottom:118px;transform:translateX(-50%);width:44%;height:9px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,140,60,.35),rgba(255,106,26,.08) 60%,transparent);filter:blur(4px);pointer-events:none}
-.display .hint{position:absolute;right:3rem;top:1.1rem;font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-3);pointer-events:none}
+.display .hint{position:absolute;right:3rem;top:1.1rem;font-size:0.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-3);pointer-events:none}
 .display .hint b{color:var(--ink-2);font-weight:600}
 .display .corner{position:absolute;width:26px;height:26px;border:1px solid rgba(255,255,255,.22);pointer-events:none}
 .display .c1{top:14px;left:14px;border-right:0;border-bottom:0}.display .c2{top:14px;right:14px;border-left:0;border-bottom:0}
@@ -162,33 +164,33 @@ footer .brand .swd{height:52px}
 .mini .m img{width:100%;height:100%;object-fit:cover}
 .mini .m:hover{opacity:.9;transform:translateY(-3px)}
 .mini .m.on{opacity:1;transform:translateY(-4px) scale(1.08);box-shadow:0 0 0 1.5px var(--ember),0 8px 20px rgba(255,106,26,.35)}
-.mini .arr{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:1px solid var(--line-2);background:rgba(255,255,255,.05);display:grid;place-items:center;color:var(--ink-2)}
+.mini .arr{flex:0 0 auto;width:40px;height:40px;border-radius:50%;border:1px solid var(--line-2);background:rgba(255,255,255,.05);display:grid;place-items:center;color:var(--ink-2)}
 .mini .arr:hover{color:var(--ink);border-color:rgba(255,255,255,.35)}
 .mini .arr svg{width:14px;height:14px}
 @media(max-width:759px){.mini .arr{display:none}.mini{padding:.6rem .6rem .7rem}}
-.display .loading{position:absolute;inset:0;display:grid;place-items:center;font-size:.66rem;letter-spacing:.32em;text-transform:uppercase;color:var(--ink-3);pointer-events:none;transition:opacity .4s}
+.display .loading{position:absolute;inset:0;display:grid;place-items:center;font-size:0.7rem;letter-spacing:.32em;text-transform:uppercase;color:var(--ink-3);pointer-events:none;transition:opacity .4s}
 .display .loading.off{opacity:0}
 /* spec sheet */
 .sheet{display:flex;flex-direction:column;gap:1rem;padding:1.4rem;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));border-radius:6px;position:relative;overflow:hidden}
 .sheet::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--ember-2),transparent);opacity:.7}
-.sheet .game{display:inline-flex;align-items:center;gap:.5rem;font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-2)}
+.sheet .game{display:inline-flex;align-items:center;gap:.5rem;font-size:0.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-2)}
 .sheet .game i{width:7px;height:7px;border-radius:50%;background:var(--ember);box-shadow:0 0 10px var(--ember)}
 .sheet .game.magic i{background:#6fb3ff;box-shadow:0 0 10px #6fb3ff}
 .sheet h3{font-family:var(--display);font-size:clamp(1.4rem,3vw,2rem);letter-spacing:.04em;line-height:1.15;transition:opacity .2s,transform .2s}
 .sheet .set{color:var(--ink-2);font-size:.92rem}
 .specs{display:grid;grid-template-columns:1fr 1fr;gap:.7rem 1.2rem;border-top:1px solid var(--line);padding-top:.9rem}
-@media(max-width:759px){.specs{grid-template-columns:repeat(4,minmax(0,1fr));gap:.5rem}.specs dd{font-size:.82rem}.cond button{min-height:32px;padding:0 .6rem;font-size:.6rem}.sheet .actions .btn{min-height:44px}}
+@media(max-width:759px){.specs{grid-template-columns:repeat(4,minmax(0,1fr));gap:.5rem}.specs dd{font-size:.82rem}.cond button{min-height:40px;padding:0 .6rem;font-size:0.7rem}.sheet .actions .btn{min-height:44px}}
 .specs div{display:flex;flex-direction:column;gap:.15rem}
-.specs dt{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-3)}
+.specs dt{font-size:0.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-3)}
 .specs dd{margin:0;font-size:.95rem;color:var(--ink)}
 .price{display:flex;align-items:baseline;gap:.7rem;border-top:1px solid var(--line);padding-top:1.1rem;margin-top:auto}
 .price .n{font-family:var(--display);font-size:clamp(1.8rem,4vw,2.5rem);letter-spacing:.02em}
-.price .l{font-size:.64rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-3)}
+.price .l{font-size:0.7rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-3)}
 .price .foil{margin-left:auto;font-size:.8rem;color:var(--ember-2)}
 .sheet .actions{display:flex;gap:.7rem;flex-wrap:wrap}
 .sheet .actions .btn{flex:1 1 160px}
 .cond{display:flex;gap:.4rem;flex-wrap:wrap}
-.cond button{min-height:36px;padding:0 .8rem;border:1px solid var(--line);background:transparent;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-2);border-radius:3px}
+.cond button{min-height:40px;padding:0 .8rem;border:1px solid var(--line);background:transparent;font-size:0.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-2);border-radius:3px}
 .cond button.on{border-color:var(--ember);color:var(--ink);background:rgba(255,106,26,.12)}
 .sheet.swap h3,.sheet.swap .set,.sheet.swap .specs,.sheet.swap .price{opacity:0;transform:translateY(6px)}
 .sheet .set,.sheet .specs,.sheet .price{transition:opacity .2s,transform .2s}
@@ -196,11 +198,11 @@ footer .brand .swd{height:52px}
 /* the rail of other cards */
 .rail-head{display:flex;align-items:center;justify-content:center;gap:1rem;margin:2.2rem 0 .9rem;flex-wrap:wrap}
 .filters{display:flex;gap:.5rem;flex-wrap:wrap}
-.chip{min-height:38px;padding:0 1rem;border:1px solid var(--line);background:rgba(255,255,255,.02);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2);border-radius:999px;transition:all .25s}
+.chip{min-height:40px;padding:0 1rem;border:1px solid var(--line);background:rgba(255,255,255,.02);font-size:0.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2);border-radius:999px;transition:all .25s}
 .chip.on,.chip:hover{color:var(--ink);border-color:rgba(255,255,255,.3)}
 .chip.on{background:rgba(255,106,26,.14);border-color:var(--ember)}
-.search{display:flex;align-items:center;gap:.6rem;border:1px solid var(--line);border-radius:999px;padding:0 1rem;min-height:38px;background:rgba(255,255,255,.02);flex:0 1 300px}
-.search input{background:none;border:0;outline:0;color:var(--ink);font:inherit;font-size:.9rem;width:100%}
+.search{display:flex;align-items:center;gap:.6rem;border:1px solid var(--line);border-radius:999px;padding:0 1rem;min-height:44px;background:rgba(255,255,255,.02);flex:0 1 300px}
+.search input{background:none;border:0;outline:0;color:var(--ink);font:inherit;font-size:.9rem;width:100%;min-height:42px}
 .search svg{width:14px;height:14px;opacity:.5}
 .rail{display:flex;gap:.9rem;overflow-x:auto;overflow-y:hidden;padding:.6rem .2rem 1.2rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:thin;scrollbar-color:var(--steel-2) transparent}
 .rail::-webkit-scrollbar{height:4px}.rail::-webkit-scrollbar-thumb{background:var(--steel-2);border-radius:2px}
@@ -220,8 +222,9 @@ footer .brand .swd{height:52px}
 #inventory{padding:3rem 0 5rem}
 .inv-head{display:flex;flex-direction:column;align-items:center;text-align:center;gap:1rem;margin-bottom:1.6rem}
 .inv-head h2{font-family:var(--display);font-size:clamp(1.3rem,3.4vw,2rem);letter-spacing:.12em;text-transform:uppercase;margin-top:.5rem}
-.sort{display:flex;gap:.5rem;align-items:center;justify-content:center;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3)}
-.sort select{background:#111317;border:1px solid var(--line);color:var(--ink);font:inherit;font-size:.72rem;letter-spacing:.12em;padding:.5rem .7rem;border-radius:3px;min-height:38px}
+.sort{display:flex;gap:.5rem;align-items:center;justify-content:center;font-size:0.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3)}
+footer a{display:inline-block;padding:.7rem .2rem}
+.sort select{background:#111317;border:1px solid var(--line);color:var(--ink);font:inherit;font-size:.72rem;letter-spacing:.12em;padding:.5rem .7rem;border-radius:3px;min-height:44px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1.2rem .9rem}
 @media(max-width:480px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .grid .tile{width:auto;min-width:0}
@@ -233,7 +236,7 @@ footer .brand .swd{height:52px}
 .game-title.magic i{background:#6fb3ff;box-shadow:0 0 10px #6fb3ff}
 .game-title .line{flex:1 1 20px;max-width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--line-2))}
 .game-title .line.r{background:linear-gradient(90deg,var(--line-2),transparent)}
-.game-title .c{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-3)}
+.game-title .c{font-size:0.7rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-3)}
 .row{border-top:1px solid var(--line);padding:.9rem 0 .2rem}
 .row .rail{display:none}
 .row.show .rail{display:flex}
@@ -247,10 +250,10 @@ footer .brand .swd{height:52px}
 @media(max-width:759px){.row-head .n{display:none}.row-head h3{white-space:normal;font-size:.92rem;line-height:1.2}.row-head .t{flex:1 1 auto}.row-head .peek{flex:0 0 auto}}
 .row-head{display:flex;align-items:center;gap:1rem;margin-bottom:.4rem}
 .row-head .t{display:flex;flex-direction:column;gap:.15rem;min-width:0;flex:1 1 auto}
-.row-head .g{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-3)}
+.row-head .g{font-size:0.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-3)}
 .row-head h3{font-family:var(--display);font-size:1rem;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.row-head .n{margin-left:auto;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap}
-.row-head .x{min-height:36px;padding:0 .9rem;border:1px solid var(--line);background:transparent;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2);border-radius:999px;white-space:nowrap}
+.row-head .n{margin-left:auto;font-size:0.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap}
+.row-head .x{min-height:40px;padding:0 .9rem;border:1px solid var(--line);background:transparent;font-size:0.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2);border-radius:999px;white-space:nowrap}
 .row-head .x:hover{border-color:rgba(255,255,255,.3);color:var(--ink)}
 .row .rail{padding-bottom:.9rem}
 .row.open.show .rail{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1.2rem .9rem;overflow:visible;scroll-snap-type:none}
@@ -275,7 +278,7 @@ footer .brand .swd{height:52px}
 .svc .n{font-family:var(--display);font-size:.7rem;letter-spacing:.3em;color:var(--ember-2)}
 .svc h3{font-family:var(--display);font-size:1.15rem;letter-spacing:.08em;text-transform:uppercase;margin:.6rem 0 .5rem}
 .svc p{color:var(--ink-2);margin:0;font-size:.92rem}
-.svc .tag{margin:1rem 0 0;display:inline-block;font-size:.6rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-3);border:1px solid var(--line);padding:.35rem .6rem;border-radius:999px;opacity:1;animation:none}
+.svc .tag{margin:1rem 0 0;display:inline-block;font-size:0.7rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-3);border:1px solid var(--line);padding:.35rem .6rem;border-radius:999px;opacity:1;animation:none}
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;counter-reset:st}
 .step{position:relative;padding:1.6rem 1.4rem 1.4rem;border-top:1px solid var(--line-2);text-align:center}
 .step::before{counter-increment:st;content:"0" counter(st);font-family:var(--display);font-size:2.4rem;line-height:1;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.35);display:block;margin-bottom:.8rem}
@@ -312,7 +315,7 @@ footer .brand .swd{height:52px}
 .opening .feats div{background:rgba(7,8,9,.75);backdrop-filter:blur(6px);padding:1.2rem .9rem}
 .opening .feats b{display:block;font-family:var(--display);letter-spacing:.1em;text-transform:uppercase;font-size:.92rem;margin-bottom:.3rem}
 .opening .feats span{font-size:.8rem;color:var(--ink-3)}
-.opening .marks{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-top:2.2rem;font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-3)}
+.opening .marks{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-top:2.2rem;font-size:0.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-3)}
 .opening .marks b{color:var(--ink-2);font-weight:600}
 
 /* ============================================================ STRIP + FOOTER */
@@ -359,7 +362,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 <div id="splash" aria-label="Welcome">
   <div class="ground"><canvas id="embers"></canvas></div>
   <div class="splash-in">
-<span class="mark forge-mark"><span class="back"></span><span class="glow"></span><img class="rglow" src="img/runeglow.png" alt="" aria-hidden="true"><img class="rhot" src="img/runehot.png" alt="" aria-hidden="true"><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="855" height="668" fetchpriority="high"><canvas class="fx"></canvas><canvas class="fx2"></canvas><canvas class="emb"></canvas></span>
+<span class="mark forge-mark"><span class="back"></span><span class="glow"></span><img class="rglow" src="img/runeglow.png" alt="" aria-hidden="true"><img class="rhot" src="img/runehot.png" alt="" aria-hidden="true"><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="700" height="547" fetchpriority="high"><canvas class="fx"></canvas><canvas class="fx2"></canvas><canvas class="emb"></canvas></span>
     <div class="splash-text">
     <p class="tag">Pokemon &amp; Magic: The Gathering. Singles, sealed, and the chase cards you actually want.</p>
     <button class="enter" id="enter"><i></i> Enter the forge</button>
@@ -369,7 +372,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 
 <!-- ============================================================ NAV -->
 <nav id="nav">
-  <a class="brand" href="#top"><img class="swd" src="img/sword.png" alt="" width="220" height="395"><span>Darksteel Forge</span></a>
+  <a class="brand" href="#top"><img class="swd" src="img/sword.png" alt="" width="72" height="459"><span>Darksteel Forge</span></a>
   <div class="nav-links"><a href="#vault">The vault</a><a href="#inventory">Library</a><a href="#shop">The shop</a><a href="#services">Services</a><a href="#faq">FAQ</a><a href="#contact">Contact</a></div>
   <a class="nav-cta" href="#vault">Shop cards</a>
 </nav>
@@ -378,7 +381,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 <header id="hero"><a id="top"></a>
   <canvas id="heroFx"></canvas>
   <div class="hero-in">
-<span class="mark logo-anim"><span class="back"></span><span class="glow"></span><img class="rglow" src="img/runeglow.png" alt="" aria-hidden="true"><img class="rhot" src="img/runehot.png" alt="" aria-hidden="true"><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="855" height="668" id="logoAnim"><canvas class="fx"></canvas><canvas class="fx2"></canvas><canvas class="emb"></canvas></span>
+<span class="mark logo-anim"><span class="back"></span><span class="glow"></span><img class="rglow" src="img/runeglow.png" alt="" aria-hidden="true"><img class="rhot" src="img/runehot.png" alt="" aria-hidden="true"><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="700" height="547" id="logoAnim"><canvas class="fx"></canvas><canvas class="fx2"></canvas><canvas class="emb"></canvas></span>
     <h1 class="hero-title metal" id="heroTitle"><span class="w" style="animation-delay:.05s"><span class="molten">Forge</span></span> <span class="w" style="animation-delay:.18s">your</span> <span class="w" style="animation-delay:.31s">game</span> <span class="w" style="animation-delay:.44s">night<span class="dot">.</span></span></h1>
     <p class="slogan">Pokemon &amp; Magic singles, sealed and chase cards.</p>
     <div class="hero-cta"><a class="btn hot" href="#vault">Open the vault</a></div>
@@ -414,7 +417,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
           <div><dt>Released</dt><dd id="shYear">—</dd></div>
         </dl>
         <div>
-          <dt class="specs" style="display:block;border:0;padding:0;font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.5rem">Condition</dt>
+          <dt class="specs" style="display:block;border:0;padding:0;font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.5rem">Condition</dt>
           <div class="cond" id="cond"><button class="on" data-m="1">Near Mint</button><button data-m=".85">Lightly Played</button><button data-m=".7">Mod. Played</button><button data-m=".5">Heavily Played</button></div>
         </div>
         <div class="price"><span class="n" id="shPrice">—</span><span class="l">market</span><span class="foil" id="shFoil"></span></div>
@@ -447,7 +450,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
     <div class="sec-head reveal"><div class="eyebrow">The shop</div><h2 class="metal">Built by collectors, for collectors</h2><div class="rule"></div></div>
     <div class="story">
       <div class="reveal">
-        <img class="storymark" src="img/sword.png" alt="" width="220" height="395">
+        <img class="storymark" src="img/sword.png" alt="" width="72" height="459">
         <p class="lead">Darksteel Forge started the way most card shops do: a binder, a folding table and too many trades that should have gone the other way. It grew into a stocked inventory of Magic and Pokemon singles, sealed product and the chase cards that never seem to be in stock anywhere else.</p>
         <p>Every card that comes through the door is inspected under light, sleeved and stored in a climate-controlled room. Condition is graded honestly, prices track the market daily, and if we do not have the card you want we will source it. When the storefront opens it will have play space, weekly events and a buylist counter. Until then, everything here ships.</p>
       </div>
@@ -533,7 +536,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 <!-- ============================================================ FOOTER / CONTACT -->
 <footer id="contact">
   <div class="wrap">
-    <div class="brand"><img class="swd" src="img/sword.png" alt="" width="220" height="395"><span>Darksteel Forge Gaming</span></div>
+    <div class="brand"><img class="swd" src="img/sword.png" alt="" width="72" height="459"><span>Darksteel Forge Gaming</span></div>
     <p>Pokemon · Magic: The Gathering · Singles · Sealed</p>
     <p>Ask about a card: <a href="mailto:hello@darksteelforge.gg" style="color:var(--ink-2)">hello@darksteelforge.gg</a></p>
     <p>Buylist and sourcing: <a href="mailto:buylist@darksteelforge.gg" style="color:var(--ink-2)">buylist@darksteelforge.gg</a></p>
@@ -1044,7 +1047,7 @@ function visible() {
 }
 function tile(c) {
   const b = document.createElement("button"); b.className = "tile" + (current && current.id === c.id ? " on" : ""); b.dataset.id = c.id; b.type = "button";
-  b.innerHTML = `<div class="ph"><img loading="lazy" decoding="async" src="${c.imgSmall}" alt="${c.name}"></div><div class="m"><b>${c.name}</b>${c.set}</div><div class="p">${money(c.price)}</div>`;
+  b.innerHTML = `<div class="ph"><img loading="lazy" decoding="async" fetchpriority="low" src="${c.imgSmall}" alt="${c.name}"></div><div class="m"><b>${c.name}</b>${c.set}</div><div class="p">${money(c.price)}</div>`;
   b.addEventListener("click", () => { feature(c); document.getElementById("vault").scrollIntoView({ behavior: "smooth", block: "start" }); });
   b.addEventListener("mouseenter", () => Display.warm(c.img), { once: true });
   return b;
@@ -1053,9 +1056,9 @@ function stripList() {
   // the wheel under the display stays in the picked card's lane: its set first, then the rest of that game
   const g = current ? current.game : null; let a = visible().filter(c => !g || c.game === g);
   if (current) a = [...a.filter(c => c.set === current.set), ...a.filter(c => c.set !== current.set)];
-  return a.slice(0, 60);
+  return a.slice(0, 40);
 }
-function renderMini() { const m = $("#mini"); m.innerHTML = ""; stripList().forEach(c => { const b = document.createElement("button"); b.className = "m" + (current && current.id === c.id ? " on" : ""); b.dataset.id = c.id; b.type = "button"; b.title = c.name; b.innerHTML = `<img src="${c.imgSmall}" alt="${c.name}" loading="lazy">`; b.addEventListener("click", () => feature(c)); m.appendChild(b); }); }
+function renderMini() { const m = $("#mini"); m.innerHTML = ""; stripList().slice(0, 18).forEach(c => { const b = document.createElement("button"); b.className = "m" + (current && current.id === c.id ? " on" : ""); b.dataset.id = c.id; b.type = "button"; b.title = c.name; b.innerHTML = `<img src="${c.imgSmall}" alt="${c.name}" loading="lazy" decoding="async">`; b.addEventListener("click", () => feature(c)); m.appendChild(b); }); }
 function step(d) { const a = stripList(); const i = a.findIndex(c => current && c.id === current.id); const n = a[(i + d + a.length) % a.length]; if (n) feature(n); }
 $("#mPrev").addEventListener("click", () => step(-1)); $("#mNext").addEventListener("click", () => step(1));
 function renderRail() {}
@@ -1073,9 +1076,13 @@ function renderGrid() {
     const [game, set] = k.split("|"); const r = document.createElement("div"); const show = shownRows.has(k) || (query && rows.length <= 4);
     r.className = "row" + (openRows.has(k) ? " open" : "") + (show ? " show" : "");
     r.innerHTML = `<div class="row-head"><div class="t"><h3>${set}</h3></div><div class="peek">${cards.slice(0, 3).map(c => `<img src="${c.imgSmall}" alt="" loading="lazy">`).join("")}</div><span class="n">${cards.length} card${cards.length > 1 ? "s" : ""}</span><button class="x" type="button">${openRows.has(k) ? "Collapse" : "See all"}</button><i class="arrow"></i></div><div class="rail"></div>`;
-    const rail = r.querySelector(".rail"); cards.forEach(c => rail.appendChild(tile(c)));
-    r.querySelector(".x").addEventListener("click", e => { e.stopPropagation(); openRows.has(k) ? openRows.delete(k) : openRows.add(k); r.classList.toggle("open"); r.querySelector(".x").textContent = openRows.has(k) ? "Collapse" : "See all"; });
-    r.querySelector(".row-head").addEventListener("click", () => { shownRows.has(k) ? shownRows.delete(k) : shownRows.add(k); r.classList.toggle("show"); });
+    const rail = r.querySelector(".rail");
+    let drawn = 0;
+    const draw = n => { cards.slice(drawn, drawn + n).forEach(c => rail.appendChild(tile(c))); drawn = Math.min(cards.length, drawn + n); };
+    draw(10);                                            // a phone shows three at a time - the rest stream in
+    rail.addEventListener("scroll", () => { if (drawn < cards.length && rail.scrollLeft > rail.scrollWidth - rail.clientWidth * 2.2) draw(10); }, { passive: true });
+    r.querySelector(".x").addEventListener("click", e => { e.stopPropagation(); openRows.has(k) ? openRows.delete(k) : openRows.add(k); if (openRows.has(k)) draw(cards.length); r.classList.toggle("open"); r.querySelector(".x").textContent = openRows.has(k) ? "Collapse" : "See all"; });
+    r.querySelector(".row-head").addEventListener("click", () => { shownRows.has(k) ? shownRows.delete(k) : shownRows.add(k); if (shownRows.has(k) && drawn < 10) draw(10); r.classList.toggle("show"); });
     groups[game].appendChild(r);
   });
 }

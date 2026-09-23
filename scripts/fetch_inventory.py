@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake the demo inventory: real cards, images and market prices from Scryfall (Magic) and pokemontcg.io
+"""Bake the demo inventory (then run scripts/make_thumbs.py to rebuild img/t): real cards, images and market prices from Scryfall (Magic) and pokemontcg.io
 (Pokemon), written to data/cards.json so the page never depends on either API being up at demo time
 (pokemontcg.io returned 500 twice out of three calls on 2026-09-21). Re-run to refresh prices."""
 import json, time, urllib.request, urllib.parse, sys
