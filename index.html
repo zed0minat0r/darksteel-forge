@@ -930,20 +930,9 @@ const Display = (() => {
   const texCache = new Map();
   const tex = url => texCache.get(url) || (texCache.set(url, new Promise(res => loader.load(url, t => { t.encoding = THREE.sRGBEncoding; t.anisotropy = renderer.capabilities.getMaxAnisotropy(); res(t); }, undefined, () => res(null)))), texCache.get(url));
 
-  // the shop's own card back - drawn once on a canvas (a branded sleeve)
-  function backTexture() {
-    const c = document.createElement("canvas"); c.width = 744; c.height = 1040; const x = c.getContext("2d");
-    const g = x.createLinearGradient(0, 0, 744, 1040); g.addColorStop(0, "#1b1e23"); g.addColorStop(.5, "#0d0f12"); g.addColorStop(1, "#1a1d22"); x.fillStyle = g; x.fillRect(0, 0, 744, 1040);
-    // brushed steel lines
-    x.globalAlpha = .06; for (let i = 0; i < 1040; i += 3) { x.fillStyle = i % 6 ? "#fff" : "#000"; x.fillRect(0, i, 744, 1); } x.globalAlpha = 1;
-    x.strokeStyle = "rgba(255,255,255,.18)"; x.lineWidth = 3; x.strokeRect(34, 34, 676, 972); x.lineWidth = 1; x.strokeStyle = "rgba(255,255,255,.1)"; x.strokeRect(50, 50, 644, 940);
-    x.translate(372, 470); x.scale(1.6, 1.6); x.translate(-100, -100);
-    x.strokeStyle = "#c9ced4"; x.lineWidth = 8; x.lineJoin = "round"; x.beginPath(); [[100, 22], [168, 62], [168, 138], [100, 178], [32, 138], [32, 62]].forEach((p, i) => i ? x.lineTo(...p) : x.moveTo(...p)); x.closePath(); x.stroke();
-    x.fillStyle = "#d9dde2"; x.beginPath(); x.moveTo(66, 96); x.lineTo(134, 96); x.lineTo(124, 108); x.lineTo(108, 108); x.lineTo(108, 122); x.lineTo(120, 122); x.lineTo(120, 130); x.lineTo(80, 130); x.lineTo(80, 122); x.lineTo(92, 122); x.lineTo(92, 108); x.lineTo(76, 108); x.closePath(); x.fill();
-    x.fillStyle = "#ff6a1a"; x.fillRect(88, 66, 24, 9); x.fillStyle = "#d9dde2"; x.fillRect(97, 52, 6, 16);
-    x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = "#9aa3ad"; x.font = "700 30px Cinzel, serif"; x.textAlign = "center"; x.letterSpacing = "8px"; x.fillText("DARK STEEL FORGE", 372, 800); x.font = "500 18px Cinzel, serif"; x.fillStyle = "#6b737c"; x.fillText("GAMING", 372, 836);
-    const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t;
-  }
+  // the REAL card backs - Pokemon and Magic each get their own (Matt, 2026-09-23: "should all have the
+  // actual back not a fake back from the Forge")
+  const BACKS = { pokemon: "img/back-pokemon.jpg", magic: "img/back-magic.jpg" };
   // a rounded-rectangle alpha map so the card has real corners
   function alphaMap() {
     const c = document.createElement("canvas"); c.width = 372; c.height = 520; const x = c.getContext("2d"); x.fillStyle = "#000"; x.fillRect(0, 0, 372, 520);
@@ -976,7 +965,7 @@ const Display = (() => {
     cardGroup = new THREE.Group(); card = new THREE.Group(); cardGroup.add(card); scene.add(cardGroup);
     const mat = t => new THREE.MeshPhysicalMaterial({ map: t, alphaMap: aMap, alphaTest: .5, transparent: false, roughness: .42, metalness: .04, clearcoat: .75, clearcoatRoughness: .28, envMapIntensity: .8, side: THREE.FrontSide });
     front = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat(null)); front.position.z = d / 2;
-    back = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat(backTexture())); back.position.z = -d / 2; back.rotation.y = Math.PI;
+    back = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat(null)); back.position.z = -d / 2; back.rotation.y = Math.PI;
     edge = new THREE.Mesh(new THREE.BoxGeometry(w - .03, h - .03, d * .7), new THREE.MeshStandardMaterial({ color: 0xf1ecdf, roughness: .8 }));
     card.add(edge, front, back);
     // reflection on the floor: a mirrored copy, faded
@@ -1022,18 +1011,21 @@ const Display = (() => {
       if (k >= 1) { SW.phase = 0; card.scale.setScalar(1); cardGroup.position.y = 0; swapping = false; }
     }
   }
-  function apply(t) {
-    if (!t) return;
+  function apply(pair) {
+    if (!pair || !pair[0]) return;
+    const [t, bt] = pair;
     front.material.map = t; front.material.needsUpdate = true;
     const mm = cardGroup.userData.mirror.children[1]; mm.material.map = t; mm.material.needsUpdate = true;
+    if (bt) { back.material.map = bt; back.material.needsUpdate = true;
+      const mb = cardGroup.userData.mirror.children[2]; if (mb) { mb.material.map = bt; mb.material.needsUpdate = true; } }
     flipped = false; userY = 0; velY = 0; userX = 0;
   }
   async function show(c, first) {
-    const t = await tex(c.img);
-    if (t && renderer.initTexture) renderer.initTexture(t);   // upload before the animation, not during it (that upload was a dropped frame mid-spin)
-    if (first) { apply(t); card.scale.setScalar(1); cardGroup.position.y = 0; return; }
-    if (SW.phase) { SW.next = t; return; }                    // a click mid-swap just retargets it
-    swapping = true; SW.phase = 1; SW.t = 0; SW.y0 = autoT; SW.next = t;
+    const [t, bt] = await Promise.all([tex(c.img), tex(BACKS[c.game] || BACKS.magic)]);
+    if (renderer.initTexture) { if (t) renderer.initTexture(t); if (bt) renderer.initTexture(bt); }   // upload before the animation, not during it
+    if (first) { apply([t, bt]); card.scale.setScalar(1); cardGroup.position.y = 0; return; }
+    if (SW.phase) { SW.next = [t, bt]; return; }                    // a click mid-swap just retargets it
+    swapping = true; SW.phase = 1; SW.t = 0; SW.y0 = autoT; SW.next = [t, bt];
   }
   return { init, show, flip, warm: url => tex(url) };
 })();
@@ -1053,9 +1045,12 @@ function tile(c) {
   return b;
 }
 function stripList() {
-  // the wheel under the display stays in the picked card's lane: its set first, then the rest of that game
-  const g = current ? current.game : null; let a = visible().filter(c => !g || c.game === g);
-  if (current) a = [...a.filter(c => c.set === current.set), ...a.filter(c => c.set !== current.set)];
+  // the wheel under the display stays in the picked card's lane: its set first, then the rest of that game.
+  // If the game filter excludes the displayed card, the lane follows the filter instead of emptying.
+  const vis = visible();
+  const g = current && vis.some(c => c.game === current.game) ? current.game : null;
+  let a = vis.filter(c => !g || c.game === g);
+  if (current && g) a = [...a.filter(c => c.set === current.set), ...a.filter(c => c.set !== current.set)];
   return a.slice(0, 40);
 }
 function renderMini() { const m = $("#mini"); m.innerHTML = ""; stripList().slice(0, 18).forEach(c => { const b = document.createElement("button"); b.className = "m" + (current && current.id === c.id ? " on" : ""); b.dataset.id = c.id; b.type = "button"; b.title = c.name; b.innerHTML = `<img src="${c.imgSmall}" alt="${c.name}" loading="lazy" decoding="async">`; b.addEventListener("click", () => feature(c)); m.appendChild(b); }); }
@@ -1100,7 +1095,8 @@ function sheet(c) {
 }
 function price() { if (current) $("#shPrice").textContent = money(current.price * condMult); }
 function feature(c, first) { if (current && current.id === c.id && !first) return; const relane = !current || current.game !== c.game || current.set !== c.set; current = c; sheet(c); if (relane) renderMini(); mark(); Display.show(c, first); const i = CARDS.indexOf(c); [CARDS[i + 1], CARDS[i + 2], CARDS[i - 1]].forEach(n => n && Display.warm(n.img)); }
-$("#filters").addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; document.querySelectorAll("#filters .chip").forEach(x => x.classList.toggle("on", x === b)); filterG = b.dataset.g; shown = 24; renderRail(); renderMini(); renderGrid(); });
+$("#filters").addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; document.querySelectorAll("#filters .chip").forEach(x => x.classList.toggle("on", x === b)); filterG = b.dataset.g; shown = 24; renderRail(); renderGrid();
+  const vis = visible(); if (vis.length && (!current || !vis.some(c => c.id === current.id))) feature(vis[0]); else renderMini(); });
 $("#q").addEventListener("input", e => { query = e.target.value.trim().toLowerCase(); shown = 24; renderRail(); renderMini(); renderGrid(); });
 $("#sort").addEventListener("change", e => { sortBy = e.target.value; renderGrid(); });
 $("#cond").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; document.querySelectorAll("#cond button").forEach(x => x.classList.toggle("on", x === b)); condMult = +b.dataset.m; price(); });
