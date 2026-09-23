@@ -35,21 +35,20 @@ h1,h2,h3{margin:0;font-weight:600}
 .metal.ember{background-image:linear-gradient(180deg,#fff2d6 0%,#ffb347 35%,#ff6a1a 62%,#b83a00 100%)}   /* background-image, not the shorthand: the shorthand resets background-clip and paints a solid bar */
 
 /* ============================================================ THE LOGO (client artwork) + LIVE FIRE
-   logo.png is their logo, cut off its marble background and OTHERWISE UNTOUCHED. Keying the painted fire
-   out of it tore the letters it crosses (Matt, 2026-09-22: "the text is all messed up") - a clean version
-   needs the layered source file from their designer, so do not try again from the flat JPEG. The live fire is a WebGL
+   logo.png is the client's FLAME-FREE logo (they sent it 2026-09-23), cut off its marble background. All the
+   fire on the page is live: a WebGL shader burning on the blade, plus rising embers. The live fire is a WebGL
    shader (see the fire() block below) burning BEHIND the blade, with a faint copy in front for licks over
    the steel; a canvas adds rising embers and the glow behind the blade breathes. */
 .mark{position:relative;display:block;width:100%;isolation:isolate}
 .mark img{display:block;width:100%;height:auto}
 .mark .base{position:relative;z-index:2;filter:brightness(1.42) contrast(1.05) saturate(1.06) drop-shadow(0 18px 40px rgba(0,0,0,.75))}
 .mark .back{position:absolute;inset:-14% -10%;z-index:0;pointer-events:none;background:radial-gradient(50% 42% at 50% 52%,rgba(150,170,195,.16),rgba(120,140,170,.07) 55%,transparent 78%);filter:blur(10px)}
-.mark .glow{position:absolute;left:50%;top:0;width:46%;height:104%;transform:translateX(-50%);z-index:1;pointer-events:none;
+.mark .glow{position:absolute;left:60.8%;top:0;width:34%;height:104%;transform:translateX(-50%);z-index:1;pointer-events:none;
   background:radial-gradient(48% 40% at 50% 46%,rgba(255,150,60,.5),rgba(255,90,20,.18) 45%,transparent 72%);filter:blur(12px);animation:glowbreath 2.6s ease-in-out infinite alternate}
 @keyframes glowbreath{0%{opacity:.75;transform:translateX(-50%) scale(.97)}100%{opacity:1;transform:translateX(-50%) scale(1.06)}}
 .mark .emb{position:absolute;inset:-12% -6% 0 -6%;width:112%;height:112%;z-index:5;pointer-events:none}
-.mark .fx{position:absolute;left:58%;bottom:8%;width:38%;height:116%;transform:translateX(-50%);z-index:1;pointer-events:none;mix-blend-mode:screen}
-.mark .fx2{position:absolute;left:58%;bottom:8%;width:26%;height:112%;transform:translateX(-50%);z-index:3;pointer-events:none;mix-blend-mode:screen;opacity:.42}
+.mark .fx{position:absolute;left:60.8%;bottom:11%;width:30%;height:92%;transform:translateX(-50%);z-index:1;pointer-events:none;mix-blend-mode:screen}
+.mark .fx2{position:absolute;left:60.8%;bottom:11%;width:19%;height:88%;transform:translateX(-50%);z-index:3;pointer-events:none;mix-blend-mode:screen;opacity:.5}
 @media (prefers-reduced-motion:reduce){.mark .glow{animation:none}.mark .fx,.mark .emb{display:none}}
 
 /* ============================================================ SPLASH */
@@ -320,7 +319,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 <div id="splash" aria-label="Welcome">
   <div class="ground"><canvas id="embers"></canvas></div>
   <div class="splash-in">
-<span class="mark forge-mark"><span class="back"></span><span class="glow"></span><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="900" height="894" fetchpriority="high"><canvas class="fx"></canvas><canvas class="fx2"></canvas><canvas class="emb"></canvas></span>
+<span class="mark forge-mark"><span class="back"></span><span class="glow"></span><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="1000" height="919" fetchpriority="high"><canvas class="fx"></canvas><canvas class="fx2"></canvas><canvas class="emb"></canvas></span>
     <div class="splash-text">
     <p class="tag">Pokemon &amp; Magic: The Gathering. Singles, sealed, and the chase cards you actually want.</p>
     <button class="enter" id="enter"><i></i> Enter the forge</button>
@@ -339,7 +338,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 <header id="hero"><a id="top"></a>
   <canvas id="heroFx"></canvas>
   <div class="hero-in">
-<span class="mark logo-anim"><span class="back"></span><span class="glow"></span><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="900" height="894" id="logoAnim"><canvas class="fx"></canvas><canvas class="fx2"></canvas><canvas class="emb"></canvas></span>
+<span class="mark logo-anim"><span class="back"></span><span class="glow"></span><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="1000" height="919" id="logoAnim"><canvas class="fx"></canvas><canvas class="fx2"></canvas><canvas class="emb"></canvas></span>
     <h1 class="hero-title metal" id="heroTitle"><span class="w" style="animation-delay:.05s">Forged</span> <span class="w" style="animation-delay:.2s">for</span> <span class="w" style="animation-delay:.35s">collectors.</span></h1>
     <p class="slogan">Every card <b>hand-checked</b>, <b>sleeved</b> and <b>priced to market</b> the day it lands. Pokemon and Magic, from playsets to grails.</p>
     <div class="hero-cta"><a class="btn hot" href="#vault">Open the vault</a><a class="btn" href="#inventory">Browse inventory</a></div>
@@ -566,12 +565,12 @@ embers(document.getElementById("openFx"), 70, { speed: .5 });
     float warp = fbm(n1) * 0.55 + fbm(n2) * 0.3;
     // flame body: a column that narrows with height, pushed around by the noise
     float cx = 0.5 + (warp - 0.45) * 0.34 * smoothstep(0.02, 1.0, y);
-    float width = mix(0.34, 0.085, pow(y, 0.5));
+    float width = mix(0.32, 0.13, pow(y, 0.8));
     float d = abs(q.x - cx) / max(width, 0.001);
     float body = 1.0 - smoothstep(0.18, 1.08, d);
     // vertical envelope: anchored at the blade, torn apart near the top
     float tear = fbm(vec2(q.x*4.2, q.y*2.6 - t*1.45));
-    float top = smoothstep(0.98, 0.20, y + (tear - 0.5) * 1.05);
+    float top = smoothstep(1.02, 0.30, y + (tear - 0.5) * 0.95);
     float base = smoothstep(-0.04, 0.16, y);
     float f = body * top * base;
     f *= 0.50 + 0.85 * fbm(vec2(q.x*5.8 + 3.0, q.y*3.2 - t*2.35));
