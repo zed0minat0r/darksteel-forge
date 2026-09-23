@@ -39,7 +39,7 @@ h1,h2,h3{margin:0;font-weight:600}
    fire on the page is live: a WebGL shader burning on the blade, plus rising embers. The live fire is a WebGL
    shader (see the fire() block below) burning BEHIND the blade, with a faint copy in front for licks over
    the steel; a canvas adds rising embers and the glow behind the blade breathes. */
-.mark{position:relative;display:block;width:100%;isolation:isolate}
+.mark{position:relative;display:block;width:100%;isolation:isolate;left:-7.4%}   /* the sword sits at 64.8% of the artwork, so the lit mass reads right of centre - nudge the whole mark to balance it optically (uses `left`, not `transform`: the splash intro animates transform) */
 .mark img{display:block;width:100%;height:auto}
 .mark .base{position:relative;z-index:1;filter:brightness(1.85) contrast(1.02) saturate(1.04) drop-shadow(0 18px 40px rgba(0,0,0,.75))}
 /* the engraved runes: a pre-baked glow layer (light bleeding out of the grooves) that only animates
@@ -108,6 +108,9 @@ footer .brand .swd{height:52px}
 #hero.go .logo-anim{opacity:1}   /* revealed only when the flying splash mark lands on it */
 .forge-mark{width:min(300px,62vw);margin:0 auto 1.6rem}
 .hero-title{font-size:clamp(2rem,7.6vw,4.9rem);line-height:1.02}
+.hero-title .molten{background-image:linear-gradient(100deg,#8a2f06 0%,#ff6a1a 22%,#ffc06a 42%,#fff3d8 50%,#ffc06a 58%,#ff6a1a 78%,#8a2f06 100%);
+  background-size:280% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:molten 5.4s linear infinite;filter:drop-shadow(0 0 20px rgba(255,106,26,.32))}
+.hero-title .dot{color:var(--ember);-webkit-text-fill-color:var(--ember)}
 .hero-title .w{display:inline-block;opacity:0;transform:translateY(.4em) rotateX(40deg);transform-origin:bottom}
 #hero.go .hero-title .w{animation:wordin 1s cubic-bezier(.2,.8,.2,1) forwards}
 @keyframes wordin{to{opacity:1;transform:none}}
@@ -373,8 +376,8 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
   <canvas id="heroFx"></canvas>
   <div class="hero-in">
 <span class="mark logo-anim"><span class="back"></span><span class="glow"></span><img class="rglow" src="img/runeglow.png" alt="" aria-hidden="true"><img class="rhot" src="img/runehot.png" alt="" aria-hidden="true"><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="855" height="668" id="logoAnim"><canvas class="fx"></canvas><canvas class="fx2"></canvas><canvas class="emb"></canvas></span>
-    <h1 class="hero-title metal" id="heroTitle"><span class="w" style="animation-delay:.05s">Forged</span> <span class="w" style="animation-delay:.2s">for</span> <span class="w" style="animation-delay:.35s">collectors.</span></h1>
-    <p class="slogan">Every card <b>hand-checked</b>, <b>sleeved</b> and <b>priced to market</b> the day it lands. Pokemon and Magic, from playsets to grails.</p>
+    <h1 class="hero-title metal" id="heroTitle"><span class="w" style="animation-delay:.05s"><span class="molten">Forge</span></span> <span class="w" style="animation-delay:.18s">your</span> <span class="w" style="animation-delay:.31s">game</span> <span class="w" style="animation-delay:.44s">night<span class="dot">.</span></span></h1>
+    <p class="slogan">Singles, sealed and the chase cards that decide the table. Pokemon and Magic, hand-checked and priced to market the day they land.</p>
     <div class="hero-cta"><a class="btn hot" href="#vault">Open the vault</a><a class="btn" href="#inventory">Browse inventory</a></div>
     <div class="scroll-hint"><span>Scroll</span><i></i></div>
   </div>
@@ -521,23 +524,6 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
       <div><b>Grading drop-off</b><span>Monthly PSA / CGC group subs</span></div>
     </div>
     <div class="marks"><span><b>Magic</b> · Commander nights</span><span><b>Pokemon</b> · League play</span><span><b>Prereleases</b> · Every set</span></div>
-  </div>
-</section>
-
-<!-- ============================================================ SLOGAN -->
-<section class="slogan-band" id="about">
-  <canvas class="sfx" aria-hidden="true"></canvas>
-  <div class="wrap">
-    <p class="eyebrow reveal">Darksteel Forge Gaming</p>
-    <h2 class="slogan-line">
-      <span class="w reveal"><span class="molten">Forge</span></span>
-      <span class="w reveal">your</span>
-      <span class="w reveal">game</span>
-      <span class="w reveal">night<span class="dot">.</span></span>
-    </h2>
-    <div class="slogan-rule reveal"></div>
-    <p class="slogan-sub reveal">Singles, sealed and the chase cards that decide the table. Pulled, checked and priced the day they land.</p>
-    <div class="slogan-cta reveal"><a class="btn hot" href="#vault">Open the vault</a><a class="btn" href="#inventory">Browse the library</a></div>
   </div>
 </section>
 
