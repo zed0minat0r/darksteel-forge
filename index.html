@@ -1090,7 +1090,17 @@ function renderGrid() {
   // sets with one or two cards (mostly promos) would be a wall of near-empty rows, so they share one
   for (const [k, cs] of [...by]) { if (cs.length > 2) continue; const g = k.split("|")[0], pk = g + "|Promos & singles";
     by.delete(k); if (!by.has(pk)) by.set(pk, []); by.get(pk).push(...cs); }
-  const rows = [...by.entries()].sort((x, y) => Math.max(...y[1].map(c => c.price)) - Math.max(...x[1].map(c => c.price)));
+  const isPromo = k => /Promo|promotion|Participation|Sealed Battle|Giveaway|Tie|Campaign/i.test(k.split("|")[1] || "");
+  let rows = [...by.entries()].sort((x, y) => (isPromo(x[0]) - isPromo(y[0])) ||
+    (Math.max(...y[1].map(c => c.price)) - Math.max(...x[1].map(c => c.price))));
+  // four sets per game, most valuable first; everything else folds into that game's "More singles" row
+  const total = {}; rows.forEach(([k]) => { const g = k.split("|")[0]; total[g] = (total[g] || 0) + 1; });
+  const perGame = {}, trimmed = [], spill = {};
+  for (const [k, cs] of rows) { const g = k.split("|")[0]; perGame[g] = (perGame[g] || 0) + 1;
+    const keep = total[g] > 4 ? 3 : 4;                       // 4 rows a game: either 4 sets, or 3 sets + the rest
+    if (perGame[g] <= keep) trimmed.push([k, cs]); else (spill[g] = spill[g] || []).push(...cs); }
+  for (const g of Object.keys(spill)) trimmed.push([g + "|More singles", spill[g].sort((a2, b2) => b2.price - a2.price)]);
+  rows = trimmed;
   if (!rows.length) { host.innerHTML = '<div class="empty">Nothing matches that. Try another name or set.</div>'; return; }
   if (!shownRows.size && !query) [...new Set(rows.map(([k]) => k.split("|")[0]))].forEach(g => { const first = rows.find(([k]) => k.startsWith(g + "|")); if (first) shownRows.add(first[0]); });
   const jump = $("#jump"); jump.innerHTML = "";
