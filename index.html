@@ -748,7 +748,10 @@ document.querySelectorAll(".mark .emb").forEach(cv => {
   /* a full-screen canvas used by the strike / burn / ember transitions */
   function fxCanvas() {
     const c = document.createElement("canvas"); c.style.cssText = "position:fixed;inset:0;width:100%;height:100%;z-index:120;pointer-events:none";
-    c.width = innerWidth; c.height = innerHeight; document.body.appendChild(c); return c;
+    document.body.appendChild(c);
+    const r = c.getBoundingClientRect();                      // the real painted box, not innerWidth/innerHeight
+    c.width = Math.round(r.width); c.height = Math.round(r.height);
+    return c;
   }
   const go = instant => {
     if (gone) return; gone = true;
@@ -819,7 +822,11 @@ document.querySelectorAll(".mark .emb").forEach(cv => {
       /* BURN THROUGH, centred on the PAGE, both ways. The hero is rendered first underneath so the hole
          opens onto a finished page; a ragged burning edge eats the splash outward from the centre, then
          the same ragged edge runs back in and closes on the centre. */
-      hero.classList.add("go");
+      // the hero is built underneath straight away (so the hole never opens onto a blank page) but it
+      // fades up through the burn rather than being there already
+      hero.style.opacity = "0"; hero.classList.add("go");
+      requestAnimationFrame(() => { hero.style.transition = "opacity .85s ease .12s"; hero.style.opacity = "1"; });
+      setTimeout(() => { hero.style.transition = ""; hero.style.opacity = ""; }, 1400);
       if (txt) { txt.style.transition = "opacity .25s ease"; txt.style.opacity = "0"; }
       const cv = fxCanvas(), ctx = cv.getContext("2d");
       const cx = cv.width / 2, cy = cv.height / 2;
