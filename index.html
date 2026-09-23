@@ -228,7 +228,15 @@ footer a{display:inline-block;padding:.7rem .2rem}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1.2rem .9rem}
 @media(max-width:480px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .grid .tile{width:auto;min-width:0}
-.game-group{margin-top:2.6rem}
+.jump{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin:0 0 .6rem}
+.jump button{min-height:44px;padding:0 1rem;border:1px solid var(--line);background:rgba(255,255,255,.02);color:var(--ink-2);font:inherit;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;border-radius:999px;display:inline-flex;align-items:center;gap:.5rem;transition:all .25s}
+.jump button:hover{color:var(--ink);border-color:rgba(255,255,255,.3)}
+.jump button i{width:7px;height:7px;border-radius:50%;background:var(--ember);box-shadow:0 0 8px var(--ember)}
+.jump button.magic i{background:#6fb3ff;box-shadow:0 0 8px #6fb3ff}
+.jump button.onepiece i{background:#e8413c;box-shadow:0 0 8px #e8413c}
+.jump button.riftbound i{background:#b07cff;box-shadow:0 0 8px #b07cff}
+.jump button b{color:var(--ink-3);font-weight:600}
+.game-group{margin-top:2.6rem;scroll-margin-top:84px}
 .game-group:first-child{margin-top:1.2rem}
 .game-title{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1rem;text-align:center}
 .game-title h3{font-family:var(--display);font-size:clamp(1.05rem,2.6vw,1.4rem);letter-spacing:.16em;text-transform:uppercase}
@@ -444,6 +452,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
       <div><div class="eyebrow">In stock</div><h2 class="metal">The library</h2></div>
       <div class="sort"><span>Sort</span><select id="sort"><option value="price-desc">Price: high to low</option><option value="price-asc">Price: low to high</option><option value="name">Name A - Z</option></select></div>
     </div>
+    <div class="jump" id="jump"></div>
     <div id="rows"></div>
   </div>
 </section>
@@ -1078,10 +1087,17 @@ function renderGrid() {
   // one horizontal row per set (Matt: "way too much vertically") - each row expands into a grid on demand
   const host = $("#rows"); host.innerHTML = ""; const a = visible(); const by = new Map();
   a.forEach(c => { const k = c.game + "|" + c.set; if (!by.has(k)) by.set(k, []); by.get(k).push(c); });
+  // sets with one or two cards (mostly promos) would be a wall of near-empty rows, so they share one
+  for (const [k, cs] of [...by]) { if (cs.length > 2) continue; const g = k.split("|")[0], pk = g + "|Promos & singles";
+    by.delete(k); if (!by.has(pk)) by.set(pk, []); by.get(pk).push(...cs); }
   const rows = [...by.entries()].sort((x, y) => Math.max(...y[1].map(c => c.price)) - Math.max(...x[1].map(c => c.price)));
   if (!rows.length) { host.innerHTML = '<div class="empty">Nothing matches that. Try another name or set.</div>'; return; }
   if (!shownRows.size && !query) [...new Set(rows.map(([k]) => k.split("|")[0]))].forEach(g => { const first = rows.find(([k]) => k.startsWith(g + "|")); if (first) shownRows.add(first[0]); });
-  const groups = {}; ["magic", "pokemon", "onepiece", "riftbound"].forEach(g => { groups[g] = document.createElement("div"); groups[g].className = "game-group"; const n = rows.filter(([k]) => k.startsWith(g + "|")).reduce((t, [, c]) => t + c.length, 0);
+  const jump = $("#jump"); jump.innerHTML = "";
+  const groups = {}; ["magic", "pokemon", "onepiece", "riftbound"].forEach(g => { groups[g] = document.createElement("div"); groups[g].className = "game-group"; groups[g].id = "g-" + g; const n = rows.filter(([k]) => k.startsWith(g + "|")).reduce((t, [, c]) => t + c.length, 0);
+    if (n) { const jb = document.createElement("button"); jb.className = g; jb.type = "button";
+      jb.innerHTML = `<i></i>${GAME_NAME[g].split(":")[0].replace(" Card Game", "").replace(" TCG", "")} <b>${n}</b>`;
+      jb.addEventListener("click", () => groups[g].scrollIntoView({ behavior: "smooth", block: "start" })); jump.appendChild(jb); }
     groups[g].innerHTML = `<div class="game-title ${g}"><span class="line"></span><i></i><h3>${GAME_NAME[g]}</h3><span class="c">${n} cards</span><span class="line r"></span></div>`; if (n) host.appendChild(groups[g]); });
   rows.forEach(([k, cards]) => {
     const [game, set] = k.split("|"); const r = document.createElement("div"); const show = shownRows.has(k) || (query && rows.length <= 4);
