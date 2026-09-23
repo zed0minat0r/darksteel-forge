@@ -47,8 +47,8 @@ h1,h2,h3{margin:0;font-weight:600}
   background:radial-gradient(48% 40% at 50% 46%,rgba(255,150,60,.5),rgba(255,90,20,.18) 45%,transparent 72%);filter:blur(12px);animation:glowbreath 2.6s ease-in-out infinite alternate}
 @keyframes glowbreath{0%{opacity:.75;transform:translateX(-50%) scale(.97)}100%{opacity:1;transform:translateX(-50%) scale(1.06)}}
 .mark .emb{position:absolute;inset:-12% -6% 0 -6%;width:112%;height:112%;z-index:5;pointer-events:none}
-.mark .fx{position:absolute;left:60.8%;bottom:11%;width:30%;height:92%;transform:translateX(-50%);z-index:1;pointer-events:none;mix-blend-mode:screen}
-.mark .fx2{position:absolute;left:60.8%;bottom:11%;width:19%;height:88%;transform:translateX(-50%);z-index:3;pointer-events:none;mix-blend-mode:screen;opacity:.5}
+.mark .fx{position:absolute;left:60.8%;bottom:10%;width:34%;height:106%;transform:translateX(-50%);z-index:1;pointer-events:none;mix-blend-mode:screen}
+.mark .fx2{position:absolute;left:60.8%;bottom:10%;width:22%;height:102%;transform:translateX(-50%);z-index:3;pointer-events:none;mix-blend-mode:screen;opacity:.5}
 @media (prefers-reduced-motion:reduce){.mark .glow{animation:none}.mark .fx,.mark .emb{display:none}}
 
 /* ============================================================ SPLASH */
@@ -551,50 +551,67 @@ embers(document.getElementById("openFx"), 70, { speed: .5 });
    This is the live fire; the painted flames in the artwork sit under it as the base glow. */
 (function fire() {
   const VS = "attribute vec2 p;varying vec2 uv;void main(){uv=p*.5+.5;gl_Position=vec4(p,0.,1.);}";
-  const FS = `precision highp float; varying vec2 uv; uniform float t; uniform vec2 res;
-  float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-  float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
-    return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
-  float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*noise(p);p*=2.03;a*=.5;}return v;}
+  const FS = `precision highp float; varying vec2 uv; uniform float t; uniform vec2 res; uniform float seed;
+  /* Built from the standard procedural-fire recipe: gradient-noise fbm, DOMAIN WARPING (Quilez's q/r
+     pattern) so the tongues curl instead of sliding, turbulence that grows with height, fuel burning off
+     with height, and a blackbody ramp (deep red -> orange -> yellow -> white core) on an additive blend. */
+  vec2 hash2(vec2 p){ p = vec2(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)));
+    return -1.0 + 2.0*fract(sin(p)*43758.5453123); }
+  float gnoise(vec2 p){                       // gradient noise - smoother than value noise, no blockiness
+    vec2 i = floor(p), f = fract(p);
+    vec2 u = f*f*(3.0-2.0*f);
+    return mix(mix(dot(hash2(i+vec2(0,0)), f-vec2(0,0)), dot(hash2(i+vec2(1,0)), f-vec2(1,0)), u.x),
+               mix(dot(hash2(i+vec2(0,1)), f-vec2(0,1)), dot(hash2(i+vec2(1,1)), f-vec2(1,1)), u.x), u.y);
+  }
+  float fbm(vec2 p){
+    float v = 0.0, a = 0.5;
+    mat2 m = mat2(1.6, 1.2, -1.2, 1.6);       // rotate each octave so the layers do not line up
+    for (int i = 0; i < 6; i++){ v += a*gnoise(p); p = m*p; a *= 0.5; }
+    return v;
+  }
   void main(){
     vec2 q = uv;
-    float y = q.y;                                  // 0 bottom, 1 top
-    // rising, stretched noise - two octopus layers at different speeds so the flame licks
-    vec2 n1 = vec2(q.x*2.6, q.y*1.15 - t*1.05);
-    vec2 n2 = vec2(q.x*5.2 + 11.0, q.y*2.1 - t*1.75);
-    float warp = fbm(n1) * 0.55 + fbm(n2) * 0.3;
-    // flame body: a column that narrows with height, pushed around by the noise
-    float cx = 0.5 + (warp - 0.45) * 0.34 * smoothstep(0.02, 1.0, y);
-    float width = mix(0.32, 0.13, pow(y, 0.8));
-    float d = abs(q.x - cx) / max(width, 0.001);
-    float body = 1.0 - smoothstep(0.18, 1.08, d);
-    // vertical envelope: anchored at the blade, torn apart near the top
-    float tear = fbm(vec2(q.x*4.2, q.y*2.6 - t*1.45));
-    float top = smoothstep(1.02, 0.30, y + (tear - 0.5) * 0.95);
-    float base = smoothstep(-0.04, 0.16, y);
-    float f = body * top * base;
-    f *= 0.50 + 0.85 * fbm(vec2(q.x*5.8 + 3.0, q.y*3.2 - t*2.35));
-    f = clamp(f, 0.0, 1.0);
-    // blackbody-ish ramp
+    float y = q.y;                            // 0 at the wick, 1 at the tip
+    vec2 p = vec2((q.x-0.5)*3.2, q.y*2.4 - t*1.15) + vec2(seed*7.3, seed*3.1);   // tighter structures = visible tongues
+    // --- domain warp: sample fbm twice and use it to displace the lookup. this is what makes fire curl
+    float turb = 0.35 + 1.25*y;               // laminar at the base, chaotic at the top
+    vec2 w1 = vec2(fbm(p*2.1), fbm(p*2.1 + vec2(5.2,1.3)));
+    vec2 w2 = vec2(fbm(p*4.3 + 1.7*w1 + vec2(1.7,9.2)), fbm(p*4.3 + 1.7*w1 + vec2(8.3,2.8)));
+    float n  = fbm(p*2.2 + turb*w2);
+    n = n*0.5 + 0.5;
+    // --- flame body: a column of fuel that narrows and is eaten away with height, pushed by the warp
+    float sway = sin(t*1.3 + y*4.0 + seed*6.0)*0.045*y + (w1.x)*0.16*y;
+    float halfw = mix(0.17, 0.44, pow(y, 0.55));   // hugs the blade at the tip, billows as it rises ('half' is reserved in GLSL ES)
+    float d = abs(q.x - (0.5 + sway)) / halfw;
+    float col_shape = 1.0 - smoothstep(0.10, 1.05, d);
+    float fuel = smoothstep(0.0, 0.14, y) * (1.0 - smoothstep(0.70, 1.15, y));   // lit along the blade, burnt out above the tip
+    float flicker = 0.88 + 0.22*fbm(vec2(seed*3.0, t*2.4));     // whole-flame breathing
+    float heat = col_shape * fuel * flicker * (0.55 + 1.30*n);
+    heat -= smoothstep(0.30, 1.0, y) * 0.85 * (1.0 - n);        // the top tears into separate tongues
+    heat = clamp(heat, 0.0, 1.6);
+    // --- blackbody ramp: cool smoke-red at the edges through orange and yellow to a white core
     vec3 col = vec3(0.0);
-    col += vec3(1.00, 0.95, 0.84) * smoothstep(0.88, 1.0, f) * 0.55;
-    col += vec3(1.00, 0.68, 0.18) * smoothstep(0.52, 0.90, f) * 0.8;
-    col += vec3(1.00, 0.34, 0.05) * smoothstep(0.20, 0.52, f) * 0.85;
-    col += vec3(0.55, 0.10, 0.02) * smoothstep(0.06, 0.28, f) * 0.6;
-    float a = smoothstep(0.12, 0.50, f) * 0.92;
-    gl_FragColor = vec4(col * a, a);
+    col += vec3(0.42, 0.045, 0.010) * smoothstep(0.06, 0.34, heat);
+    col += vec3(0.90, 0.22,  0.015) * smoothstep(0.22, 0.58, heat);
+    col += vec3(1.00, 0.56,  0.060) * smoothstep(0.46, 0.86, heat);
+    col += vec3(1.00, 0.88,  0.45 ) * smoothstep(0.78, 1.12, heat);
+    col += vec3(1.00, 0.98,  0.92 ) * smoothstep(1.02, 1.40, heat) * 0.8;
+    float a = smoothstep(0.30, 0.46, heat);   // a tight edge is what reads as a flame tongue rather than a glow
+    a *= smoothstep(0.0, 0.14, y);                              // no hard edge at the bottom
+    gl_FragColor = vec4(col*a, a);
   }`;
   document.querySelectorAll(".mark .fx, .mark .fx2").forEach(cv => {
     const gl = cv.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false });
     if (!gl) { cv.remove(); return; }
-    const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); return o; };
+    const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) console.error("fire shader:", gl.getShaderInfoLog(o)); return o; };
     const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr);
     if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) { cv.remove(); return; }
     gl.useProgram(pr);
     const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(pr, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    const uT = gl.getUniformLocation(pr, "t"), uR = gl.getUniformLocation(pr, "res");
+    const uT = gl.getUniformLocation(pr, "t"), uR = gl.getUniformLocation(pr, "res"), uS = gl.getUniformLocation(pr, "seed");
+    const seed = Math.random();
     gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     let run = true, W = 0, H = 0;
     const size = () => { const r = cv.getBoundingClientRect(); const d = Math.min(devicePixelRatio, 2);
@@ -604,7 +621,7 @@ embers(document.getElementById("openFx"), 70, { speed: .5 });
     const t0 = performance.now();
     (function draw(now) {
       requestAnimationFrame(draw); if (!run || !W) return;
-      gl.uniform1f(uT, (now - t0) / 1000); gl.uniform2f(uR, W, H);
+      gl.uniform1f(uT, (now - t0) / 1000); gl.uniform2f(uR, W, H); gl.uniform1f(uS, seed);
       gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLES, 0, 3);
     })(t0);
   });
