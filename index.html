@@ -54,12 +54,12 @@ h1,h2,h3{margin:0;font-weight:600}
 @keyframes runesweep{0%{-webkit-mask-position:190% 0;mask-position:190% 0}60%,100%{-webkit-mask-position:-100% 0;mask-position:-100% 0}}
 @media (prefers-reduced-motion:reduce){.mark .rglow,.mark .rhot{animation:none}.mark .rhot{display:none}}
 .mark .back{position:absolute;inset:-14% -10%;z-index:-1;pointer-events:none;background:radial-gradient(46% 38% at 50% 52%,rgba(175,195,220,.16),transparent 72%)}
-.mark .glow{position:absolute;left:64.8%;top:-16%;width:40%;height:132%;transform:translateX(-50%);z-index:1;pointer-events:none;
+.mark .glow{position:absolute;left:64.8%;top:-6%;width:38%;height:112%;transform:translateX(-50%);z-index:1;pointer-events:none;
   background:radial-gradient(48% 40% at 50% 46%,rgba(255,150,60,.5),rgba(255,90,20,.18) 45%,transparent 72%);filter:blur(12px);animation:glowbreath 2.6s ease-in-out infinite alternate}
 @keyframes glowbreath{0%{opacity:.75;transform:translateX(-50%) scale(.97)}100%{opacity:1;transform:translateX(-50%) scale(1.06)}}
 .mark .emb{position:absolute;inset:-12% -6% 0 -6%;width:112%;height:112%;z-index:5;pointer-events:none}
-.mark .fx{position:absolute;left:64.8%;bottom:4%;width:46%;height:150%;transform:translateX(-50%);z-index:0;pointer-events:none;mix-blend-mode:screen}
-.mark .fx2{position:absolute;left:64.8%;bottom:4%;width:30%;height:144%;transform:translateX(-50%);z-index:3;pointer-events:none;mix-blend-mode:screen;opacity:.5}
+.mark .fx{position:absolute;left:64.8%;bottom:6%;width:44%;height:118%;transform:translateX(-50%);z-index:0;pointer-events:none;mix-blend-mode:screen}
+.mark .fx2{position:absolute;left:64.8%;bottom:6%;width:29%;height:114%;transform:translateX(-50%);z-index:3;pointer-events:none;mix-blend-mode:screen;opacity:.5}
 @media (prefers-reduced-motion:reduce){.mark .glow{animation:none}.mark .fx,.mark .emb{display:none}}
 
 /* ============================================================ SPLASH */
@@ -603,7 +603,7 @@ embers(document.getElementById("openFx"), 40, { speed: .5 });
                mix(dot(hash2(i+vec2(0,1)), f-vec2(0,1)), dot(hash2(i+vec2(1,1)), f-vec2(1,1)), u.x), u.y);
   }
   const mat2 M = mat2(1.6, 1.2, -1.2, 1.6);   // rotate each octave so the layers do not line up
-  float fbm4(vec2 p){ float v=0.0, a=0.5; for (int i=0;i<4;i++){ v += a*gnoise(p); p = M*p; a *= 0.5; } return v; }
+  float fbm4(vec2 p){ float v=0.0, a=0.5; for (int i=0;i<5;i++){ v += a*gnoise(p); p = M*p; a *= 0.5; } return v; }
   float fbm2(vec2 p){ float v=0.0, a=0.5; for (int i=0;i<2;i++){ v += a*gnoise(p); p = M*p; a *= 0.5; } return v; }
   void main(){
     vec2 q = uv;
@@ -616,7 +616,7 @@ embers(document.getElementById("openFx"), 40, { speed: .5 });
     n = n*0.5 + 0.5;
     // --- flame body: a column of fuel that narrows and is eaten away with height, pushed by the warp
     float sway = sin(t*1.3 + y*4.0 + seed*6.0)*0.045*y + (w1.x)*0.16*y;
-    float halfw = mix(0.17, 0.44, pow(y, 0.55));   // hugs the blade at the tip, billows as it rises ('half' is reserved in GLSL ES)
+    float halfw = mix(0.15, 0.40, pow(y, 0.62));   // hugs the blade at the tip, billows as it rises ('half' is reserved in GLSL ES)
     float d = abs(q.x - (0.5 + sway)) / halfw;
     float col_shape = 1.0 - smoothstep(0.10, 1.05, d);
     float fuel = smoothstep(0.0, 0.14, y) * (1.0 - smoothstep(0.70, 1.15, y));   // lit along the blade, burnt out above the tip
@@ -649,7 +649,7 @@ embers(document.getElementById("openFx"), 40, { speed: .5 });
     const seed = Math.random();
     gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     let run = true, W = 0, H = 0;
-    const size = () => { const r = cv.getBoundingClientRect(); const d = Math.min(devicePixelRatio, 1.5);   // a soft effect: 1.5x is indistinguishable from 3x and a quarter of the fill
+    const size = () => { const r = cv.getBoundingClientRect(); const d = Math.min(devicePixelRatio, 2.5);   // the flame canvas is small, so it gets the real pixel ratio
       W = cv.width = Math.max(2, Math.round(r.width * d)); H = cv.height = Math.max(2, Math.round(r.height * d)); gl.viewport(0, 0, W, H); };
     new IntersectionObserver(e => { run = e[0].isIntersecting; }, { threshold: 0 }).observe(cv.parentElement);
     addEventListener("resize", size); size();
@@ -657,7 +657,7 @@ embers(document.getElementById("openFx"), 40, { speed: .5 });
     let last = 0;
     (function draw(now) {
       requestAnimationFrame(draw); if (!run || !W || document.hidden) return;
-      if (now - last < 24) return; last = now;                 // ~40fps: fire reads identically and costs a third less
+      if (now - last < 15) return; last = now;                 // 60fps: at 40 the licks stepped
       gl.uniform1f(uT, (now - t0) / 1000); gl.uniform2f(uR, W, H); gl.uniform1f(uS, seed);
       gl.uniform1f(uF, 0.88 + 0.22 * (0.5 + 0.5 * Math.sin(now / 430 + seed * 19) * Math.sin(now / 191 + seed * 7)));
       gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLES, 0, 3);
@@ -817,7 +817,7 @@ document.querySelectorAll(".mark .emb").forEach(cv => {
       const cv = fxCanvas(), ctx = cv.getContext("2d");
       const cx = cv.width / 2, cy = cv.height / 2;
       const N = 460, seeds = Array.from({ length: N }, () => .94 + Math.random() * .12);
-      const OUT = 1250, HOLD = 120, BACK = 1050, t0 = performance.now();
+      const OUT = 1250, t0 = performance.now();
       sp.style.transition = "none";
       const maxR = Math.hypot(cx, cy) * 1.12;
       const radiusAt = (ang, f) => maxR * f * seeds[Math.floor(ang / 6.283 * N) % N] *
@@ -842,24 +842,11 @@ document.querySelectorAll(".mark .emb").forEach(cv => {
         const t = Math.min(1, (now - t0) / OUT);
         const e = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
         ctx.clearRect(0, 0, cv.width, cv.height);
-        edge(e, Math.min(1, e * 8) * (1 - e * .3), 1 - e * .45);
+        edge(e, Math.min(1, e * 8) * (1 - Math.pow(e, 2.2)), 1 - e * .45);
         clipTo(e);
         if (t < 1) requestAnimationFrame(phase1);
         else {
-          sp.remove(); stopSplashEmbers(); displayReady = true;
-          const t1 = performance.now();
-          (function phase2(n2) {                              // the same edge, running back in
-            const u = Math.min(1, (n2 - t1 - HOLD) / BACK);
-            if (u < 0) { requestAnimationFrame(phase2); return; }
-            const e2 = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
-            ctx.clearRect(0, 0, cv.width, cv.height);
-            edge(Math.max(.001, 1 - e2), Math.sin(Math.min(1, u * 1.05) * Math.PI) * .9, .45 + (1 - e2) * .6);
-            if (u > .78) { const g = (u - .78) / .22;
-              const rad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 220 * (1 - g) + 30);
-              rad.addColorStop(0, `rgba(255,205,140,${(1 - g) * .38})`); rad.addColorStop(1, "rgba(255,120,30,0)");
-              ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.fillStyle = rad; ctx.fillRect(0, 0, cv.width, cv.height); ctx.restore(); }
-            if (u < 1) requestAnimationFrame(phase2); else cv.remove();
-          })(t1);
+          sp.remove(); stopSplashEmbers(); displayReady = true; cv.remove();   // no return burn: the fire opens the page and is done
         }
       })(t0);
       return;
