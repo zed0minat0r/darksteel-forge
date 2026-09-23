@@ -520,28 +520,40 @@ const $ = s => document.querySelector(s);
 const money = n => "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 document.getElementById("yr").textContent = new Date().getFullYear();
 
+const EMBER_SPRITE = (() => {
+  const c = document.createElement("canvas"); c.width = c.height = 32; const x = c.getContext("2d");
+  const g = x.createRadialGradient(16, 16, 0, 16, 16, 16);
+  g.addColorStop(0, "rgba(255,240,200,1)"); g.addColorStop(.35, "rgba(255,150,50,.75)"); g.addColorStop(1, "rgba(255,90,20,0)");
+  x.fillStyle = g; x.fillRect(0, 0, 32, 32); return c;
+})();
 /* ============================================================ embers (splash + hero) */
 function embers(canvas, count, opts = {}) {
-  const ctx = canvas.getContext("2d"); let W, H, P = [], run = true;
-  const size = () => { W = canvas.width = canvas.offsetWidth * devicePixelRatio; H = canvas.height = canvas.offsetHeight * devicePixelRatio; };
+  // full-screen ember fields: 1x pixel ratio (they were 1170x3336 on a phone), 30fps, sprite-drawn
+  const ctx = canvas.getContext("2d", { alpha: true }); let W, H, P = [], run = true, last = 0;
+  const devicePixelRatio = 1;
+  const size = () => { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; };
   size(); addEventListener("resize", size);
   const mk = () => ({ x: Math.random() * W, y: H + Math.random() * H * .3, r: (Math.random() * 1.6 + .5) * devicePixelRatio, v: (Math.random() * .5 + .25) * devicePixelRatio * (opts.speed || 1), d: Math.random() * 6.28, a: Math.random() * .6 + .3, hue: Math.random() < .8 ? 22 : 40 });
   for (let i = 0; i < count; i++) { const p = mk(); p.y = Math.random() * H; P.push(p); }
-  (function tick() {
-    if (!run) return; ctx.clearRect(0, 0, W, H);
+  ctx.globalCompositeOperation = "lighter";
+  (function tick(now) {
+    if (!run) return; requestAnimationFrame(tick);
+    if (document.hidden || now - last < 32) return; last = now;
+    ctx.clearRect(0, 0, W, H);
     for (const p of P) {
-      p.y -= p.v; p.x += Math.sin(p.d += .02) * .3 * devicePixelRatio; p.a -= .0012;
+      p.y -= p.v; p.x += Math.sin(p.d += .02) * .3; p.a -= .0012;
       if (p.y < -10 || p.a <= 0) Object.assign(p, mk());
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.28);
-      ctx.fillStyle = `hsla(${p.hue},100%,${60 + p.a * 20}%,${p.a})`; ctx.shadowColor = "rgba(255,120,40,.9)"; ctx.shadowBlur = 8 * devicePixelRatio; ctx.fill();
+      ctx.globalAlpha = Math.max(0, p.a);
+      const r = p.r * 4;
+      ctx.drawImage(EMBER_SPRITE, p.x - r, p.y - r, r * 2, r * 2);
     }
-    requestAnimationFrame(tick);
-  })();
+    ctx.globalAlpha = 1;
+  })(0);
   return () => { run = false; };
 }
-const stopSplashEmbers = embers(document.getElementById("embers"), 90);
-embers(document.getElementById("heroFx"), 55, { speed: .6 });
-embers(document.getElementById("openFx"), 70, { speed: .5 });
+const stopSplashEmbers = embers(document.getElementById("embers"), 46);
+embers(document.getElementById("heroFx"), 34, { speed: .6 });
+embers(document.getElementById("openFx"), 40, { speed: .5 });
 
 
 
@@ -551,7 +563,7 @@ embers(document.getElementById("openFx"), 70, { speed: .5 });
    This is the live fire; the painted flames in the artwork sit under it as the base glow. */
 (function fire() {
   const VS = "attribute vec2 p;varying vec2 uv;void main(){uv=p*.5+.5;gl_Position=vec4(p,0.,1.);}";
-  const FS = `precision highp float; varying vec2 uv; uniform float t; uniform vec2 res; uniform float seed;
+  const FS = `precision highp float; varying vec2 uv; uniform float t; uniform vec2 res; uniform float seed; uniform float flick;
   /* Built from the standard procedural-fire recipe: gradient-noise fbm, DOMAIN WARPING (Quilez's q/r
      pattern) so the tongues curl instead of sliding, turbulence that grows with height, fuel burning off
      with height, and a blackbody ramp (deep red -> orange -> yellow -> white core) on an additive blend. */
@@ -563,21 +575,17 @@ embers(document.getElementById("openFx"), 70, { speed: .5 });
     return mix(mix(dot(hash2(i+vec2(0,0)), f-vec2(0,0)), dot(hash2(i+vec2(1,0)), f-vec2(1,0)), u.x),
                mix(dot(hash2(i+vec2(0,1)), f-vec2(0,1)), dot(hash2(i+vec2(1,1)), f-vec2(1,1)), u.x), u.y);
   }
-  float fbm(vec2 p){
-    float v = 0.0, a = 0.5;
-    mat2 m = mat2(1.6, 1.2, -1.2, 1.6);       // rotate each octave so the layers do not line up
-    for (int i = 0; i < 6; i++){ v += a*gnoise(p); p = m*p; a *= 0.5; }
-    return v;
-  }
+  const mat2 M = mat2(1.6, 1.2, -1.2, 1.6);   // rotate each octave so the layers do not line up
+  float fbm4(vec2 p){ float v=0.0, a=0.5; for (int i=0;i<4;i++){ v += a*gnoise(p); p = M*p; a *= 0.5; } return v; }
+  float fbm2(vec2 p){ float v=0.0, a=0.5; for (int i=0;i<2;i++){ v += a*gnoise(p); p = M*p; a *= 0.5; } return v; }
   void main(){
     vec2 q = uv;
     float y = q.y;                            // 0 at the wick, 1 at the tip
     vec2 p = vec2((q.x-0.5)*3.2, q.y*2.4 - t*1.15) + vec2(seed*7.3, seed*3.1);   // tighter structures = visible tongues
     // --- domain warp: sample fbm twice and use it to displace the lookup. this is what makes fire curl
     float turb = 0.35 + 1.25*y;               // laminar at the base, chaotic at the top
-    vec2 w1 = vec2(fbm(p*2.1), fbm(p*2.1 + vec2(5.2,1.3)));
-    vec2 w2 = vec2(fbm(p*4.3 + 1.7*w1 + vec2(1.7,9.2)), fbm(p*4.3 + 1.7*w1 + vec2(8.3,2.8)));
-    float n  = fbm(p*2.2 + turb*w2);
+    vec2 w1 = vec2(fbm2(p*2.1), fbm2(p*2.1 + vec2(5.2,1.3)));   // the warp field only needs low frequencies
+    float n  = fbm4(p*2.2 + turb*1.6*w1);
     n = n*0.5 + 0.5;
     // --- flame body: a column of fuel that narrows and is eaten away with height, pushed by the warp
     float sway = sin(t*1.3 + y*4.0 + seed*6.0)*0.045*y + (w1.x)*0.16*y;
@@ -585,7 +593,7 @@ embers(document.getElementById("openFx"), 70, { speed: .5 });
     float d = abs(q.x - (0.5 + sway)) / halfw;
     float col_shape = 1.0 - smoothstep(0.10, 1.05, d);
     float fuel = smoothstep(0.0, 0.14, y) * (1.0 - smoothstep(0.70, 1.15, y));   // lit along the blade, burnt out above the tip
-    float flicker = 0.88 + 0.22*fbm(vec2(seed*3.0, t*2.4));     // whole-flame breathing
+    float flicker = flick;                                      // whole-flame breathing (computed once on the CPU)
     float heat = col_shape * fuel * flicker * (0.55 + 1.30*n);
     heat -= smoothstep(0.30, 1.0, y) * 0.85 * (1.0 - n);        // the top tears into separate tongues
     heat = clamp(heat, 0.0, 1.6);
@@ -610,43 +618,51 @@ embers(document.getElementById("openFx"), 70, { speed: .5 });
     const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(pr, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    const uT = gl.getUniformLocation(pr, "t"), uR = gl.getUniformLocation(pr, "res"), uS = gl.getUniformLocation(pr, "seed");
+    const uT = gl.getUniformLocation(pr, "t"), uR = gl.getUniformLocation(pr, "res"), uS = gl.getUniformLocation(pr, "seed"), uF = gl.getUniformLocation(pr, "flick");
     const seed = Math.random();
     gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     let run = true, W = 0, H = 0;
-    const size = () => { const r = cv.getBoundingClientRect(); const d = Math.min(devicePixelRatio, 2);
+    const size = () => { const r = cv.getBoundingClientRect(); const d = Math.min(devicePixelRatio, 1.5);   // a soft effect: 1.5x is indistinguishable from 3x and a quarter of the fill
       W = cv.width = Math.max(2, Math.round(r.width * d)); H = cv.height = Math.max(2, Math.round(r.height * d)); gl.viewport(0, 0, W, H); };
     new IntersectionObserver(e => { run = e[0].isIntersecting; }, { threshold: 0 }).observe(cv.parentElement);
     addEventListener("resize", size); size();
     const t0 = performance.now();
+    let last = 0;
     (function draw(now) {
-      requestAnimationFrame(draw); if (!run || !W) return;
+      requestAnimationFrame(draw); if (!run || !W || document.hidden) return;
+      if (now - last < 24) return; last = now;                 // ~40fps: fire reads identically and costs a third less
       gl.uniform1f(uT, (now - t0) / 1000); gl.uniform2f(uR, W, H); gl.uniform1f(uS, seed);
+      gl.uniform1f(uF, 0.88 + 0.22 * (0.5 + 0.5 * Math.sin(now / 430 + seed * 19) * Math.sin(now / 191 + seed * 7)));
       gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLES, 0, 3);
     })(t0);
   });
 })();
 
-/* embers rising off the burning blade, one canvas per logo */
+/* embers rising off the burning blade, one canvas per logo.
+   Drawn as a pre-rendered glow sprite (shadowBlur per particle is the single most expensive thing you can
+   do in canvas2d), at 1x pixel ratio and 30fps - none of which is visible on a soft ember. */
+
 document.querySelectorAll(".mark .emb").forEach(cv => {
-  const ctx = cv.getContext("2d"); const host = cv.parentElement; let W = 0, H = 0, P = [], run = true;
-  const size = () => { const r = cv.getBoundingClientRect(); W = cv.width = Math.max(1, r.width * devicePixelRatio); H = cv.height = Math.max(1, r.height * devicePixelRatio); };
-  const mk = () => ({ x: W * (.48 + (Math.random() - .5) * .10), y: H * (.30 + Math.random() * .58), r: (Math.random() * 1.7 + .6) * devicePixelRatio,
-                      vy: (.5 + Math.random() * 1.5) * devicePixelRatio, vx: (Math.random() - .5) * .5 * devicePixelRatio, a: .5 + Math.random() * .5, d: Math.random() * 6.28 });
+  const ctx = cv.getContext("2d", { alpha: true }); const host = cv.parentElement; let W = 0, H = 0, P = [], run = true, last = 0;
+  const size = () => { const r = cv.getBoundingClientRect(); W = cv.width = Math.max(1, Math.round(r.width)); H = cv.height = Math.max(1, Math.round(r.height)); };
+  const mk = () => ({ x: W * (.58 + (Math.random() - .5) * .10), y: H * (.30 + Math.random() * .58), r: Math.random() * 5 + 2.5,
+                      vy: .35 + Math.random() * 1.1, vx: (Math.random() - .5) * .35, a: .5 + Math.random() * .5, d: Math.random() * 6.28 });
   new IntersectionObserver(es => { run = es[0].isIntersecting; }, { threshold: 0 }).observe(host);
   addEventListener("resize", size); size();
-  for (let i = 0; i < 26; i++) P.push(mk());
-  (function tick() {
-    requestAnimationFrame(tick); if (!run || !W) return;
+  for (let i = 0; i < 16; i++) P.push(mk());
+  ctx.globalCompositeOperation = "lighter";
+  (function tick(now) {
+    requestAnimationFrame(tick); if (!run || !W || document.hidden) return;
+    if (now - last < 32) return; last = now;
     ctx.clearRect(0, 0, W, H);
     for (const p of P) {
-      p.y -= p.vy; p.x += p.vx + Math.sin(p.d += .06) * .5 * devicePixelRatio; p.a -= .008; p.r *= .995;
+      p.y -= p.vy; p.x += p.vx + Math.sin(p.d += .06) * .4; p.a -= .008; p.r *= .997;
       if (p.a <= 0 || p.y < -8) Object.assign(p, mk());
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.28);
-      ctx.fillStyle = `hsla(${22 + Math.random() * 18},100%,${58 + p.a * 22}%,${p.a})`;
-      ctx.shadowColor = "rgba(255,130,40,.95)"; ctx.shadowBlur = 9 * devicePixelRatio; ctx.fill();
+      ctx.globalAlpha = Math.max(0, p.a);
+      ctx.drawImage(EMBER_SPRITE, p.x - p.r, p.y - p.r, p.r * 2, p.r * 2);
     }
-  })();
+    ctx.globalAlpha = 1;
+  })(0);
 });
 
 /* ============================================================ splash sequence */
