@@ -56,6 +56,57 @@ for s in PK_SETS:
         if got >= 12: break
     time.sleep(0.5)
 print("pokemon", len(cards) - n0, file=sys.stderr)
+
+# ---- One Piece and Riftbound, from dotgg's public card feed (images + TCGplayer market prices)
+def dotgg(game, n_per_set, min_price, cap=60):
+    d = get(f"https://api.dotgg.gg/cgfw/getcards?game={game}&mode=indexed")
+    if not d: return []
+    names, rows = d["names"], d["data"]
+    out = []
+    for row in rows:
+        c = dict(zip(names, row))
+        try: price = float(c.get("price") or 0)
+        except ValueError: price = 0
+        if price < min_price: continue
+        name = c.get("name", "")
+        if not name or any(ord(ch) > 0x2000 for ch in name): continue          # skip Japanese-language printings
+        img = c.get("image") or f"https://static.dotgg.gg/{game}/card/{c['id']}.webp"
+        if game == "onepiece":
+            setname = (c.get("CardSets") or "").split("[")[0].strip(" -") or c.get("set", "")
+            typ = " / ".join(x for x in [c.get("cardType"), c.get("Color")] if x)
+            rarity = {"C": "Common", "UC": "Uncommon", "R": "Rare", "SR": "Super Rare", "SEC": "Secret Rare",
+                      "L": "Leader", "P": "Promo", "SP CARD": "Special"}.get((c.get("rarity") or "").upper(), c.get("rarity") or "")
+        else:
+            setname = c.get("set_name") or ""
+            t = c.get("type"); typ = " / ".join(t) if isinstance(t, list) else (t or "")
+            col = c.get("color"); typ = (typ + (" · " + " / ".join(col) if isinstance(col, list) and col else "")).strip()
+            rarity = c.get("rarity") or ""
+        out.append({"id": f"{game}-{c['id']}", "game": game, "name": c.get("name", ""), "set": setname,
+                    "setCode": str(c.get("set") or c["id"].split("-")[0]), "number": c["id"], "rarity": rarity,
+                    "img": img, "imgSmall": img, "price": price,
+                    "priceFoil": (lambda v: float(v) if v and float(v) > 0 else None)(c.get("foilPrice")),
+                    "type": typ, "artist": "", "year": "", "finishes": ["holo"] if c.get("hasFoil") else []})
+    # the most valuable cards per set, so the library reads like a case
+    by = {}
+    for c in out: by.setdefault(c["set"], []).append(c)
+    picked = []
+    for st, cs in by.items():
+        cs.sort(key=lambda c: -c["price"])
+        seen = set(); uniq = []
+        for c in cs:                                                            # one printing per card name
+            if c["name"] in seen: continue
+            seen.add(c["name"]); uniq.append(c)
+        picked += uniq[:n_per_set]
+    picked.sort(key=lambda c: -c["price"])
+    return picked[:cap]
+
+n0 = len(cards)
+cards += dotgg("onepiece", 6, 3.0, cap=56)
+print("one piece", len(cards) - n0, file=sys.stderr)
+n0 = len(cards)
+cards += dotgg("riftbound", 12, 0.4, cap=56)
+print("riftbound", len(cards) - n0, file=sys.stderr)
+
 cards.sort(key=lambda c: -c["price"])
 json.dump({"generated": time.strftime("%Y-%m-%d"), "cards": cards}, open("data/cards.json", "w"), indent=0)
 print("total", len(cards), "top", cards[0]["name"], cards[0]["price"], file=sys.stderr)
