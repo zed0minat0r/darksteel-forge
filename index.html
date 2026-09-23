@@ -816,73 +816,59 @@ document.querySelectorAll(".mark .emb").forEach(cv => {
     }
 
     if (TX === "burn") {
-      /* BURN THROUGH, both ways: fire eats the splash away from the BLADE outward (the hole is centred on
-         the blade, not the page), the logo rides up through the burn, and then the same edge runs back in
-         reverse over the hero and closes on the blade - the fire returning to the sword. */
-      mark.style.transition = "transform 1.0s cubic-bezier(.5,0,.25,1)";
-      requestAnimationFrame(() => requestAnimationFrame(() => { mark.style.transform = `translate(${dx}px,${dy}px) scale(${k})`; }));
-      if (txt) { txt.style.transition = "opacity .28s ease"; txt.style.opacity = "0"; }
+      /* BURN THROUGH, centred on the PAGE, both ways. The hero is rendered first underneath so the hole
+         opens onto a finished page; a ragged burning edge eats the splash outward from the centre, then
+         the same ragged edge runs back in and closes on the centre. */
+      hero.classList.add("go");
+      if (txt) { txt.style.transition = "opacity .25s ease"; txt.style.opacity = "0"; }
       const cv = fxCanvas(), ctx = cv.getContext("2d");
-      const BLADE = 0.648;                                   // the blade sits at 64.8% of the cropped artwork's width
-      const cx0 = a.left + a.width * BLADE, cy0 = a.top + a.height * .55;
-      const cx1 = b.left + b.width * BLADE, cy1 = b.top + b.height * .55;
-      const N = 420, seeds = Array.from({ length: N }, () => .92 + Math.random() * .16);
-      const OUT = 1150, BACK = 900, t0 = performance.now();
+      const cx = cv.width / 2, cy = cv.height / 2;
+      const N = 460, seeds = Array.from({ length: N }, () => .94 + Math.random() * .12);
+      const OUT = 1250, HOLD = 120, BACK = 1050, t0 = performance.now();
       sp.style.transition = "none";
-      const radiusAt = (ang, f, cx, cy) => {
-        const maxR = Math.hypot(Math.max(cx, cv.width - cx), Math.max(cy, cv.height - cy)) * 1.16;
-        const i2 = Math.floor(ang / 6.283 * N) % N;
-        return maxR * f * seeds[i2] * (0.97 + 0.05 * Math.sin(ang * 9 + f * 7) + 0.04 * Math.sin(ang * 23 - f * 11));
-      };
-      const drawRim = (f, cx, cy, fade) => {
-        ctx.beginPath();
-        for (let i = 0; i <= 180; i++) { const ang = i / 180 * 6.283, rr = radiusAt(ang, f, cx, cy);
-          const x = cx + Math.cos(ang) * rr, y = cy + Math.sin(ang) * rr * .92; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+      const maxR = Math.hypot(cx, cy) * 1.12;
+      const radiusAt = (ang, f) => maxR * f * seeds[Math.floor(ang / 6.283 * N) % N] *
+        (0.97 + 0.05 * Math.sin(ang * 9 + f * 7) + 0.04 * Math.sin(ang * 23 - f * 11));
+      const edge = (f, fade, grow) => {                      // the ragged fire line itself
+        ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.beginPath();
+        for (let i = 0; i <= 220; i++) { const ang = i / 220 * 6.283, rr = radiusAt(ang, f);
+          const x = cx + Math.cos(ang) * rr, y = cy + Math.sin(ang) * rr * .95; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
         ctx.closePath();
-        ctx.shadowColor = "rgba(255,110,25,.95)"; ctx.shadowBlur = 55;
-        ctx.strokeStyle = `rgba(255,185,90,${fade})`; ctx.lineWidth = 14 * fade; ctx.stroke();
-        ctx.shadowBlur = 18; ctx.strokeStyle = `rgba(255,245,215,${fade * .85})`; ctx.lineWidth = 3.5 * fade; ctx.stroke();
-        ctx.shadowBlur = 0;
+        ctx.shadowColor = "rgba(255,110,25,.9)"; ctx.shadowBlur = 55;
+        ctx.strokeStyle = `rgba(255,150,55,${fade * .55})`; ctx.lineWidth = 26 * grow; ctx.stroke();
+        ctx.shadowBlur = 20; ctx.strokeStyle = `rgba(255,236,200,${fade * .85})`; ctx.lineWidth = 5 * grow; ctx.stroke();
+        ctx.restore();
+      };
+      const clipTo = (f) => {
+        const pts = [];
+        for (let i = 0; i <= 72; i++) { const ang = i / 72 * 6.283, rr = radiusAt(ang, f);
+          pts.push(`${((cx + Math.cos(ang) * rr) / cv.width * 100).toFixed(2)}% ${((cy + Math.sin(ang) * rr * .95) / cv.height * 100).toFixed(2)}%`); }
+        sp.style.clipPath = `polygon(evenodd, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, ${pts.join(", ")})`;
       };
       (function phase1(now) {
         const t = Math.min(1, (now - t0) / OUT);
+        const e = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
         ctx.clearRect(0, 0, cv.width, cv.height);
-        drawRim(t, cx0, cy0, Math.max(0, .95 - t * .35));
-        const pts = [];
-        for (let i = 0; i <= 56; i++) { const ang = i / 56 * 6.283, rr = radiusAt(ang, t, cx0, cy0);
-          pts.push(`${((cx0 + Math.cos(ang) * rr) / cv.width * 100).toFixed(2)}% ${((cy0 + Math.sin(ang) * rr * .92) / cv.height * 100).toFixed(2)}%`); }
-        sp.style.clipPath = `polygon(evenodd, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, ${pts.join(", ")})`;
+        edge(e, Math.min(1, e * 8) * (1 - e * .3), 1 - e * .45);
+        clipTo(e);
         if (t < 1) requestAnimationFrame(phase1);
         else {
+          sp.remove(); stopSplashEmbers(); displayReady = true;
           const t1 = performance.now();
-          /* the way back: a SOFT ring of fire contracting onto the blade. Drawn as a blurred band rather
-             than a hard jagged stroke - the polygon read as scribble over the hero. */
-          (function phase2(n2) {
-            const u = Math.min(1, (n2 - t1) / BACK);
-            const e = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;      // ease in-out
-            const R = (1 - e) * Math.hypot(Math.max(cx1, cv.width - cx1), Math.max(cy1, cv.height - cy1)) * 0.92;
-            const fade = Math.sin(Math.min(1, u * 1.08) * Math.PI) * 0.9;        // in and out, never a hard cut
+          (function phase2(n2) {                              // the same edge, running back in
+            const u = Math.min(1, (n2 - t1 - HOLD) / BACK);
+            if (u < 0) { requestAnimationFrame(phase2); return; }
+            const e2 = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
             ctx.clearRect(0, 0, cv.width, cv.height);
-            ctx.save();
-            ctx.globalCompositeOperation = "lighter";
-            const wob = 1 + 0.03 * Math.sin(u * 22);
-            for (const [lw, col, blur] of [[42, `rgba(255,90,20,${fade * .30})`, 60], [16, `rgba(255,150,50,${fade * .5})`, 28], [4, `rgba(255,236,200,${fade * .7})`, 10]]) {
-              ctx.beginPath(); ctx.ellipse(cx1, cy1, R * wob, R * .92 * wob, 0, 0, 6.283);
-              ctx.shadowColor = "rgba(255,120,30,.9)"; ctx.shadowBlur = blur; ctx.strokeStyle = col; ctx.lineWidth = lw * (0.4 + (1 - e)); ctx.stroke();
-            }
-            if (u > .72) {                                                        // the last of it settles on the blade
-              const g = (u - .72) / .28;
-              const rad = ctx.createRadialGradient(cx1, cy1, 0, cx1, cy1, 190 * (1 - g) + 40);
-              rad.addColorStop(0, `rgba(255,205,140,${(1 - g) * .5})`); rad.addColorStop(1, "rgba(255,120,30,0)");
-              ctx.fillStyle = rad; ctx.fillRect(0, 0, cv.width, cv.height);
-            }
-            ctx.restore();
+            edge(Math.max(.001, 1 - e2), Math.sin(Math.min(1, u * 1.05) * Math.PI) * .9, .45 + (1 - e2) * .6);
+            if (u > .78) { const g = (u - .78) / .22;
+              const rad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 220 * (1 - g) + 30);
+              rad.addColorStop(0, `rgba(255,205,140,${(1 - g) * .38})`); rad.addColorStop(1, "rgba(255,120,30,0)");
+              ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.fillStyle = rad; ctx.fillRect(0, 0, cv.width, cv.height); ctx.restore(); }
             if (u < 1) requestAnimationFrame(phase2); else cv.remove();
           })(t1);
         }
       })(t0);
-      setTimeout(() => { mark.style.visibility = "hidden"; }, 1000);
-      finish(sp, hero, 1000);
       return;
     }
 
