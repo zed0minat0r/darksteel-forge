@@ -6,6 +6,7 @@
 <title>Darksteel Forge Gaming</title>
 <link rel="icon" href="img/favicon.png">
 <meta name="description" content="Darksteel Forge Gaming - Pokemon and Magic: The Gathering singles, sealed and chase cards.">
+<link rel="preload" as="image" href="img/logo.png"><link rel="preload" as="image" href="img/runeglow.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -655,6 +656,7 @@ embers(document.getElementById("openFx"), 40, { speed: .5 });
       W = cv.width = Math.max(2, Math.round(r.width * d)); H = cv.height = Math.max(2, Math.round(r.height * d)); gl.viewport(0, 0, W, H); };
     new IntersectionObserver(e => { run = e[0].isIntersecting; }, { threshold: 0 }).observe(cv.parentElement);
     addEventListener("resize", size); size();
+    run = true;                                              // draw from the first frame; the observer only ever turns it off
     const t0 = performance.now();
     let last = 0;
     (function draw(now) {
@@ -813,8 +815,9 @@ document.querySelectorAll(".mark .emb").forEach(cv => {
       // the hero is built underneath straight away (so the hole never opens onto a blank page) but it
       // fades up through the burn rather than being there already
       hero.style.opacity = "0"; hero.classList.add("go");
-      requestAnimationFrame(() => { hero.style.transition = "opacity .85s ease .12s"; hero.style.opacity = "1"; });
-      setTimeout(() => { hero.style.transition = ""; hero.style.opacity = ""; }, 1400);
+      requestAnimationFrame(() => { hero.style.transition = "opacity .9s ease .1s"; hero.style.opacity = "1"; });
+      hero.addEventListener("transitionend", function clr(e) { if (e.propertyName !== "opacity") return;
+        hero.removeEventListener("transitionend", clr); hero.style.transition = ""; hero.style.opacity = ""; });
       if (txt) { txt.style.transition = "opacity .25s ease"; txt.style.opacity = "0"; }
       const cv = fxCanvas(), ctx = cv.getContext("2d");
       const cx = cv.width / 2, cy = cv.height / 2;
@@ -848,7 +851,10 @@ document.querySelectorAll(".mark .emb").forEach(cv => {
         clipTo(e);
         if (t < 1) requestAnimationFrame(phase1);
         else {
-          sp.remove(); stopSplashEmbers(); displayReady = true; cv.remove();   // no return burn: the fire opens the page and is done
+          sp.remove(); stopSplashEmbers(); cv.remove();   // no return burn: the fire opens the page and is done
+          // the display case compiles shaders and uploads textures; doing that while the hero is still
+          // settling is what made the page flash. Wait for the fade, then take an idle slot.
+          setTimeout(() => { (window.requestIdleCallback || requestAnimationFrame)(() => { displayReady = true; }); }, 850);
         }
       })(t0);
       return;
