@@ -415,6 +415,21 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
 .hero-cta{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
 [hidden]{display:none!important}
+/* centred everywhere (Matt 2026-10-12) */
+.panel{text-align:center}
+.panel ul{list-style:none;padding:0}
+.panel li{margin:.7rem 0}
+.fl > span{text-align:center}
+.chips{justify-content:center}
+.scard{justify-content:center;text-align:left}
+.sellf .btn,.cform .btn{justify-self:center;min-width:240px}
+.dirs{align-items:start}
+details.dir summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.7rem;min-height:44px}
+details.dir summary::-webkit-details-marker{display:none}
+details.dir summary h3{margin:0}
+details.dir summary i{width:9px;height:9px;border-right:2px solid var(--ember);border-bottom:2px solid var(--ember);transform:rotate(45deg) translateY(-3px);transition:transform .3s}
+details.dir[open] summary i{transform:rotate(-135deg) translateY(-1px)}
+details.dir p{margin:.9rem 0 0}
 .chips label{position:relative}
 @media (max-width:620px){.nav-cta .lg{display:none}}
 </style>
@@ -490,9 +505,9 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
       </div>
     </div>
     <div class="dirs reveal">
-      <div class="panel"><h3>From Route 422</h3><p>Take the Route 724 / Phoenixville exit, which becomes Route 23. Follow 23 east to Route 113 north, then turn left onto Bridge Street.</p></div>
-      <div class="panel"><h3>From Philadelphia</h3><p>I-76 to the Mall Road exit, then North Gulph Road, which becomes Route 23 through Valley Forge Park. Turn right on Starr Street, then left onto Bridge Street.</p></div>
-      <div class="panel"><h3>From the Turnpike</h3><p>Exit 312, Route 100 south to Route 113. Turn left on 113, then right onto Route 23 east toward Bridge Street.</p></div>
+      <details class="panel dir"><summary><h3>From Route 422</h3><i></i></summary><p>Take the Route 724 / Phoenixville exit, which becomes Route 23. Follow 23 east to Route 113 north, then turn left onto Bridge Street.</p></details>
+      <details class="panel dir"><summary><h3>From Philadelphia</h3><i></i></summary><p>I-76 to the Mall Road exit, then North Gulph Road, which becomes Route 23 through Valley Forge Park. Turn right on Starr Street, then left onto Bridge Street.</p></details>
+      <details class="panel dir"><summary><h3>From the Turnpike</h3><i></i></summary><p>Exit 312, Route 100 south to Route 113. Turn left on 113, then right onto Route 23 east toward Bridge Street.</p></details>
     </div>
   </div>
 </section>
