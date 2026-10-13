@@ -367,6 +367,56 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 .news input:focus{border-color:var(--ember)}
 .reveal{opacity:0;transform:translateY(22px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.8,.2,1)}
 .reveal.in{opacity:1;transform:none}
+
+/* ============================================================ 2026-10-12 RESTRUCTURE: owner notes
+   Less emphasis on the cards; a shop site first - statement, visit, sell, socials, contact. */
+.sub-lead{color:var(--ink-2);max-width:620px;margin:.9rem auto 0;text-align:center}
+.vgrid{display:grid;grid-template-columns:1.1fr 1fr;gap:1.4rem;margin-top:2.2rem}
+@media (max-width:860px){.vgrid{grid-template-columns:1fr}}
+.panel{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));border-radius:6px;padding:1.4rem}
+.panel h3{margin:0 0 .8rem;font-family:var(--display);font-size:1rem;letter-spacing:.18em;text-transform:uppercase}
+.panel p,.panel li{color:var(--ink-2);font-size:.95rem}
+.panel ul{margin:0;padding-left:1.1rem}.panel li{margin:.35rem 0}
+.panel b{color:var(--ink);font-weight:600}
+.addr{font-size:1.15rem;color:var(--ink);line-height:1.5}
+.addr small{display:block;color:var(--ember-2);font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;margin-top:.4rem}
+.mapbox{position:relative;border:1px solid var(--line);border-radius:6px;overflow:hidden;min-height:340px;background:#0c0d0f}
+.mapbox iframe{/* OSM: Google 404s keyless embeds (2026-10-12) */position:absolute;inset:0;width:100%;height:100%;border:0;filter:grayscale(.85) invert(.92) hue-rotate(180deg) contrast(.9)}
+.vstack{display:grid;gap:1.4rem}
+.dirs{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:1.4rem}
+@media (max-width:860px){.dirs{grid-template-columns:1fr}}
+.park .tagline{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ember-2)}
+.sellf,.cform{max-width:760px;margin:2.2rem auto 0;display:grid;gap:1rem}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media (max-width:620px){.fgrid{grid-template-columns:1fr}}
+.fl{display:grid;gap:.45rem}
+.fl > span{font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-2)}
+.fl input,.fl select,.fl textarea{width:100%;min-height:46px;padding:.7rem .9rem;background:rgba(255,255,255,.04);border:1px solid var(--line-2);border-radius:4px;color:var(--ink);font:inherit;font-size:16px}
+.fl textarea{min-height:130px;resize:vertical}
+.fl input:focus,.fl select:focus,.fl textarea:focus{outline:none;border-color:var(--ember);background:rgba(255,106,26,.06)}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chips label{display:inline-flex;align-items:center;gap:.5rem;min-height:42px;padding:0 1rem;border:1px solid var(--line-2);border-radius:999px;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);cursor:pointer}
+.chips input{position:absolute;opacity:0;pointer-events:none}
+.chips label:has(input:checked){border-color:var(--ember);color:var(--ink);background:rgba(255,106,26,.12)}
+.fsaid{min-height:1.4em;color:var(--ember-2);font-size:.92rem;text-align:center}
+.fnote{color:var(--ink-3);font-size:.85rem;text-align:center}
+.steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;max-width:900px;margin:2rem auto 0}
+@media (max-width:760px){.steps3{grid-template-columns:1fr}}
+.steps3 div{text-align:center;padding:1rem}
+.steps3 b{display:block;font-family:var(--display);font-size:1.6rem;color:var(--ember);margin-bottom:.3rem}
+.steps3 span{color:var(--ink-2);font-size:.92rem}
+.socgrid{display:grid;grid-template-columns:repeat(2,minmax(0,360px));justify-content:center;gap:1.2rem;margin-top:2.2rem}
+@media (max-width:640px){.socgrid{grid-template-columns:1fr}}
+.scard{display:flex;align-items:center;gap:1rem;min-height:92px;padding:1.2rem 1.4rem;border:1px solid var(--line-2);border-radius:6px;background:rgba(255,255,255,.03);transition:border-color .3s,transform .3s,background .3s}
+.scard:hover{border-color:var(--ember);background:rgba(255,106,26,.07);transform:translateY(-2px)}
+.scard svg{width:34px;height:34px;fill:var(--ink);flex:0 0 auto}
+.scard b{display:block;font-size:1rem;letter-spacing:.06em}
+.scard span{color:var(--ink-2);font-size:.85rem}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.hero-cta{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+[hidden]{display:none!important}
+.chips label{position:relative}
+@media (max-width:620px){.nav-cta .lg{display:none}}
 </style>
 </head>
 <body class="locked">
@@ -386,8 +436,8 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 <!-- ============================================================ NAV -->
 <nav id="nav">
   <a class="brand" href="#top"><img class="swd" src="img/sword.png" alt="" width="72" height="459"><span>Darksteel Forge</span></a>
-  <div class="nav-links"><a href="#vault">The vault</a><a href="#inventory">Library</a><a href="#shop">The shop</a><a href="#services">Services</a><a href="#faq">FAQ</a><a href="#contact">Contact</a></div>
-  <a class="nav-cta" href="#vault">Shop cards</a>
+  <div class="nav-links"><a href="#shop">About</a><a href="#visit">Visit</a><a href="#sell">Sell to us</a><a href="#social">Follow</a><a href="#contactus">Contact</a></div>
+  <a class="nav-cta" href="#visit">Visit<span class="lg">&nbsp;the shop</span></a>
 </nav>
 
 <!-- ============================================================ HERO -->
@@ -396,20 +446,111 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
   <div class="hero-in">
 <span class="mark logo-anim"><span class="back"></span><span class="glow"></span><img class="rglow" src="img/runeglow.png" alt="" aria-hidden="true"><img class="rhot" src="img/runehot.png" alt="" aria-hidden="true"><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="700" height="547" id="logoAnim"><canvas class="fx"></canvas><canvas class="fx2"></canvas><canvas class="emb"></canvas></span>
     <h1 class="hero-title metal" id="heroTitle"><span class="w" style="animation-delay:.05s"><span class="molten">Forge</span></span> <span class="w" style="animation-delay:.18s">your</span> <span class="w" style="animation-delay:.31s">game</span> <span class="w" style="animation-delay:.44s">night<span class="dot">.</span></span></h1>
-    <p class="slogan">Magic, Pokemon, One Piece and Riftbound. Singles, sealed and chase cards.</p>
-    <div class="hero-cta"><a class="btn hot" href="#vault">Open the vault</a></div>
+    <p class="slogan">Phoenixville's trading card shop on Bridge Street. Magic, Pokemon, One Piece and Riftbound - singles, sealed, a place to play, and a fair price when you sell.</p>
+    <div class="hero-cta"><a class="btn hot" href="#visit">Visit the shop</a><a class="btn" href="#sell">Sell us your cards</a></div>
     <div class="scroll-hint"><i></i></div>
   </div>
   </header>
-<div class="ticker"><div id="tick"></div></div>
+
+<!-- ============================================================ ABOUT THE SHOP -->
+<section class="sec" id="shop">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="eyebrow">The shop</div><h2 class="metal">Built by collectors, for collectors</h2><div class="rule"></div></div>
+    <div class="story">
+      <div class="reveal">
+        <img class="storymark" src="img/sword.png" alt="" width="72" height="459">
+        <p class="lead">Darksteel Forge started the way most card shops do: a binder, a folding table and too many trades that should have gone the other way. It grew into a stocked inventory of Magic, Pokemon, One Piece and Riftbound singles, sealed product and the chase cards that never seem to be in stock anywhere else.</p>
+        <p>Every card that comes through the door is inspected under light, sleeved and stored in a climate-controlled room. Condition is graded honestly, prices track the market daily, and if we do not have the card you want we will source it. Now it is a storefront on Bridge Street in downtown Phoenixville, with play space, weekly events and a buylist counter where you get a real offer on the spot.</p>
+      </div>
+      
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ VISIT -->
+<section class="sec" id="visit">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="eyebrow">Visit the shop</div><h2 class="metal">Downtown Phoenixville</h2><div class="rule"></div></div>
+    <div class="vgrid reveal">
+      <div class="mapbox"><iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-75.5250%2C40.1297%2C-75.5070%2C40.1387&amp;layer=mapnik&amp;marker=40.1342%2C-75.516" title="Map of Bridge Street, Phoenixville" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+      <div class="vstack">
+        <div class="panel"><h3>The shop</h3>
+          <p class="addr">Bridge Street<br>Phoenixville, PA 19460<small>Street number and opening hours coming soon</small></p>
+          <p style="margin-top:1rem"><a class="btn hot" href="https://www.google.com/maps/dir/?api=1&amp;destination=Bridge+St,+Phoenixville,+PA+19460" target="_blank" rel="noopener">Get directions</a></p>
+        </div>
+        <div class="panel park"><h3>Parking</h3>
+          <ul>
+            <li><b>Free on Bridge Street.</b> Two-hour street parking on the 100, 200 and 300 blocks, and on the side streets around them.</li>
+            <li><b>Borough lots, $2 an hour.</b> Main &amp; Bridge, Taylor Alley, Mill St and Prospect St. Pay at the kiosk or with the Passport Parking app.</li>
+            <li><b>Evenings and weekends.</b> The Borough Hall lot is $1 an hour weeknights after 5pm and all weekend.</li>
+          </ul>
+          <p class="tagline" style="margin-top:.8rem">Lot rules and rates: phoenixville.org/parking</p>
+        </div>
+      </div>
+    </div>
+    <div class="dirs reveal">
+      <div class="panel"><h3>From Route 422</h3><p>Take the Route 724 / Phoenixville exit, which becomes Route 23. Follow 23 east to Route 113 north, then turn left onto Bridge Street.</p></div>
+      <div class="panel"><h3>From Philadelphia</h3><p>I-76 to the Mall Road exit, then North Gulph Road, which becomes Route 23 through Valley Forge Park. Turn right on Starr Street, then left onto Bridge Street.</p></div>
+      <div class="panel"><h3>From the Turnpike</h3><p>Exit 312, Route 100 south to Route 113. Turn left on 113, then right onto Route 23 east toward Bridge Street.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SELL TO US -->
+<section class="sec" id="sell">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="eyebrow">Buylist</div><h2 class="metal">Sell us your stuff</h2><div class="rule"></div></div>
+    <p class="sub-lead reveal">Binders, collections, sealed product or a single chase card. Tell us what you have and we will come back with a written offer in cash or store credit (credit pays more).</p>
+    <div class="steps3 reveal">
+      <div><b>1</b><span>Tell us what you have below</span></div>
+      <div><b>2</b><span>We reply with questions and an offer</span></div>
+      <div><b>3</b><span>Bring it to the shop, we check it, you get paid</span></div>
+    </div>
+    <form class="sellf reveal" id="sellForm" novalidate>
+      <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="fgrid">
+        <label class="fl"><span>Name</span><input name="name" required autocomplete="name"></label>
+        <label class="fl"><span>Email</span><input name="email" type="email" required autocomplete="email"></label>
+      </div>
+      <div class="fgrid">
+        <label class="fl"><span>Phone (optional)</span><input name="phone" type="tel" autocomplete="tel"></label>
+        <label class="fl"><span>What is it?</span><select name="kind"><option>Singles</option><option>A whole collection</option><option>Sealed product</option><option>Bulk</option><option>Graded cards</option><option>Not sure</option></select></label>
+      </div>
+      <div class="fl"><span>Games</span><div class="chips">
+        <label><input type="checkbox" name="games" value="Magic">Magic</label>
+        <label><input type="checkbox" name="games" value="Pokemon">Pokemon</label>
+        <label><input type="checkbox" name="games" value="One Piece">One Piece</label>
+        <label><input type="checkbox" name="games" value="Riftbound">Riftbound</label>
+        <label><input type="checkbox" name="games" value="Other">Other</label>
+      </div></div>
+      <label class="fl"><span>Tell us about it</span><textarea name="message" required placeholder="Roughly how many cards, standout cards, sets, condition..."></textarea></label>
+      <button class="btn hot" type="submit">Get an offer</button>
+      <p class="fsaid" aria-live="polite"></p>
+      <p class="fnote">Have photos? Reply to our email with them and the offer comes back faster.</p>
+    </form>
+  </div>
+</section>
+
+<!-- ============================================================ SOCIALS -->
+<section class="sec" id="social">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="eyebrow">Follow the forge</div><h2 class="metal">New arrivals, pulls and events</h2><div class="rule"></div></div>
+    <p class="sub-lead reveal">Fresh stock, big pulls and event nights go up on our socials first.</p>
+    <div class="socgrid reveal">
+      <a class="scard" href="https://www.instagram.com/darksteelforgegames" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 3.3.1 4.8 1.7 4.9 4.9.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 3.2-1.7 4.8-4.9 4.9-1.3.1-1.6.1-4.9.1s-3.6 0-4.8-.1c-3.3-.1-4.8-1.7-4.9-4.9C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8C2.4 3.9 3.9 2.4 7.2 2.3 8.4 2.2 8.8 2.2 12 2.2zm0 3.1a6.7 6.7 0 1 0 0 13.4 6.7 6.7 0 0 0 0-13.4zm0 11.1a4.4 4.4 0 1 1 0-8.8 4.4 4.4 0 0 1 0 8.8zm6.9-11.3a1.6 1.6 0 1 1-3.2 0 1.6 1.6 0 0 1 3.2 0z"/></svg><div><b>Instagram</b><span>@darksteelforgegames</span></div></a>
+      <a class="scard" href="https://www.facebook.com/p/Darksteel-Forge-Gaming-61588901174551/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.1h-3.1V8.9c0-.9.3-1.5 1.6-1.5h1.6V4.6c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.4H7.8V14h2.7v8h3z"/></svg><div><b>Facebook</b><span>Darksteel Forge Gaming</span></div></a>
+    </div>
+  </div>
+</section>
 
 <!-- ============================================================ THE VAULT -->
 <section id="vault">
   <div class="wrap">
     <div class="vault-head reveal">
-      <div class="eyebrow">The display case</div>
-      <h2 class="metal">Featured card</h2>
-      <p>Live market pricing. Tap a thumbnail under the display to swap cards.</p>
+      <div class="eyebrow">From the case</div>
+      <h2 class="metal">A few from the case</h2>
+      <p>A taste of what is behind the glass. Drag to turn, tap to flip, and ask about anything at the counter.</p>
     </div>
     <div class="stage">
       <div class="display" id="display">
@@ -434,7 +575,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
           <div class="cond" id="cond"><button class="on" data-m="1">Near Mint</button><button data-m=".85">Lightly Played</button><button data-m=".7">Mod. Played</button><button data-m=".5">Heavily Played</button></div>
         </div>
         <div class="price"><span class="n" id="shPrice">—</span><span class="l">market</span><span class="foil" id="shFoil"></span></div>
-        <div class="actions"><a class="btn hot" id="shInquire" href="#contact">Inquire</a><button class="btn" id="shFlip">Flip card</button></div>
+        <div class="actions"><a class="btn hot" id="shInquire" href="#contactus">Inquire</a><button class="btn" id="shFlip">Flip card</button></div>
       </aside>
     </div>
 
@@ -446,7 +587,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 </section>
 
 <!-- ============================================================ FULL INVENTORY -->
-<section id="inventory">
+<section id="inventory" hidden>
   <div class="wrap">
     <div class="inv-head reveal">
       <div><div class="eyebrow">In stock</div><h2 class="metal">The library</h2></div>
@@ -458,24 +599,26 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 </section>
 
 
-<!-- ============================================================ ABOUT THE SHOP -->
-<section class="sec" id="shop">
+<!-- ============================================================ CONTACT -->
+<section class="sec" id="contactus">
   <div class="wrap">
-    <div class="sec-head reveal"><div class="eyebrow">The shop</div><h2 class="metal">Built by collectors, for collectors</h2><div class="rule"></div></div>
-    <div class="story">
-      <div class="reveal">
-        <img class="storymark" src="img/sword.png" alt="" width="72" height="459">
-        <p class="lead">Darksteel Forge started the way most card shops do: a binder, a folding table and too many trades that should have gone the other way. It grew into a stocked inventory of Magic, Pokemon, One Piece and Riftbound singles, sealed product and the chase cards that never seem to be in stock anywhere else.</p>
-        <p>Every card that comes through the door is inspected under light, sleeved and stored in a climate-controlled room. Condition is graded honestly, prices track the market daily, and if we do not have the card you want we will source it. When the storefront opens it will have play space, weekly events and a buylist counter. Until then, everything here ships.</p>
+    <div class="sec-head reveal"><div class="eyebrow">Get in touch</div><h2 class="metal">Contact us</h2><div class="rule"></div></div>
+    <p class="sub-lead reveal">Looking for a card, asking about events, or anything else. We answer every message.</p>
+    <form class="cform reveal" id="contactForm" novalidate>
+      <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="fgrid">
+        <label class="fl"><span>Name</span><input name="name" required autocomplete="name"></label>
+        <label class="fl"><span>Email</span><input name="email" type="email" required autocomplete="email"></label>
       </div>
-      
-      </div>
-    </div>
+      <label class="fl"><span>Message</span><textarea name="message" required></textarea></label>
+      <button class="btn hot" type="submit">Send message</button>
+      <p class="fsaid" aria-live="polite"></p>
+    </form>
   </div>
 </section>
 
 <!-- ============================================================ SERVICES -->
-<section class="sec" id="services" style="padding-top:0">
+<section class="sec" id="services" style="padding-top:0" hidden>
   <div class="wrap">
     <div class="sec-head reveal"><div class="eyebrow">What we do</div><h2 class="metal">Services</h2><div class="rule"></div></div>
     <div class="services">
@@ -490,7 +633,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 </section>
 
 <!-- ============================================================ HOW IT WORKS -->
-<section class="sec" id="how" style="padding-top:0">
+<section class="sec" id="how" style="padding-top:0" hidden>
   <div class="wrap">
     <div class="sec-head reveal"><div class="eyebrow">Ordering</div><h2 class="metal">How it works</h2><div class="rule"></div></div>
     <div class="steps reveal">
@@ -503,7 +646,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 </section>
 
 <!-- ============================================================ FAQ -->
-<section class="sec" id="faq" style="padding-top:0">
+<section class="sec" id="faq" style="padding-top:0" hidden>
   <div class="wrap">
     <div class="sec-head reveal"><div class="eyebrow">Questions</div><h2 class="metal">Good to know</h2><div class="rule"></div></div>
     <div class="faq reveal">
@@ -517,7 +660,7 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 </section>
 
 <!-- ============================================================ OPENING -->
-<section class="opening" id="opening">
+<section class="opening" id="opening" hidden>
   <canvas id="openFx"></canvas>
   <svg class="bp" viewBox="0 0 1100 520" aria-hidden="true">
     <line class="g" x1="0" y1="470" x2="1100" y2="470"/>
@@ -552,8 +695,8 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
   <div class="wrap">
     <div class="brand"><img class="swd" src="img/sword.png" alt="" width="72" height="459"><span>Darksteel Forge Gaming</span></div>
     <p>Magic · Pokemon · One Piece · Riftbound</p>
-    <p>Ask about a card: <a href="mailto:hello@darksteelforge.gg" style="color:var(--ink-2)">hello@darksteelforge.gg</a></p>
-    <p>Buylist and sourcing: <a href="mailto:buylist@darksteelforge.gg" style="color:var(--ink-2)">buylist@darksteelforge.gg</a></p>
+    <p>Bridge Street, Phoenixville, PA 19460</p>
+    <p><a href="mailto:darksteelforge@gmail.com" style="color:var(--ink-2)">darksteelforge@gmail.com</a> &nbsp;·&nbsp; <a href="https://www.instagram.com/darksteelforgegames" target="_blank" rel="noopener" style="color:var(--ink-2)">Instagram</a> &nbsp;·&nbsp; <a href="https://www.facebook.com/p/Darksteel-Forge-Gaming-61588901174551/" target="_blank" rel="noopener" style="color:var(--ink-2)">Facebook</a></p>
     <p style="margin-top:2rem">© <span id="yr"></span> Darksteel Forge Gaming. Card images and names are property of their respective owners. Prices are market references and change daily.</p>
   </div>
 </footer>
@@ -1147,9 +1290,42 @@ $("#shFlip").addEventListener("click", () => Display.flip());
 const readyForDisplay = () => new Promise(res => { const f = () => { if (displayReady) res(); else setTimeout(f, 100); }; f(); });
 fetch("data/cards.json").then(r => r.json()).then(async d => {
   CARDS = d.cards; await readyForDisplay(); Display.init();
-  const top = CARDS.slice(0, 14); $("#tick").innerHTML = (top.map(c => `<span>${c.name} <em style="color:var(--ember-2);font-style:normal">${money(c.price)}</em></span>`).join("")).repeat(2);
+  const top = CARDS.slice(0, 14); if ($("#tick")) $("#tick").innerHTML = (top.map(c => `<span>${c.name} <em style="color:var(--ember-2);font-style:normal">${money(c.price)}</em></span>`).join("")).repeat(2);
   renderRail(); renderMini(); renderGrid(); feature(CARDS[0], true); setTimeout(() => $("#dispLoad").classList.add("off"), 900);
 }).catch(e => { console.error(e); $("#dispLoad").textContent = "Inventory offline"; });
+</script>
+<script>
+/* Both forms post to Web3Forms with the coming-soon site's key, which mails darksteelforge@gmail.com.
+   The confirmation only prints on success:true. botcheck reads .checked - .value is always "on". */
+(() => {
+  const KEY = "2802c142-dcf4-432a-85a9-1efc4c0c1fde";
+  const hook = (id, subject, build, ok) => {
+    const form = document.getElementById(id); if (!form) return;
+    const say = form.querySelector(".fsaid"), btn = form.querySelector("button[type=submit]");
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      if (!form.checkValidity()) { say.textContent = "Please fill in your name, email and a message."; form.reportValidity(); return; }
+      btn.disabled = true; say.textContent = "Sending...";
+      try {
+        const f = new FormData(form);
+        const r = await fetch("https://api.web3forms.com/submit", {
+          method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ access_key: KEY, subject, from_name: "Darksteel Forge website",
+            name: f.get("name"), email: f.get("email"), ...build(f), botcheck: form.botcheck.checked }),
+        });
+        const out = await r.json().catch(() => ({}));
+        if (r.ok && out.success) { form.reset(); say.textContent = ok; }
+        else say.textContent = "That did not send. Try again, or email darksteelforge@gmail.com.";
+      } catch { say.textContent = "That did not send. Try again, or email darksteelforge@gmail.com."; }
+      finally { btn.disabled = false; }
+    });
+  };
+  hook("sellForm", "Darksteel Forge - someone wants to sell", f => ({
+    phone: f.get("phone") || "-", selling: f.get("kind"), games: f.getAll("games").join(", ") || "-", message: f.get("message") }),
+    "Got it. We will email you with questions and an offer, usually within a day.");
+  hook("contactForm", "Darksteel Forge - new message", f => ({ message: f.get("message") }),
+    "Message sent. We will get back to you soon.");
+})();
 </script>
 </body>
 </html>
