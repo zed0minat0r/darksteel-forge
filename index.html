@@ -432,9 +432,54 @@ details.dir[open] summary i{transform:rotate(-135deg) translateY(-1px)}
 details.dir p{margin:.9rem 0 0}
 .chips label{position:relative}
 @media (max-width:620px){.nav-cta .lg{display:none}}
+
+/* ============================================================ MORE EXCITING (Matt 2026-10-12: "this is boring to scroll through")
+   Reuses what he accepted on the coming-soon site: the card lanes, embers, rune glow. */
+#pageFx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.55}
+.sec,#vault,footer{position:relative;z-index:1}
+.sec::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none}
+#shop::before{background:radial-gradient(60% 50% at 50% 0%,rgba(255,106,26,.10),transparent 70%)}
+#visit::before{background:linear-gradient(180deg,transparent,rgba(255,255,255,.025) 30%,rgba(255,255,255,.025) 70%,transparent),radial-gradient(40% 40% at 85% 30%,rgba(255,106,26,.08),transparent 70%)}
+#sell::before{background:radial-gradient(70% 55% at 50% 40%,rgba(255,61,0,.13),transparent 70%)}
+#social::before{background:radial-gradient(50% 60% at 15% 50%,rgba(255,179,71,.08),transparent 70%),radial-gradient(50% 60% at 85% 50%,rgba(255,106,26,.08),transparent 70%)}
+#contactus::before{background:linear-gradient(180deg,transparent,rgba(255,106,26,.07))}
+/* a forged seam between sections */
+.sec + .sec,.cband + .sec{border-top:1px solid transparent;border-image:linear-gradient(90deg,transparent,rgba(255,106,26,.45),transparent) 1}
+/* stronger scroll-in: rise, scale and un-blur, children staggered */
+.reveal{opacity:0;transform:translateY(46px) scale(.97);transition:opacity 1s ease,transform 1.1s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none;filter:none}
+.vgrid.reveal > *,.dirs.reveal > *,.socgrid.reveal > *,.steps3.reveal > *{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .9s cubic-bezier(.16,1,.3,1)}
+.reveal.in > *{opacity:1!important;transform:none!important}
+.reveal.in > *:nth-child(2){transition-delay:.12s}.reveal.in > *:nth-child(3){transition-delay:.24s}.reveal.in > *:nth-child(4){transition-delay:.36s}
+/* the rule under every heading draws itself and glows */
+.rule{width:140px;height:2px;transform:scaleX(0);transition:transform 1.2s .3s cubic-bezier(.16,1,.3,1);box-shadow:0 0 14px rgba(255,106,26,.7)}
+.sec-head.in .rule{transform:scaleX(1)}
+.sec-head h2.metal{background-size:220% 100%;animation:sheen 7s linear infinite}
+@keyframes sheen{from{background-position:0% 0}to{background-position:220% 0}}
+/* panels feel like objects */
+.panel,.scard{transition:transform .4s cubic-bezier(.16,1,.3,1),border-color .4s,box-shadow .4s}
+.panel:hover{transform:translateY(-4px);border-color:rgba(255,106,26,.45);box-shadow:0 18px 40px rgba(0,0,0,.5),0 0 0 1px rgba(255,106,26,.15),0 0 30px rgba(255,106,26,.12)}
+.steps3 b{text-shadow:0 0 18px rgba(255,106,26,.8);animation:emberpulse 2.6s ease-in-out infinite}
+.steps3 div:nth-child(2) b{animation-delay:.4s}.steps3 div:nth-child(3) b{animation-delay:.8s}
+@keyframes emberpulse{50%{text-shadow:0 0 30px rgba(255,106,26,1),0 0 60px rgba(255,61,0,.5)}}
+/* the card band */
+.cband{position:relative;z-index:1;padding:3.4rem 0 3rem;overflow:hidden;background:linear-gradient(180deg,transparent,rgba(255,106,26,.05) 50%,transparent)}
+.cband .eyebrow{display:block;text-align:center;margin-bottom:1.6rem}
+.clanes{-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.clane{display:flex;gap:1.1rem;width:max-content;padding:.4rem 0;opacity:0;transition:opacity .6s ease;animation:cslide 82s linear infinite;animation-play-state:paused}
+.clane.ready{opacity:1;animation-play-state:running}
+.clane.back{animation-name:cslideBack;animation-duration:104s;margin-top:1.1rem}
+.clane.back.ready{opacity:.85}
+@keyframes cslide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes cslideBack{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.clane figure{margin:0;width:clamp(130px,34vw,180px);flex:0 0 auto}
+.clane img{width:100%;height:auto;aspect-ratio:63/88;object-fit:contain;border-radius:8px;background:#15181c;box-shadow:0 14px 28px rgba(0,0,0,.65);transition:transform .4s cubic-bezier(.16,1,.3,1),box-shadow .4s}
+@media (hover:hover){.clanes:hover .clane{animation-play-state:paused}.clane figure:hover img{transform:translateY(-8px) scale(1.04);box-shadow:0 22px 40px rgba(0,0,0,.8),0 0 24px rgba(255,106,26,.35)}}
+@media (prefers-reduced-motion:reduce){.clane{animation:none}.reveal{filter:none;transform:none}.sec-head h2.metal,.steps3 b{animation:none}}
 </style>
 </head>
 <body class="locked">
+<canvas id="pageFx" aria-hidden="true"></canvas>
 
 <!-- ============================================================ SPLASH -->
 <div id="splash" aria-label="Welcome">
@@ -482,6 +527,12 @@ details.dir p{margin:.9rem 0 0}
     </div>
   </div>
 </section>
+
+<!-- ============================================================ CARD BAND -->
+<div class="cband" aria-label="Cards in the shop">
+  <span class="eyebrow">Behind the glass right now</span>
+  <div class="clanes"><div class="clane" id="cl1"></div><div class="clane back" id="cl2"></div></div>
+</div>
 
 <!-- ============================================================ VISIT -->
 <section class="sec" id="visit">
@@ -1341,6 +1392,28 @@ fetch("data/cards.json").then(r => r.json()).then(async d => {
   hook("contactForm", "Darksteel Forge - new message", f => ({ message: f.get("message") }),
     "Message sent. We will get back to you soon.");
 })();
+</script>
+<script>
+/* card band: the coming-soon site's lanes, no prices. AVIF 400px set, WebP fallback. */
+(async () => {
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const AVIF = await new Promise(res => { const t = new Image(); t.onload = () => res(t.width > 0); t.onerror = () => res(false);
+    t.src = "data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAAD5bWV0YQAAAAAAAAAvaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAFBpY3R1cmVIYW5kbGVyAAAAAA5waXRtAAAAAAABAAAAHmlsb2MAAAAARAAAAQABAAAAAQAAASEAAAAYAAAAKGlpbmYAAAAAAAEAAAAaaW5mZQIAAAAAAQAAYXYwMUNvbG9yAAAAAGppcHJwAAAAS2lwY28AAAAUaXNwZQAAAAAAAAACAAAAAgAAABBwaXhpAAAAAAMICAgAAAAMYXYxQ4EADAAAAAATY29scm5jbHgAAgACAAIAAAAAF2lwbWEAAAAAAAAAAQABBAECgwQAAAAgbWRhdAoFGAA2wCAyDxyAAABYAAAAAK/sqvFLgA=="; });
+  try {
+    const cards = await (await fetch("data/stock.json")).json();
+    const src = c => { const f = c.img.split("/").pop(); return AVIF ? "img/a4/" + f.replace(/\.webp$/, ".avif") : "img/cw/" + f; };
+    const fill = (el, list) => { el.innerHTML = list.concat(list).map(c =>
+      `<figure><img src="${src(c)}" alt="${esc(c.name)}" decoding="async" width="400" height="559"></figure>`).join(""); };
+    const half = Math.ceil(cards.length / 2);
+    const l1 = document.getElementById("cl1"), l2 = document.getElementById("cl2");
+    fill(l1, cards.slice(0, half)); fill(l2, cards.slice(half));
+    const wait = el => Promise.all([...el.querySelectorAll("img")].slice(0, 10).map(i => i.decode().catch(() => {})));
+    await Promise.all([wait(l1), wait(l2)]);
+    l1.classList.add("ready"); l2.classList.add("ready");
+  } catch (e) { console.error(e); }
+})();
+/* embers down the whole page, not only the hero */
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches) embers(document.getElementById("pageFx"), 36, { speed: .45 });
 </script>
 </body>
 </html>
