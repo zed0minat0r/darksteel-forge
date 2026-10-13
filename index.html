@@ -1947,6 +1947,9 @@ marqueeReady.then(() => fetch("data/stock.json").then(r => r.json())).then(async
     const mirror = card.clone(); mirror.scale.y = -1; mirror.position.y = 2 * floorY;
     mirror.traverse(o => { if (o.material) { o.material = o.material.clone(); o.material.opacity = .22; o.material.transparent = true; o.material.depthWrite = false; o.material.envMapIntensity = .4; } });
     group.add(mirror);
+    // Matt 2026-10-12: the floor reflection read as "a mini card underneath the main card". Hidden;
+    // the updates below still run on it, harmlessly.
+    mirror.visible = false;
     /* SOFT CONTACT SHADOW (Matt 2026-10-12: "a little shadow underneath it that looks glitchy").
        It was a hard-edged black disc 1.9 units across, scaled 1.25x - wider than a phone screen, cut
        off at both edges, and only .01 above the floor so the two planes fought for depth. Now a
