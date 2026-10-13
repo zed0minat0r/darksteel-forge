@@ -478,6 +478,152 @@ details.dir p{margin:.9rem 0 0}
 .trow.two span{font-size:clamp(1.6rem,5vw,3.4rem);-webkit-text-stroke:0;color:rgba(236,238,241,.14);background:none;animation:none;letter-spacing:.18em}
 .trow.two i{font-size:clamp(.8rem,2vw,1.2rem);opacity:.6}
 @media (prefers-reduced-motion:reduce){.ttrack,.ttrack span{animation:none}.reveal{filter:none;transform:none}.sec-head h2.metal,.steps3 b{animation:none}}
+/* ============================================================ PORTED FROM THE COMING-SOON SITE (2026-10-12):
+   the three-level card preview - lanes -> zoomed card + details -> full-screen 3D. .strip/.fade renamed
+   .cstrip/.cfade because the full site already uses both. */
+/* ============================================================ CARD MARQUEE */
+.cstrip{padding-bottom:clamp(3rem,8vw,4.5rem);overflow:hidden}
+.cstrip .head{text-align:center;margin-bottom:2rem}
+.cstrip h2{font-family:var(--display);font-size:clamp(1.25rem,3.4vw,1.9rem);letter-spacing:.14em;text-transform:uppercase;margin-top:.6rem}
+.cstrip .head p{color:var(--ink-2);margin:.7rem auto 0;max-width:46ch}
+.cfade{position:relative;overflow:hidden}
+.cfade::before,.cfade::after{content:"";position:absolute;top:0;bottom:0;width:clamp(40px,12vw,160px);z-index:2;pointer-events:none}
+.cfade::before{left:0;background:linear-gradient(90deg,var(--bg) 10%,transparent)}
+.cfade::after{right:0;background:linear-gradient(270deg,var(--bg) 10%,transparent)}
+.cfade{min-height:clamp(250px,58vw,318px)}
+.lane{display:flex;gap:1.1rem;width:max-content;padding:.4rem 0;opacity:0;transition:opacity .5s ease;animation:cslide 82s linear infinite;animation-play-state:paused}
+.lane.ready{opacity:1;animation-play-state:running}
+.lane.back{animation:cslideBack 104s linear infinite;animation-play-state:paused;margin-top:1.1rem}
+.lane.back.ready{opacity:.88;animation-play-state:running}
+/* Hover only where there is a real pointer. On iOS the first tap on an element
+   that has :hover styling is spent activating that hover, and only the second
+   tap counts as a click - which is why a card had to be tapped twice to open. */
+@media (hover:hover) and (pointer:fine){
+  .lane:hover{animation-play-state:paused}
+}
+@keyframes cslide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes cslideBack{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.lane figure{margin:0;width:clamp(158px,42vw,200px);flex:0 0 auto}
+.lane img{width:100%;height:auto;aspect-ratio:63/88;object-fit:contain;border-radius:9px;background:#15181c;filter:brightness(1.12) contrast(1.03) saturate(1.05);box-shadow:0 16px 32px rgba(0,0,0,.65);
+  transition:transform .4s ease,box-shadow .4s ease}
+@media (hover:hover) and (pointer:fine){
+  .lane figure:hover img{transform:translateY(-8px) scale(1.02);box-shadow:0 26px 46px rgba(0,0,0,.8)}
+}
+.lane figcaption{margin-top:.55rem;font-size:.72rem;line-height:1.35;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lane figcaption b{display:block;color:var(--ink-3);font-weight:500;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase}
+
+/* ============================================================ CARD VIEWER
+   Click a card in the lanes and it opens here. Same anatomy as the display-case
+   sheet on the full site - game badge, name, set, a spec list, the rules text -
+   minus the price and condition picker, which this site has no business
+   quoting before the shop is open. */
+.lane figure button{background:none;border:0;padding:0;margin:0;display:block;width:100%;text-align:left;cursor:zoom-in}
+.viewer{position:fixed;inset:0;z-index:60;display:none;place-items:center;padding:clamp(.8rem,3vw,2rem)}
+.viewer[open]{display:grid}
+.vbg{position:absolute;inset:0;background:rgba(3,4,5,.82);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);will-change:opacity}
+.vpanel{position:relative;width:min(940px,100%);max-height:92vh;overflow:auto;display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(1rem,3vw,2rem);
+  background:linear-gradient(180deg,#131519,#0c0e10);border:1px solid var(--line-2);border-radius:16px;
+  padding:clamp(1rem,3vw,1.9rem);box-shadow:0 40px 90px rgba(0,0,0,.75)}
+/* The card art is capped by the VIEWPORT as well as by the column. Measured at
+   844x390 (a phone on its side): the art came out 487px tall inside a 359px
+   panel and the bottom 155px of the card was simply clipped away - Matt:
+   "some of the bigger cards go too close to the top of the page and it looks
+   awkward or even gets cut off". max-height only binds when the screen is
+   short; at 375x667 and up the column is still the limit and nothing moves. */
+.vpanel img{max-width:100%;width:auto;height:auto;max-height:70vh;display:block;margin-inline:auto;border-radius:11px;background:#15181c;box-shadow:0 20px 44px rgba(0,0,0,.7);
+  transform-origin:top left;will-change:transform}
+.vart{position:relative}
+.vside{will-change:transform,opacity}
+/* The panel chrome fades on its own so the card art can fly independently of it. */
+.vpanel{will-change:opacity}
+.vgame{display:inline-flex;align-items:center;gap:.5rem;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3)}
+.vgame i{width:7px;height:7px;border-radius:2px;background:var(--ember)}
+.vname{font-family:var(--display);font-size:clamp(1.3rem,3.2vw,1.9rem);line-height:1.15;margin:.5rem 0 .2rem}
+.vset{color:var(--ink-2);font-size:.92rem;margin-bottom:1rem}
+.vspecs{margin:0 0 1rem;border-top:1px solid var(--line)}
+.vspecs>div{display:flex;justify-content:space-between;gap:1rem;padding:.5rem 0;border-bottom:1px solid var(--line)}
+.vspecs dt{color:var(--ink-3);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase}
+.vspecs dd{margin:0;text-align:right;font-size:.9rem}
+.vtext{color:var(--ink-2);font-size:.9rem;line-height:1.6;white-space:pre-wrap}
+/* z-index matters here. .vart is positioned and .vside carries will-change, so
+   both establish stacking contexts, and both come AFTER this button in the DOM -
+   which put them on top of it. The X was drawn but every tap landed on the card
+   art behind it. Caught with elementFromPoint at the button's own centre. */
+.vclose{position:absolute;top:.5rem;right:.5rem;z-index:3;width:var(--tap);height:var(--tap);border:0;border-radius:10px;
+  background:rgba(255,255,255,.06);display:grid;place-items:center;font-size:1.4rem;line-height:1}
+.vclose:hover{background:rgba(255,255,255,.12)}
+/* the close button is focused programmatically when the viewer opens, and Chrome
+   draws its default blue ring for that - swap it for the site's ember */
+.viewer :focus-visible,.viewer :focus{outline:2px solid var(--ember);outline-offset:2px}
+/* Stepping arrows, one each side, same treatment as the display-case arrows on
+   the full site - a bordered circle with a chevron. They live in .viewer rather
+   than .vpanel so they sit clear of the card and the spec list instead of on top
+   of either, and they carry z-index for the reason .vclose does: .vart and
+   .vside both make stacking contexts and would otherwise swallow the tap. */
+/* --arr-y is set from the card art's own centre when the viewer opens, so the
+   arrows line up with the card in both layouts. Centring them on the viewport
+   works on desktop, where the art fills the panel's height, but on a phone the
+   panel stacks and the middle of the screen is the middle of the SPEC LIST -
+   the arrows sat on top of the card name. */
+.varr{position:absolute;top:var(--arr-y,50%);transform:translateY(-50%);z-index:3;
+  width:var(--tap);height:var(--tap);border-radius:50%;border:1px solid var(--line-2);
+  background:rgba(14,16,19,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  color:var(--ink-2);display:grid;place-items:center;transition:color .25s ease,border-color .25s ease,background .25s ease}
+.varr svg{width:18px;height:18px}
+.varr.prev{left:clamp(.35rem,2vw,1.6rem)}
+.varr.next{right:clamp(.35rem,2vw,1.6rem)}
+@media (hover:hover) and (pointer:fine){
+  .varr:hover{color:var(--ink);border-color:rgba(255,255,255,.34);background:rgba(22,25,30,.9)}
+}
+.varr:active{transform:translateY(-50%) scale(.94)}
+@media (max-width:720px){.vpanel{grid-template-columns:1fr}.vpanel img{max-width:62%;margin:0 auto}}
+
+/* ============================================================ LEVEL 3
+   Click the card inside the viewer and it goes to the real thing: the card as
+   a 3D object, turning on a lit floor. Same build as the display case on the
+   full site - two planes and a thin edge, rounded-corner alpha map, hand-drawn
+   equirect environment through PMREM, a mirrored clone for the floor
+   reflection - so the two sites show a card the same way.
+   three.js is fetched on FIRST USE only. It is ~600 KB and most visitors will
+   never open this level; loading it up front would undo the work that got the
+   logo down to 1.4s. */
+.card3d{position:fixed;inset:0;z-index:70;display:none}
+/* The backdrop is its OWN layer. It used to be a background on .card3d, and the
+   open fade ran on .card3d itself - which faded the flying card too, so the
+   first 300ms of a 700ms flight was invisible and the card appeared to be
+   already at its destination. Matt: "the image is already where it's moving to". */
+.card3d .sbg{position:absolute;inset:0;background:#050607}
+.card3d[open]{display:block}
+.card3d canvas{display:block;width:100%;height:100%}
+.card3d .shost{position:absolute;inset:0}
+.card3d .sclose{position:absolute;top:clamp(.6rem,2vw,1.2rem);right:clamp(.6rem,2vw,1.2rem);z-index:3;
+  width:var(--tap);height:var(--tap);border:1px solid var(--line-2);border-radius:50%;
+  background:rgba(14,16,19,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  color:var(--ink-2);display:grid;place-items:center;font-size:1.3rem;line-height:1}
+.card3d .shint{position:absolute;left:50%;bottom:clamp(1rem,4vh,2.2rem);transform:translateX(-50%);z-index:3;
+  font-size:.66rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-2);pointer-events:none;text-align:center;
+  text-shadow:0 2px 8px rgba(0,0,0,.9)}   /* the floor is lit down there, so the hint needs help */
+.card3d .sname{position:absolute;left:50%;top:clamp(1rem,4vh,2rem);transform:translateX(-50%);z-index:3;
+  font-family:var(--display);font-size:clamp(1rem,3.4vw,1.5rem);letter-spacing:.04em;color:var(--ink);pointer-events:none;text-align:center;max-width:76vw;
+  text-shadow:0 2px 10px rgba(0,0,0,.85),0 0 30px rgba(0,0,0,.6)}
+.card3d .sload{position:absolute;inset:0;display:grid;place-items:center;z-index:2;
+  font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-3);transition:opacity .4s ease}
+.card3d .sload.off{opacity:0;pointer-events:none}
+@media (hover:hover) and (pointer:fine){ .card3d .sclose:hover{color:var(--ink);border-color:rgba(255,255,255,.34)} }
+/* the viewer's card art is now itself a control */
+.vart{cursor:zoom-in}
+
+/* Phone spacing for the top of the hero. The desktop rhythm reads as scrunched
+   at 390px: 42px from the mark down to the tape, then only 8px between COMING
+   SOON and "Forge your game night". `.tape.two` keeps its negative margin-top
+   because two classes beat one, so the second band still overlaps the first. */
+@media (max-width:720px){
+  .tape{margin-top:5.2rem}
+  h1.soon{margin:3.4rem 0 1.6rem}
+  .sub{margin-top:1.35rem}
+}
+
 </style>
 </head>
 <body class="locked">
@@ -612,8 +758,19 @@ details.dir p{margin:.9rem 0 0}
   </div>
 </section>
 
+<!-- ============================================================ FROM THE CASE (three-level preview, ported) -->
+<section class="sec cstrip" id="case">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="eyebrow">From the case</div><h2 class="metal">A few from the case</h2><div class="rule"></div><p>Tap a card to look closer, tap it again to turn it in your hands.</p></div>
+  </div>
+  <div class="cfade">
+    <div class="lane" id="lane"></div>
+    <div class="lane back" id="laneBack"></div>
+  </div>
+</section>
+
 <!-- ============================================================ THE VAULT -->
-<section id="vault">
+<section id="vault" hidden>
   <div class="wrap">
     <div class="vault-head reveal">
       <div class="eyebrow">From the case</div>
@@ -1356,7 +1513,8 @@ $("#cond").addEventListener("click", e => { const b = e.target.closest("button")
 $("#shFlip").addEventListener("click", () => Display.flip());
 
 const readyForDisplay = () => new Promise(res => { const f = () => { if (displayReady) res(); else setTimeout(f, 100); }; f(); });
-fetch("data/cards.json").then(r => r.json()).then(async d => {
+/* the old display case is hidden (replaced by the ported three-level preview) - do not boot WebGL or pull its art */
+(document.getElementById("vault").hidden ? new Promise(() => {}) : fetch("data/cards.json").then(r => r.json())).then(async d => {
   CARDS = d.cards; await readyForDisplay(); Display.init();
   const top = CARDS.slice(0, 14); if ($("#tick")) $("#tick").innerHTML = (top.map(c => `<span>${c.name} <em style="color:var(--ember-2);font-style:normal">${money(c.price)}</em></span>`).join("")).repeat(2);
   renderRail(); renderMini(); renderGrid(); feature(CARDS[0], true); setTimeout(() => $("#dispLoad").classList.add("off"), 900);
@@ -1398,6 +1556,640 @@ fetch("data/cards.json").then(r => r.json()).then(async d => {
 <script>
 /* embers down the whole page, not only the hero */
 if (!matchMedia("(prefers-reduced-motion: reduce)").matches) embers(document.getElementById("pageFx"), 36, { speed: .45 });
+</script>
+<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-labelledby="vName">
+  <div class="vbg" id="vBg"></div>
+  <div class="vpanel" id="vPanel">
+    <button class="vclose" id="vClose" type="button" aria-label="Close">&times;</button>
+    <div class="vart"><img id="vImg" src="" alt=""></div>
+    <div class="vside" id="vSide">
+      <span class="vgame"><i></i><span id="vGame"></span></span>
+      <h3 class="vname" id="vName"></h3>
+      <div class="vset" id="vSet"></div>
+      <dl class="vspecs" id="vSpecs"></dl>
+      <p class="vtext" id="vText"></p>
+    </div>
+  </div>
+  <button class="varr prev" id="vPrev" type="button" aria-label="Previous card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+  <button class="varr next" id="vNext" type="button" aria-label="Next card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
+</div>
+
+<div class="card3d" id="card3d" role="dialog" aria-modal="true" aria-label="Card in 3D">
+  <div class="sbg" id="sBg"></div>
+  <div class="shost" id="sHost"></div>
+  <div class="sload" id="sLoad">Loading the display</div>
+  <div class="sname" id="sName"></div>
+  <button class="sclose" id="sClose" type="button" aria-label="Back to the card details">&times;</button>
+  <div class="shint"><b>Drag</b> to turn the card</div>
+</div>
+<script>
+/* ported from darksteel-forge-soon: the three-level card preview. Lives in its own script so its
+   names stay out of the full site's scope. */
+(() => {
+const marqueeReady = (async () => {
+  if (document.readyState !== "complete") {
+    await new Promise(res => addEventListener("load", res, { once: true }));
+  }
+  await new Promise(res => (window.requestIdleCallback || (f => setTimeout(f, 200)))(res, { timeout: 1500 }));
+})();
+
+marqueeReady.then(() => fetch("data/stock.json").then(r => r.json())).then(async cards => {
+  /* ---- ART SELECTION -------------------------------------------------------------------------
+     Matt, 2026-10-01: "optimize the site to load really well without sacrificing any of the
+     quality of the cards because I really like the way the cards all look."
+
+     Nothing here reduces quality. It stops sending pixels a screen cannot draw, and uses a newer
+     codec for the same picture. Measured on a dense full-art card:
+         600px WebP q78 (what shipped)  112 KB      whole set 9.3 MB
+         600px AVIF crf36                40 KB      whole set 3.8 MB
+         400px AVIF crf32                28 KB      whole set 2.4 MB
+     Compared by decoding each back to PNG and cropping the same detail region at 1:1, including
+     the rules text - "When Chrome Mox enters the battlefield" is equally legible in all three.
+
+     `.lane figure` is clamp(158px,42vw,200px), so a card is drawn 158-200 CSS px wide. 400px is
+     1:1 or better on any display under 2.5x; only a 3x screen can resolve 600. The VIEWER always
+     gets 600 because it fills the screen.
+
+     One decode test picks the lane, rather than <picture> - the lanes also preload through
+     `new Image()`, which has no type-negotiation, so a single decision keeps both paths honest.
+     The WebP files stay exactly where they were and are the fallback. Nothing was deleted. */
+  const AVIF = await new Promise(res => {
+    const t = new Image();
+    t.onload = () => res(t.width === 2); t.onerror = () => res(false);
+    t.src = "data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAAD5bWV0YQAAAAAAAAAvaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAFBpY3R1cmVIYW5kbGVyAAAAAA5waXRtAAAAAAABAAAAHmlsb2MAAAAARAAAAQABAAAAAQAAASEAAAAYAAAAKGlpbmYAAAAAAAEAAAAaaW5mZQIAAAAAAQAAYXYwMUNvbG9yAAAAAGppcHJwAAAAS2lwY28AAAAUaXNwZQAAAAAAAAACAAAAAgAAABBwaXhpAAAAAAMICAgAAAAMYXYxQ4EADAAAAAATY29scm5jbHgAAgACAAIAAAAAF2lwbWEAAAAAAAAAAQABBAECgwQAAAAgbWRhdAoFGAA2wCAyDxyAAABYAAAAAK/sqvFLgA==";
+  });
+  const laneDir = AVIF ? ((devicePixelRatio || 1) >= 2.5 ? "img/a6" : "img/a4") : "img/c";
+  const file = c => c.img.split("/").pop().replace(/\.webp$/, AVIF ? ".avif" : ".webp");
+  const laneArt = c => laneDir + "/" + file(c);        // the marquee (NB: `art` is
+                                                       // already the viewer's <img>)
+  const artBig = c => (AVIF ? "img/a6/" : "img/c/") + file(c);   // the viewer and the 3D card
+  const GAME = { magic: "Magic", pokemon: "Pokemon", onepiece: "One Piece", riftbound: "Riftbound" };
+  const esc = t => String(t).replace(/[&<>"]/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m]));
+  const draw = (lane, c) => {
+    const f = document.createElement("figure");
+    const i = cards.indexOf(c);
+    f.innerHTML = `<button type="button" data-i="${i}" aria-label="View ${esc(c.name)}"><img src="${laneArt(c)}" alt="${esc(c.name)}" decoding="async" width="600" height="838"><figcaption>${esc(c.name)}<b>${GAME[c.game] || ""}</b></figcaption></button>`;
+    lane.appendChild(f);
+  };
+  const a = cards.filter((_, i) => i % 2 === 0), b = cards.filter((_, i) => i % 2 === 1);
+  const l1 = $("#lane"), l2 = $("#laneBack");
+  [a, a].forEach(set => set.forEach(c => draw(l1, c)));
+  [b, b].forEach(set => set.forEach(c => draw(l2, c)));
+  // Every card starts downloading NOW - that is what keeps cards from scrolling
+  // in blank, which is the thing that went wrong in September. But the lanes only
+  // wait on the handful that are actually on screen at the start; waiting on all
+  // 95 before moving would mean staring at a still marquee while ~9 MB lands.
+  // The rest have the whole length of the lane to arrive.
+  const loading = cards.map(c => { const im = new Image(); im.decoding = "async"; im.src = laneArt(c); return im; });
+  const onScreen = Math.ceil(innerWidth / 160) + 2;
+  await Promise.all(loading.slice(0, onScreen).map(im =>
+    im.complete ? null : new Promise(res => { im.onload = im.onerror = res; })));
+  l1.classList.add("ready"); l2.classList.add("ready");
+
+  /* ---- the viewer ---- */
+  const V = $("#viewer"), lanes = [l1, l2];
+  let at = 0, lastFocus = null;
+  const LABEL = {
+    number: "Number", rarity: "Rarity", artist: "Artist", released: "Released",
+    type: "Type", cost: "Cost", power: "Power", counter: "Counter",
+    might: "Might", color: "Colour", hp: "HP",
+    // "trait" is deliberately absent - Matt asked for that row gone. The data is
+    // still captured and still in cards.json, so putting it back is one key.
+  };
+  const show = i => {
+    const c = cards[(i + cards.length) % cards.length];
+    at = (i + cards.length) % cards.length;
+    const d = c.detail || {};
+    /* THE CARD MUST NEVER OPEN AROUND AN EMPTY BOX. `#vImg` carries no width or
+       height, and .vpanel img is width:100% with an automatic height, so until
+       the full-size art arrived the image measured 211 x 0 and the panel opened
+       around a zero-height sliver that then popped to 320px. Measured on the
+       live site: 3 frames at h=0 before it snapped open - that pop is the
+       "flash" going from level 1 to level 2.
+       Two parts to the fix. The width/height attributes give the box its aspect
+       ratio before any pixels exist, so the layout is right on frame one. And
+       the first thing painted is the LANE's copy of the same art, which is
+       already downloaded and decoded, so the card is visible immediately; the
+       bigger file replaces it only once it has decoded, which is a swap between
+       two identical pictures and invisible. */
+    const img = $("#vImg");
+    /* Take the ratio from this card's own lane copy, which is already decoded,
+       rather than hardcoding one: the art is 600x838, 600x825 or 600x839
+       depending on the game, and a fixed ratio would stretch a third of the set
+       by 1.5%. Falls back to the commonest size if the lane image is not in yet. */
+    const tImg = document.querySelector(`button[data-i="${at}"] img`);
+    const nw = tImg && tImg.naturalWidth ? tImg.naturalWidth : 600;
+    const nh = tImg && tImg.naturalHeight ? tImg.naturalHeight : 838;
+    img.setAttribute("width", nw); img.setAttribute("height", nh);
+    img.alt = c.name;
+    const big = artBig(c), mine = at;
+    if (img.getAttribute("data-art") !== big) {
+      img.setAttribute("data-art", big);
+      img.src = laneArt(c);
+      const up = new Image();
+      up.decoding = "async";
+      up.src = big;
+      const swap = () => { if (at === mine && img.getAttribute("data-art") === big) img.src = big; };
+      (up.decode ? up.decode().then(swap, swap) : (up.onload = swap));
+    }
+    $("#vGame").textContent = GAME[c.game] || "";
+    $("#vName").textContent = c.name;
+    $("#vSet").textContent = c.set || "";
+    const num = c.number || d.number;
+    const rows = [["number", num], ...Object.keys(LABEL)
+      .filter(k => k !== "number" && d[k] != null && d[k] !== "")
+      .map(k => [k, d[k]])];
+    $("#vSpecs").innerHTML = rows.filter(([, v]) => v != null && v !== "")
+      .map(([k, v]) => `<div><dt>${LABEL[k]}</dt><dd>${esc(v)}</dd></div>`).join("");
+    $("#vText").textContent = d.text || "";
+  };
+  /* ---- motion ----
+     The card does not cut to the viewer, it flies there: measure where the
+     thumbnail is on screen, drop the big image straight onto those exact
+     coordinates, then release it to its real position (FLIP). Closing plays the
+     same move in reverse, back to wherever that card has drifted to by then.
+     Everything uses the Web Animations API so a half-finished move can be
+     cancelled cleanly when you click again mid-flight. */
+  const EASE_OUT = "cubic-bezier(.16,1.04,.3,1)";  // decelerating with a touch of overshoot
+  const EASE_IN = "cubic-bezier(.5,0,.75,0)";      // gathers speed on the way back
+  const slow = matchMedia("(prefers-reduced-motion:reduce)");
+  const bg = $("#vBg"), panel = $("#vPanel"), side = $("#vSide"), art = $("#vImg");
+  let running = [], laneTimer = 0;
+
+  /* Scroll lock. With the page still scrollable behind the viewer, the lanes
+     and the card under them move while a card is open - and the close animation
+     measures that card to know where to fly back to, so it aimed at a rect that
+     had wandered off. Matt: "you can't scroll in the background because right
+     now you still can, and it ends up with some bugs."
+     `overflow:hidden` on body is not enough on iOS Safari, which keeps scrolling
+     the page under a fixed overlay. Pinning the body at a negative offset is the
+     technique that actually holds there; the page does not move visually because
+     the offset matches where it was scrolled to. */
+  let lockY = 0, locks = 0;
+  const lockScroll = () => {
+    if (locks++) return;
+    lockY = window.scrollY || document.documentElement.scrollTop || 0;
+    const b = document.body.style;
+    b.position = "fixed"; b.top = `-${lockY}px`; b.left = "0"; b.right = "0"; b.width = "100%";
+  };
+  const unlockScroll = () => {
+    if (!locks || --locks) return;
+    const b = document.body.style;
+    b.position = ""; b.top = ""; b.left = ""; b.right = ""; b.width = "";
+    window.scrollTo(0, lockY);
+  };
+  // Reduced motion means no flying and no scaling across the screen - it does
+  // NOT mean no animation at all. A cross-fade is the accepted substitute, so
+  // keep a real 300ms one rather than the near-instant cut this had, otherwise
+  // anyone with the iOS setting on sees the viewer snap into place.
+  const play = (el, frames, ms, ease, delay = 0) => {
+    const a = el.animate(frames, { duration: slow.matches ? Math.min(ms, 300) : ms,
+                                   easing: ease, delay: slow.matches ? 0 : delay, fill: "both" });
+    running.push(a);
+    return a;
+  };
+  const stop = () => { running.forEach(a => { try { a.cancel(); } catch (e) {} }); running = []; };
+  const stagger = (from) => {
+    if (slow.matches) return;
+    [...$("#vSpecs").children].forEach((row, n) =>
+      play(row, [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }],
+           420, EASE_OUT, from + n * 55));
+  };
+
+  // A card sits in the lanes up to four times (two lanes, each doubled). Fly to
+  // whichever copy is actually on screen, and nearest the middle of it.
+  const thumbFor = i => {
+    const seen = [...document.querySelectorAll(`button[data-i="${i}"] img`)]
+      .map(el => ({ el, r: el.getBoundingClientRect() }))
+      .filter(({ r }) => r.width && r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight);
+    if (!seen.length) return null;
+    const mid = innerWidth / 2;
+    seen.sort((a, b) => Math.abs(a.r.left + a.r.width / 2 - mid) - Math.abs(b.r.left + b.r.width / 2 - mid));
+    return seen[0].r;
+  };
+
+  const flyFrom = (from, ms, ease) => {
+    const to = art.getBoundingClientRect();
+    if (slow.matches) return play(art, [{ opacity: 0, transform: "scale(.985)" },
+                                        { opacity: 1, transform: "none" }], ms, ease);
+    if (!from || !to.width) return play(art, [{ opacity: 0 }, { opacity: 1 }], ms, ease);
+    const f = [
+      { transform: `translate(${from.left - to.left}px,${from.top - to.top}px) scale(${from.width / to.width},${from.height / to.height}) rotate(-2.5deg)`,
+        boxShadow: "0 6px 14px rgba(0,0,0,.5)" },
+      { transform: "none", boxShadow: "0 20px 44px rgba(0,0,0,.7)" },
+    ];
+    return play(art, f, ms, ease);
+  };
+
+  // Line the arrows up with the middle of the card art. .vart is the wrapper and
+  // is never animated, unlike the image inside it, so it is safe to measure at
+  // any point in the flight.
+  const placeArrows = () => {
+    const r = $(".vart").getBoundingClientRect();
+    if (r.height) V.style.setProperty("--arr-y", Math.round(r.top + r.height / 2) + "px");
+  };
+  addEventListener("resize", () => { if (V.hasAttribute("open")) placeArrows(); });
+
+  const open = i => {
+    stop();
+    lastFocus = document.activeElement;
+    const from = thumbFor(i);
+    lockScroll();
+    show(i);
+    V.setAttribute("open", "");
+    // Freezing 190 drifting cards the instant you click is a visible jolt, so
+    // hold the pause until the backdrop has most of its opacity and the freeze
+    // happens behind it.
+    clearTimeout(laneTimer);
+    // 190ms was not actually behind the backdrop. The backdrop is a 420ms LINEAR
+    // fade, so at 190ms it is only 45% opaque - measured on the live site, the
+    // freeze landed at opacity 0.357 and 190 drifting cards visibly stopped dead
+    // in plain sight. 340ms puts it at 81%, which is what "most of its opacity"
+    // was always meant to say.
+    laneTimer = setTimeout(() => lanes.forEach(l => l.style.animationPlayState = "paused"), slow.matches ? 0 : 340);
+    play(bg, [{ opacity: 0 }, { opacity: 1 }], 420, "linear");
+    play(panel, [{ opacity: 0, transform: "scale(.92)" }, { opacity: 1, transform: "none" }], 640, EASE_OUT);
+    const flight = flyFrom(from, 720, EASE_OUT);
+    play(side, [{ opacity: 0, transform: "translateY(26px)" }, { opacity: 1, transform: "none" }], 560, EASE_OUT, 140);
+    stagger(220);
+    placeArrows();
+    // Warm level 3 completely while the viewer is open: fetch three.js, build the
+    // renderer, upload THIS card's texture. By the time the card is tapped there
+    // is nothing left to do but place the camera, which is what lets level 3
+    // open with no switch and no wait.
+    // ...but NOT during the flight. requestIdleCallback fires in the gaps between
+    // animation frames, and three.js arriving is one long main-thread block:
+    // measured on the live site it landed 582ms in and stalled the page for
+    // 189ms, right in the middle of the card flying. Wait for the card to land.
+    const warmNow = () => (window.requestIdleCallback || (f => setTimeout(f, 1)))(
+      () => { warm(cards[at]).catch(() => {}); });
+    if (flight && flight.finished) flight.finished.then(warmNow, warmNow);
+    else setTimeout(warmNow, 760);
+    $("#vClose").focus({ preventScroll: true });
+  };
+
+  const close = () => {
+    stop();
+    const back = thumbFor(at);
+    // Start the lanes moving again while the backdrop is still covering them,
+    // for the same reason the pause is delayed on the way in.
+    clearTimeout(laneTimer);
+    laneTimer = setTimeout(() => lanes.forEach(l => l.style.animationPlayState = ""), slow.matches ? 0 : 170);
+    const to = art.getBoundingClientRect();
+    if (back && to.width && !slow.matches) {
+      play(art, [{ transform: "none", boxShadow: "0 20px 44px rgba(0,0,0,.7)" },
+                 { transform: `translate(${back.left - to.left}px,${back.top - to.top}px) scale(${back.width / to.width},${back.height / to.height}) rotate(-2.5deg)`,
+                   boxShadow: "0 6px 14px rgba(0,0,0,.5)" }],
+           520, EASE_IN);
+    }
+    play(side, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(22px)" }], 300, EASE_IN);
+    play(bg, [{ opacity: 1 }, { opacity: 0 }], 480, "linear");
+    const done = play(panel, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(.94)" }], 520, EASE_IN, 80);
+    done.onfinish = () => {
+      V.removeAttribute("open");
+      stop();
+      unlockScroll();
+      if (lastFocus) lastFocus.focus({ preventScroll: true });
+    };
+  };
+
+  // Stepping inside the viewer: the outgoing card leaves in the direction of
+  // travel and the new one arrives from the other side, so the move reads as
+  // moving along the shelf rather than a blink.
+  const step = dir => {
+    stop();
+    const out = play(art, [{ opacity: 1, transform: "none" },
+                           { opacity: 0, transform: `translateX(${-64 * dir}px) scale(.9) rotate(${-3 * dir}deg)` }], 260, EASE_IN);
+    play(side, [{ opacity: 1 }, { opacity: 0, transform: `translateX(${-24 * dir}px)` }], 220, EASE_IN);
+    out.onfinish = () => {
+      show(at + dir);
+      play(art, [{ opacity: 0, transform: `translateX(${78 * dir}px) scale(.9) rotate(${3 * dir}deg)` },
+                 { opacity: 1, transform: "none" }], 520, EASE_OUT);
+      play(side, [{ opacity: 0, transform: `translateX(${28 * dir}px)` }, { opacity: 1, transform: "none" }], 460, EASE_OUT, 60);
+      stagger(120);
+    };
+  };
+
+  /* ------------------------------------------------------------------ LEVEL 3
+     The card as an object. Ported from the display case on the full site so a
+     card reads the same on both. three.js is loaded the first time someone
+     asks for it and never before. */
+  const S = $("#card3d");
+  let three = null, gl = null;
+
+  const loadThree = () => three || (three = window.THREE ? Promise.resolve(window.THREE) : new Promise((res, rej) => {
+    const sc = document.createElement("script");
+    sc.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
+    sc.onload = () => res(window.THREE);
+    sc.onerror = () => { three = null; rej(new Error("three.js failed")); };
+    document.head.appendChild(sc);
+  }));
+
+  // The real backs, as on the full site. One Piece and Riftbound have no openly
+  // published back, so those keep a plain sleeve rather than an invented one.
+  const BACKS = { pokemon: "img/back-pokemon.jpg", magic: "img/back-magic.jpg" };
+
+  function buildStage(THREE) {
+    const host = $("#sHost");
+    // The stage is warmed while it is still display:none, so the host measures 0.
+    // Fall back to the viewport, and resize() corrects it the moment it opens.
+    const W = () => host.clientWidth || innerWidth, H = () => host.clientHeight || innerHeight;
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(W(), H());
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
+    host.appendChild(renderer.domElement);
+
+    const canvasTex = draw => { const c = document.createElement("canvas"); c.width = 372; c.height = 520; draw(c.getContext("2d"), c); const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t; };
+    const sleeve = canvasTex((x) => {
+      const g = x.createLinearGradient(0, 0, 372, 520);
+      g.addColorStop(0, "#15171b"); g.addColorStop(.5, "#0b0c0e"); g.addColorStop(1, "#15171b");
+      x.fillStyle = g; x.fillRect(0, 0, 372, 520);
+      x.strokeStyle = "rgba(255,255,255,.10)"; x.lineWidth = 2; x.strokeRect(18, 18, 336, 484);
+    });
+    const aMap = canvasTex((x) => {
+      x.fillStyle = "#000"; x.fillRect(0, 0, 372, 520); x.fillStyle = "#fff";
+      const r = 16; x.beginPath(); x.moveTo(r, 0);
+      x.arcTo(372, 0, 372, 520, r); x.arcTo(372, 520, 0, 520, r);
+      x.arcTo(0, 520, 0, 0, r); x.arcTo(0, 0, 372, 0, r); x.closePath(); x.fill();
+    });
+    const env = (() => {
+      const c = document.createElement("canvas"); c.width = 1024; c.height = 512; const x = c.getContext("2d");
+      x.fillStyle = "#0a0b0d"; x.fillRect(0, 0, 1024, 512);
+      const lamp = (cx, cy, rx, ry, col, a) => { const g = x.createRadialGradient(cx, cy, 0, cx, cy, rx); g.addColorStop(0, col); g.addColorStop(1, "rgba(0,0,0,0)"); x.save(); x.translate(cx, cy); x.scale(1, ry / rx); x.translate(-cx, -cy); x.globalAlpha = a; x.fillStyle = g; x.fillRect(0, 0, 1024, 512); x.restore(); };
+      lamp(300, 120, 260, 120, "#fff2e0", 1); lamp(800, 200, 220, 160, "#8fc2ff", .55);
+      lamp(512, 40, 700, 60, "#ffffff", .5); lamp(512, 470, 700, 50, "#ff6a1a", .35);
+      const t = new THREE.CanvasTexture(c); t.mapping = THREE.EquirectangularReflectionMapping; t.encoding = THREE.sRGBEncoding; return t;
+    })();
+
+    const scene = new THREE.Scene();
+    scene.environment = new THREE.PMREMGenerator(renderer).fromEquirectangular(env).texture;
+    const camera = new THREE.PerspectiveCamera(30, W() / H(), .1, 100);
+    // Pull back on a narrow screen. At 9.4 the card fills a phone top to bottom
+    // and runs under the card name; the full site never hits this because its
+    // display case is a fixed box inside a page, not the whole viewport.
+    const camZ = () => (innerWidth < 520 ? 11.6 : 9.4);
+    camera.position.set(0, -.25, camZ()); camera.lookAt(0, -.25, 0);
+    scene.add(new THREE.AmbientLight(0xffffff, .25));
+    const key = new THREE.SpotLight(0xfff1e0, 1.6, 30, .6, .6); key.position.set(3, 5, 6); scene.add(key);
+    const rim = new THREE.SpotLight(0x8fc2ff, 1.0, 30, .7, .8); rim.position.set(-4, 2, -4); scene.add(rim);
+    const warm = new THREE.PointLight(0xff6a1a, 1.2, 8); warm.position.set(0, -2.2, 1.2); scene.add(warm);
+
+    const w = 2.52, h = 3.52, d = .022, floorY = -2.35;
+    const group = new THREE.Group(), card = new THREE.Group(); group.add(card); scene.add(group);
+    const mat = t => new THREE.MeshPhysicalMaterial({ map: t, alphaMap: aMap, alphaTest: .5, roughness: .42, metalness: .04, clearcoat: .75, clearcoatRoughness: .28, envMapIntensity: .8, side: THREE.FrontSide });
+    const front = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat(null)); front.position.z = d / 2;
+    const back = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat(null)); back.position.z = -d / 2; back.rotation.y = Math.PI;
+    const edge = new THREE.Mesh(new THREE.BoxGeometry(w - .03, h - .03, d * .7), new THREE.MeshStandardMaterial({ color: 0xf1ecdf, roughness: .8 }));
+    card.add(edge, front, back);
+    const mirror = card.clone(); mirror.scale.y = -1; mirror.position.y = 2 * floorY;
+    mirror.traverse(o => { if (o.material) { o.material = o.material.clone(); o.material.opacity = .22; o.material.transparent = true; o.material.depthWrite = false; o.material.envMapIntensity = .4; } });
+    group.add(mirror);
+    const shadow = new THREE.Mesh(new THREE.CircleGeometry(1.9, 48), new THREE.MeshBasicMaterial({ color: 0, transparent: true, opacity: .55 }));
+    shadow.rotation.x = -Math.PI / 2; shadow.position.y = floorY + .01; shadow.scale.x = 1.25; scene.add(shadow);
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshStandardMaterial({ color: 0x0b0d10, roughness: .9, metalness: .1 }));
+    floor.rotation.x = -Math.PI / 2; floor.position.y = floorY; scene.add(floor);
+
+    const loader = new THREE.TextureLoader(); loader.setCrossOrigin("anonymous");
+    const cache = new Map();
+    const tex = url => cache.get(url) || (cache.set(url, new Promise(res => loader.load(url,
+      t => { t.encoding = THREE.sRGBEncoding; t.anisotropy = renderer.capabilities.getMaxAnisotropy(); res(t); },
+      undefined, () => res(null)))), cache.get(url));
+
+    let autoT = 0, userY = 0, userX = 0, velY = 0, tiltX = 0, dragging = false, lastX = 0, lastY = 0, raf = 0;
+    const el = renderer.domElement;
+    const px = e => (e.touches ? e.touches[0].clientX : e.clientX), py = e => (e.touches ? e.touches[0].clientY : e.clientY);
+    let downT = 0, moved = 0;
+    // The tap that OPENS level 3 can still be travelling when the canvas appears
+    // under the finger, and it would land as a flip before the card has even
+    // arrived. Ignore the pointer until the entry has settled.
+    let armAt = 0;
+    const armed = () => performance.now() > armAt;
+    const down = e => { if (!armed()) return; dragging = true; lastX = px(e); lastY = py(e); velY = 0; downT = performance.now(); moved = 0; };
+    const move = e => {
+      if (!dragging) { if (e.touches) return; const r = el.getBoundingClientRect();
+        const inside = px(e) >= r.left && px(e) <= r.right && py(e) >= r.top && py(e) <= r.bottom;
+        tiltX = inside ? ((py(e) - r.top) / r.height - .5) * -.22 : 0; return; }
+      const dx = px(e) - lastX, dy = py(e) - lastY;
+      moved += Math.abs(dx) + Math.abs(dy);
+      userY += dx * .012; userX = Math.max(-.6, Math.min(.6, userX + dy * .006));
+      velY = dx * .012; lastX = px(e); lastY = py(e);
+    };
+    // NO TAP-TO-FLIP. It came across with the port from the full site, where it
+    // is advertised in the display case. Here it fires on any tap on the card,
+    // including ones meant as the start of a drag - Matt: "when you click the
+    // card... it flips it into the back for no reason". Drag still turns it, and
+    // dragging past the side shows the back anyway.
+    const up = () => { if (!dragging || !armed()) return; dragging = false; };
+    el.addEventListener("mousedown", down); addEventListener("mousemove", move); addEventListener("mouseup", up);
+    el.addEventListener("touchstart", down, { passive: true });
+    el.addEventListener("touchmove", move, { passive: true });
+    el.addEventListener("touchend", up);
+    el.addEventListener("mouseleave", () => { tiltX = 0; });
+    addEventListener("resize", () => { if (!S.hasAttribute("open")) return; camera.position.z = camZ(); camera.aspect = W() / H(); camera.updateProjectionMatrix(); renderer.setSize(W(), H()); });
+
+    // Entry dolly. The still card is mid-flight at a known pixel height, so solve
+    // for the camera distance that makes the 3D card exactly that tall, start
+    // there, and ease out to the resting distance. The cross-fade then happens
+    // between two cards of identical size, which is what removes the pop - and
+    // the rotation is held at zero through the entry so the flat still and the
+    // flat 3D card line up before it starts turning.
+    let entry = 0, entryFrom = 0, spin = 0, leaving = false;
+    const offFrom = { x: 0, y: 0 };
+    const distFor = px => (H() * h) / (2 * px * Math.tan((30 * Math.PI / 180) / 2));
+    const t0 = performance.now(); let prev = t0;
+    const loop = now => {
+      raf = requestAnimationFrame(loop);
+      if (!S.hasAttribute("open")) return;            // never render behind a closed stage
+      const t = (now - t0) / 1000, dt = Math.min(.05, (now - prev) / 1000); prev = now;
+      if (leaving) return;                            // leave() drives its own frames
+      if (entry < 1) {
+        entry = Math.min(1, entry + dt / .72);
+        const e = 1 - Math.pow(1 - entry, 3);
+        camera.position.z = entryFrom + (camZ() - entryFrom) * e;
+        group.position.x = offFrom.x * (1 - e);
+        group.position.y = offFrom.y * (1 - e);
+        camera.lookAt(0, -.25, 0);
+        spin = e * e;                                  // rotation arrives late, after the size settles
+      } else { spin = 1; group.position.x = 0; group.position.y = 0; }
+      // .21 rad/s is one turn every 30 seconds, which on a phone looks like a
+      // photograph. .58 is a turn every ~11s: clearly moving, not a fairground ride.
+      if (!dragging) { userY += velY * (dt * 60); velY *= Math.pow(.95, dt * 60); autoT += .58 * dt * spin; }
+      const bob = Math.sin(t * .9) * .04;
+      card.rotation.y = autoT + userY;   // the back comes round on its own as it turns
+      card.rotation.x += ((dragging ? userX : tiltX + userX * .5) - card.rotation.x) * .08;
+      card.position.y = bob;
+      mirror.rotation.copy(card.rotation); mirror.rotation.x *= -1; mirror.position.y = 2 * floorY - bob;
+      if (!dragging) userX *= Math.pow(.98, dt * 60);
+      renderer.render(scene, camera);
+    };
+    raf = requestAnimationFrame(loop);
+
+    return {
+      async show(c) {
+        const [f, bk] = await Promise.all([tex(artBig(c)), BACKS[c.game] ? tex(BACKS[c.game]) : Promise.resolve(sleeve)]);
+        const put = (mesh, t) => { if (!t) return; mesh.material.map = t; mesh.material.needsUpdate = true; };
+        put(front, f); put(back, bk);
+        put(mirror.children[1], f); if (mirror.children[2]) put(mirror.children[2], bk);
+        if (renderer.initTexture) { if (f) renderer.initTexture(f); if (bk) renderer.initTexture(bk); }
+        autoT = 0; userY = 0; userX = 0; velY = 0;
+        renderer.render(scene, camera);
+      },
+      resize() { camera.aspect = W() / H(); camera.updateProjectionMatrix(); renderer.setSize(W(), H()); },
+      // Put the 3D card exactly over a screen rect - same size, same place - then
+      // ease it to the resting framing. This is what replaced the flying still:
+      // there is no hand-off to get wrong because there is only ever one card.
+      enter(rect) {
+        entryFrom = distFor(rect.height);
+        const vh = 2 * entryFrom * Math.tan((30 * Math.PI / 180) / 2);
+        const perPx = vh / H();
+        const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+        offFrom.x = (cx - W() / 2) * perPx;
+        offFrom.y = -(cy - H() / 2) * perPx - .25;
+        entry = 0; spin = 0; armAt = performance.now() + 420;
+        camera.position.z = entryFrom;
+        group.position.set(offFrom.x, offFrom.y, 0);
+        camera.lookAt(0, -.25, 0);
+        renderer.render(scene, camera);
+      },
+      hideCanvas(on) { renderer.domElement.style.opacity = on ? "0" : ""; },
+      // The reverse of enter(): ease the card back onto the rect the flat card
+      // occupies in the viewer, straightening it out as it goes, then hand over.
+      leave(rect, done) {
+        const toDist = distFor(rect.height);
+        const vh = 2 * toDist * Math.tan((30 * Math.PI / 180) / 2);
+        const perPx = vh / H();
+        const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+        const tx = (cx - W() / 2) * perPx, ty = -(cy - H() / 2) * perPx - .25;
+        const z0 = camera.position.z, gx = group.position.x, gy = group.position.y;
+        const r0 = card.rotation.y, rx0 = card.rotation.x;
+        const t0 = performance.now();
+        leaving = true;
+        const step = now => {
+          const k = Math.min(1, (now - t0) / 460), e = k * k * (3 - 2 * k);
+          camera.position.z = z0 + (toDist - z0) * e;
+          group.position.x = gx + (tx - gx) * e;
+          group.position.y = gy + (ty - gy) * e;
+          // settle to face-on so it matches the flat card it becomes
+          // Always land face-on. The flat card underneath is the front, so
+          // settling to the back would swap the picture at the hand-over.
+          card.rotation.y = r0 * (1 - e);
+          card.rotation.x = rx0 * (1 - e);
+          camera.lookAt(0, -.25, 0);
+          renderer.render(scene, camera);
+          if (k < 1) requestAnimationFrame(step);
+          else { leaving = false; done && done(); }
+        };
+        requestAnimationFrame(step);
+      },
+    };
+  }
+
+  // Ready state for level 3: which card the renderer is currently holding.
+  let warmFor = null;
+  const warm = async (c) => {
+    const THREE = await loadThree();
+    if (!gl) { gl = buildStage(THREE); gl.hideCanvas(true); }
+    if (warmFor !== artBig(c)) { await gl.show(c); warmFor = artBig(c); }
+    return gl;
+  };
+
+  /* There is no longer a still card that flies and then swaps for the 3D one.
+     Matt: "it switches to the 3D model... you can't tell the difference between
+     the fully zoomed in card and the 3D model." So nothing switches: the 3D card
+     is placed over the EXACT rect the flat card occupies, at rotation zero so it
+     is face-on and reads identically, and then the camera moves it to the middle
+     of the screen. One object the whole way. The flat card is simply revealed to
+     have been three-dimensional all along.
+     This only works because the renderer and the texture are warmed while the
+     viewer is open - see warm(). */
+  const openStage = async () => {
+    const c = cards[at];
+    const from = art.getBoundingClientRect();
+    $("#sName").textContent = c.name;
+
+    let ready = null;
+    try { ready = (warmFor === artBig(c) && gl) ? gl : await warm(c); } catch (e) { ready = null; }
+
+    if (!ready) {                              // no WebGL or the CDN is down
+      $("#sLoad").textContent = "3D view unavailable";
+      S.setAttribute("open", "");
+      play($("#sBg"), [{ opacity: 0 }, { opacity: 1 }], 300, "linear");
+      return;
+    }
+
+    $("#sLoad").classList.add("off");
+    S.setAttribute("open", "");                 // must be laid out before measuring
+    ready.resize();
+    ready.enter(from);                          // sits exactly on the flat card
+    ready.hideCanvas(false);
+
+    // The viewer's own backdrop STAYS UP underneath while this one fades in over
+    // it. Fading both at once left a window where neither was opaque and the
+    // page showed through - Matt: "you can still see the background for a split
+    // second when you click the card". Only the panel goes.
+    play($("#sBg"), [{ opacity: 0 }, { opacity: 1 }], 220, "linear");
+    play($("#sName"), [{ opacity: 0 }, { opacity: 1 }], 420, EASE_OUT, 240);
+    play($(".shint"), [{ opacity: 0 }, { opacity: 1 }], 420, EASE_OUT, 320);
+    play($("#sClose"), [{ opacity: 0 }, { opacity: 1 }], 380, EASE_OUT, 280);
+    play(panel, [{ opacity: 1 }, { opacity: 0 }], 220, "linear");
+  };
+
+  const closeStage = () => {
+    const back = art.getBoundingClientRect();
+    /* HIDE THE FLAT CARD UNTIL THE 3D ONE ACTUALLY ARRIVES ON IT. The panel
+       fades back over 420ms on a front-loaded ease, so it is ~90% visible by
+       200ms - while gl.leave() is a 460ms flight and the card is only a third
+       of the way home. You therefore watch the destination card fade up
+       underneath the one still travelling towards it. Matt: "you can see the
+       card show up where it's going a second before it gets there like the
+       shadow of it".
+       The panel CHROME still comes back early, which is what makes the return
+       feel immediate; only the art waits. leave() lands face-on exactly on this
+       rect, so the hand-over at finish() is an invisible swap.
+       It has to be an ANIMATION, not `art.style.opacity`. flyFrom() leaves a
+       fill:"both" animation on this element - an opacity one whenever it took
+       the no-thumbnail fallback - and a finished filling animation outranks an
+       inline style, so the inline version silently did nothing: computed
+       opacity stayed 1 with style.opacity "0". */
+    const hideArt = play(art, [{ opacity: 0 }, { opacity: 0 }], 700, "linear");
+    // The viewer's backdrop never went away, so only the panel has to come back.
+    play(panel, [{ opacity: 0 }, { opacity: 1 }], 420, EASE_OUT, 60);
+    play($("#sBg"), [{ opacity: 1 }, { opacity: 0 }], 460, EASE_IN);
+    play($("#sName"), [{ opacity: 1 }, { opacity: 0 }], 200, EASE_IN);
+    play($(".shint"), [{ opacity: 1 }, { opacity: 0 }], 200, EASE_IN);
+    play($("#sClose"), [{ opacity: 1 }, { opacity: 0 }], 200, EASE_IN);
+    const finish = () => {
+      S.removeAttribute("open"); $("#sBg").style.opacity = "";
+      try { hideArt.cancel(); } catch (e) {}
+    };
+    if (gl && gl.leave && back.width && !slow.matches) gl.leave(back, finish);
+    else setTimeout(finish, 200);
+  };
+
+  $(".vart").addEventListener("click", openStage);
+  $("#sClose").addEventListener("click", closeStage);
+  addEventListener("keydown", e => { if (S.hasAttribute("open") && e.key === "Escape") { e.stopPropagation(); closeStage(); } }, true);
+
+  lanes.forEach(l => l.addEventListener("click", e => {
+    const b = e.target.closest("button[data-i]"); if (b) open(+b.dataset.i);
+  }));
+  $("#vClose").addEventListener("click", close);
+  $("#vPrev").addEventListener("click", () => step(-1));
+  $("#vNext").addEventListener("click", () => step(1));
+  V.addEventListener("click", e => { if (e.target === V || e.target === bg) close(); });
+  addEventListener("keydown", e => {
+    if (!V.hasAttribute("open")) return;
+    if (e.key === "Escape") close();
+    if (e.key === "ArrowLeft") step(-1);
+    if (e.key === "ArrowRight") step(1);
+  });
+}).catch(() => { $("#lane").innerHTML = ""; });
+
+
+})();
 </script>
 </body>
 </html>
