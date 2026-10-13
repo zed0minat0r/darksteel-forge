@@ -462,20 +462,22 @@ details.dir p{margin:.9rem 0 0}
 .steps3 b{text-shadow:0 0 18px rgba(255,106,26,.8);animation:emberpulse 2.6s ease-in-out infinite}
 .steps3 div:nth-child(2) b{animation-delay:.4s}.steps3 div:nth-child(3) b{animation-delay:.8s}
 @keyframes emberpulse{50%{text-shadow:0 0 30px rgba(255,106,26,1),0 0 60px rgba(255,61,0,.5)}}
-/* the card band */
-.cband{position:relative;z-index:1;padding:3.4rem 0 3rem;overflow:hidden;background:linear-gradient(180deg,transparent,rgba(255,106,26,.05) 50%,transparent)}
-.cband .eyebrow{display:block;text-align:center;margin-bottom:1.6rem}
-.clanes{-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
-.clane{display:flex;gap:1.1rem;width:max-content;padding:.4rem 0;opacity:0;transition:opacity .6s ease;animation:cslide 82s linear infinite;animation-play-state:paused}
-.clane.ready{opacity:1;animation-play-state:running}
-.clane.back{animation-name:cslideBack;animation-duration:104s;margin-top:1.1rem}
-.clane.back.ready{opacity:.85}
-@keyframes cslide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-@keyframes cslideBack{from{transform:translateX(-50%)}to{transform:translateX(0)}}
-.clane figure{margin:0;width:clamp(130px,34vw,180px);flex:0 0 auto}
-.clane img{width:100%;height:auto;aspect-ratio:63/88;object-fit:contain;border-radius:8px;background:#15181c;box-shadow:0 14px 28px rgba(0,0,0,.65);transition:transform .4s cubic-bezier(.16,1,.3,1),box-shadow .4s}
-@media (hover:hover){.clanes:hover .clane{animation-play-state:paused}.clane figure:hover img{transform:translateY(-8px) scale(1.04);box-shadow:0 22px 40px rgba(0,0,0,.8),0 0 24px rgba(255,106,26,.35)}}
-@media (prefers-reduced-motion:reduce){.clane{animation:none}.reveal{filter:none;transform:none}.sec-head h2.metal,.steps3 b{animation:none}}
+/* the type band: forged words, fire running through the outline */
+.tband{position:relative;z-index:1;padding:2.6rem 0;overflow:hidden;border-top:1px solid rgba(255,106,26,.25);border-bottom:1px solid rgba(255,106,26,.25);background:linear-gradient(180deg,rgba(255,106,26,.04),rgba(0,0,0,.2),rgba(255,106,26,.04));-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.trow{overflow:hidden;white-space:nowrap}
+.ttrack{display:inline-flex;align-items:center;width:max-content;animation:tslide 60s linear infinite}
+.trow.two .ttrack{animation:tslideBack 75s linear infinite}
+@keyframes tslide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes tslideBack{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.ttrack span{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.08em;line-height:1.05;padding:0 .2em;
+  font-size:clamp(2.6rem,9vw,6.4rem);color:transparent;-webkit-text-stroke:1.5px rgba(255,140,60,.75);
+  background:linear-gradient(100deg,transparent 0%,transparent 40%,#ffb347 47%,#ff6a1a 50%,#ff3d00 53%,transparent 60%,transparent 100%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;animation:burn 5.5s linear infinite}
+.ttrack span:nth-of-type(2n){animation-delay:-1.4s}.ttrack span:nth-of-type(3n){animation-delay:-2.8s}
+@keyframes burn{from{background-position:100% 0}to{background-position:-50% 0}}
+.ttrack i{font-style:normal;color:var(--ember);font-size:clamp(1rem,3vw,2rem);padding:0 .5em;text-shadow:0 0 18px rgba(255,106,26,.9)}
+.trow.two span{font-size:clamp(1.6rem,5vw,3.4rem);-webkit-text-stroke:0;color:rgba(236,238,241,.14);background:none;animation:none;letter-spacing:.18em}
+.trow.two i{font-size:clamp(.8rem,2vw,1.2rem);opacity:.6}
+@media (prefers-reduced-motion:reduce){.ttrack,.ttrack span{animation:none}.reveal{filter:none;transform:none}.sec-head h2.metal,.steps3 b{animation:none}}
 </style>
 </head>
 <body class="locked">
@@ -528,10 +530,10 @@ details.dir p{margin:.9rem 0 0}
   </div>
 </section>
 
-<!-- ============================================================ CARD BAND -->
-<div class="cband" aria-label="Cards in the shop">
-  <span class="eyebrow">Behind the glass right now</span>
-  <div class="clanes"><div class="clane" id="cl1"></div><div class="clane back" id="cl2"></div></div>
+<!-- ============================================================ TYPE BAND (no cards - owners want less card emphasis) -->
+<div class="tband" aria-hidden="true">
+  <div class="trow"><div class="ttrack"><span>Magic</span><i>&#10022;</i><span>Pokemon</span><i>&#10022;</i><span>One Piece</span><i>&#10022;</i><span>Riftbound</span><i>&#10022;</i><span>Commander nights</span><i>&#10022;</i><span>Prereleases</span><i>&#10022;</i><span>Buylist</span><i>&#10022;</i><span>Phoenixville</span><i>&#10022;</i><span>Magic</span><i>&#10022;</i><span>Pokemon</span><i>&#10022;</i><span>One Piece</span><i>&#10022;</i><span>Riftbound</span><i>&#10022;</i><span>Commander nights</span><i>&#10022;</i><span>Prereleases</span><i>&#10022;</i><span>Buylist</span><i>&#10022;</i><span>Phoenixville</span><i>&#10022;</i></div></div>
+  <div class="trow two"><div class="ttrack"><span>Bridge Street</span><i>&#10022;</i><span>Play space</span><i>&#10022;</i><span>Sealed</span><i>&#10022;</i><span>Singles</span><i>&#10022;</i><span>League nights</span><i>&#10022;</i><span>Trade</span><i>&#10022;</i><span>Sell to us</span><i>&#10022;</i><span>Downtown</span><i>&#10022;</i><span>Bridge Street</span><i>&#10022;</i><span>Play space</span><i>&#10022;</i><span>Sealed</span><i>&#10022;</i><span>Singles</span><i>&#10022;</i><span>League nights</span><i>&#10022;</i><span>Trade</span><i>&#10022;</i><span>Sell to us</span><i>&#10022;</i><span>Downtown</span><i>&#10022;</i></div></div>
 </div>
 
 <!-- ============================================================ VISIT -->
@@ -1394,24 +1396,6 @@ fetch("data/cards.json").then(r => r.json()).then(async d => {
 })();
 </script>
 <script>
-/* card band: the coming-soon site's lanes, no prices. AVIF 400px set, WebP fallback. */
-(async () => {
-  const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  const AVIF = await new Promise(res => { const t = new Image(); t.onload = () => res(t.width > 0); t.onerror = () => res(false);
-    t.src = "data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAAD5bWV0YQAAAAAAAAAvaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAFBpY3R1cmVIYW5kbGVyAAAAAA5waXRtAAAAAAABAAAAHmlsb2MAAAAARAAAAQABAAAAAQAAASEAAAAYAAAAKGlpbmYAAAAAAAEAAAAaaW5mZQIAAAAAAQAAYXYwMUNvbG9yAAAAAGppcHJwAAAAS2lwY28AAAAUaXNwZQAAAAAAAAACAAAAAgAAABBwaXhpAAAAAAMICAgAAAAMYXYxQ4EADAAAAAATY29scm5jbHgAAgACAAIAAAAAF2lwbWEAAAAAAAAAAQABBAECgwQAAAAgbWRhdAoFGAA2wCAyDxyAAABYAAAAAK/sqvFLgA=="; });
-  try {
-    const cards = await (await fetch("data/stock.json")).json();
-    const src = c => { const f = c.img.split("/").pop(); return AVIF ? "img/a4/" + f.replace(/\.webp$/, ".avif") : "img/cw/" + f; };
-    const fill = (el, list) => { el.innerHTML = list.concat(list).map(c =>
-      `<figure><img src="${src(c)}" alt="${esc(c.name)}" decoding="async" width="400" height="559"></figure>`).join(""); };
-    const half = Math.ceil(cards.length / 2);
-    const l1 = document.getElementById("cl1"), l2 = document.getElementById("cl2");
-    fill(l1, cards.slice(0, half)); fill(l2, cards.slice(half));
-    const wait = el => Promise.all([...el.querySelectorAll("img")].slice(0, 10).map(i => i.decode().catch(() => {})));
-    await Promise.all([wait(l1), wait(l2)]);
-    l1.classList.add("ready"); l2.classList.add("ready");
-  } catch (e) { console.error(e); }
-})();
 /* embers down the whole page, not only the hero */
 if (!matchMedia("(prefers-reduced-motion: reduce)").matches) embers(document.getElementById("pageFx"), 36, { speed: .45 });
 </script>
