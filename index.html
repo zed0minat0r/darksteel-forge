@@ -1947,8 +1947,16 @@ marqueeReady.then(() => fetch("data/stock.json").then(r => r.json())).then(async
     const mirror = card.clone(); mirror.scale.y = -1; mirror.position.y = 2 * floorY;
     mirror.traverse(o => { if (o.material) { o.material = o.material.clone(); o.material.opacity = .22; o.material.transparent = true; o.material.depthWrite = false; o.material.envMapIntensity = .4; } });
     group.add(mirror);
-    const shadow = new THREE.Mesh(new THREE.CircleGeometry(1.9, 48), new THREE.MeshBasicMaterial({ color: 0, transparent: true, opacity: .55 }));
-    shadow.rotation.x = -Math.PI / 2; shadow.position.y = floorY + .01; shadow.scale.x = 1.25; scene.add(shadow);
+    /* SOFT CONTACT SHADOW (Matt 2026-10-12: "a little shadow underneath it that looks glitchy").
+       It was a hard-edged black disc 1.9 units across, scaled 1.25x - wider than a phone screen, cut
+       off at both edges, and only .01 above the floor so the two planes fought for depth. Now a
+       radial-gradient texture about the card's footprint, polygon-offset and depthWrite off. */
+    const shTex = (() => { const c = document.createElement("canvas"); c.width = c.height = 256; const x = c.getContext("2d");
+      const g = x.createRadialGradient(128, 128, 0, 128, 128, 128);
+      g.addColorStop(0, "rgba(0,0,0,.62)"); g.addColorStop(.45, "rgba(0,0,0,.32)"); g.addColorStop(1, "rgba(0,0,0,0)");
+      x.fillStyle = g; x.fillRect(0, 0, 256, 256); return new THREE.CanvasTexture(c); })();
+    const shadow = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 1.5), new THREE.MeshBasicMaterial({ map: shTex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+    shadow.rotation.x = -Math.PI / 2; shadow.position.y = floorY + .02; shadow.renderOrder = 1; scene.add(shadow);
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshStandardMaterial({ color: 0x0b0d10, roughness: .9, metalness: .1 }));
     floor.rotation.x = -Math.PI / 2; floor.position.y = floorY; scene.add(floor);
 
