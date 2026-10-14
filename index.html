@@ -759,7 +759,7 @@ details.dir p{margin:.9rem 0 0}
 </section>
 
 <!-- ============================================================ FROM THE CASE (three-level preview, ported) -->
-<section class="sec cstrip" id="case">
+<section class="sec cstrip" id="case" hidden><!-- carousel removed (Matt 2026-10-13: "get rid of the card carousel all together"); kept, not deleted -->
   <div class="wrap">
     <div class="sec-head reveal"><div class="eyebrow">From the case</div><h2 class="metal">A few from the case</h2><div class="rule"></div><p>Tap a card to look closer, tap it again to turn it in your hands.</p></div>
   </div>
@@ -1593,7 +1593,7 @@ const marqueeReady = (async () => {
   await new Promise(res => (window.requestIdleCallback || (f => setTimeout(f, 200)))(res, { timeout: 1500 }));
 })();
 
-marqueeReady.then(() => fetch("data/stock.json").then(r => r.json())).then(async cards => {
+marqueeReady.then(() => document.getElementById("case").hidden ? new Promise(() => {}) : fetch("data/stock.json").then(r => r.json())).then(async cards => {
   /* ---- ART SELECTION -------------------------------------------------------------------------
      Matt, 2026-10-01: "optimize the site to load really well without sacrificing any of the
      quality of the cards because I really like the way the cards all look."
