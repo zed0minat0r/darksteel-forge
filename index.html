@@ -451,8 +451,12 @@ details.dir p{margin:.9rem 0 0}
   -webkit-mask:linear-gradient(180deg,transparent,#000 14%,#000 80%,transparent);mask:linear-gradient(180deg,transparent,#000 14%,#000 80%,transparent);
   animation:swordglow 6s ease-in-out infinite}
 @keyframes swordglow{0%,100%{filter:brightness(1) drop-shadow(0 0 0 rgba(255,106,26,0))}50%{filter:brightness(1.35) drop-shadow(0 0 30px rgba(255,106,26,.35))}}
-.story{position:relative}
-.story .lead,.story p{text-shadow:0 2px 14px rgba(0,0,0,.9)}
+.story{position:relative;isolation:isolate}
+/* legibility over the sword (Matt 2026-10-21: "makes the text hard to read... keep it"): a soft dark pool sits
+   behind the paragraphs only, so the sword stays bright above and below the text and dims where words are */
+.story::before{content:"";position:absolute;z-index:-1;inset:-6% -10%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(7,8,9,.86),rgba(7,8,9,.62) 60%,transparent);filter:blur(6px)}
+.story .lead,.story p{text-shadow:0 1px 2px rgba(0,0,0,.95),0 2px 16px rgba(0,0,0,.9)}
 /* ---------- GALLERY: out at the shows (photos pulled from their own Facebook / Instagram) ---------- */
 #gallery::before{background:radial-gradient(60% 50% at 50% 100%,rgba(255,106,26,.08),transparent 70%)}
 .gal{position:relative;margin-top:2.6rem}   /* breathing room under the intro line (Matt 2026-10-21) */
