@@ -398,7 +398,8 @@ footer p{color:var(--ink-3);font-size:.82rem;margin:.3rem 0}
 .chips label{display:inline-flex;align-items:center;gap:.5rem;min-height:42px;padding:0 1rem;border:1px solid var(--line-2);border-radius:999px;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);cursor:pointer}
 .chips input{position:absolute;opacity:0;pointer-events:none}
 .chips label:has(input:checked){border-color:var(--ember);color:var(--ink);background:rgba(255,106,26,.12)}
-.fsaid{min-height:1.4em;color:var(--ember-2);font-size:.92rem;text-align:center}
+.fsaid{min-height:0;color:var(--ember-2);font-size:.92rem;text-align:center}
+.fsaid:empty{display:none}
 .fnote{color:var(--ink-3);font-size:.85rem;text-align:center}
 .steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;max-width:900px;margin:2rem auto 0}
 @media (max-width:760px){.steps3{grid-template-columns:1fr}}
@@ -457,6 +458,17 @@ details.dir p{margin:.9rem 0 0}
   background:url(img/shopsword.webp) center/contain no-repeat;opacity:1;pointer-events:none;
   -webkit-mask:linear-gradient(180deg,transparent,#000 14%,#000 80%,transparent);mask:linear-gradient(180deg,transparent,#000 14%,#000 80%,transparent);
   animation:swordglow 6s ease-in-out infinite}
+/* fire behind the sword (Matt 2026-10-21: "faint glowing... fire glowing kind of in the background... too bland"). Two soft
+   ember blooms flicker out of phase low and around the blade; they sit under the text's dark pool, so the copy stays legible. */
+#shop::after{content:"";position:absolute;z-index:-2;left:50%;top:8%;width:min(820px,140vw);height:90%;transform:translateX(-50%);pointer-events:none;
+  background:radial-gradient(28% 34% at 50% 78%,rgba(255,61,0,.30),transparent 70%),radial-gradient(40% 46% at 50% 62%,rgba(255,106,26,.18),transparent 72%),radial-gradient(22% 30% at 50% 30%,rgba(255,179,71,.10),transparent 70%);
+  filter:blur(18px);animation:forgefire 3.4s ease-in-out infinite}
+#shop .wrap::before{content:"";position:absolute;z-index:-2;left:50%;bottom:4%;width:min(520px,100vw);height:45%;transform:translateX(-50%);pointer-events:none;
+  background:radial-gradient(50% 60% at 50% 100%,rgba(255,90,20,.28),transparent 70%);filter:blur(24px);animation:forgefire2 2.3s ease-in-out infinite}
+#shop .wrap{position:relative}
+@keyframes forgefire{0%,100%{opacity:.75;transform:translateX(-50%) scale(1)}35%{opacity:1;transform:translateX(-50%) scale(1.04)}60%{opacity:.82;transform:translateX(-50%) scale(.98)}}
+@keyframes forgefire2{0%,100%{opacity:.55}50%{opacity:.95}}
+@media (prefers-reduced-motion:reduce){#shop::after,#shop .wrap::before{animation:none}}
 @keyframes swordglow{0%,100%{filter:brightness(1) drop-shadow(0 0 0 rgba(255,106,26,0))}50%{filter:brightness(1.35) drop-shadow(0 0 30px rgba(255,106,26,.35))}}
 .story{position:relative;isolation:isolate}
 /* legibility over the sword (Matt 2026-10-21: "makes the text hard to read... keep it"): a soft dark pool sits
@@ -473,16 +485,28 @@ details.dir p{margin:.9rem 0 0}
 .gcard img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s cubic-bezier(.16,1,.3,1)}
 .gcard:hover img{transform:scale(1.04)}
 .gcard.tall img{object-position:center 30%}
-.gdots{display:flex;justify-content:center;gap:8px;margin-top:1.1rem}
-.gdots button{width:26px;height:4px;border-radius:2px;border:0;padding:0;background:var(--line-2);position:relative;overflow:hidden;cursor:pointer}
-.gdots button.on{background:rgba(255,106,26,.35)}
-.gdots button.run::after{content:"";position:absolute;inset:0;background:var(--ember);transform-origin:left;animation:gdot 10s linear forwards}
+.gdots{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:1.4rem;min-height:var(--tap)}
+/* bright, animated dots (Matt 2026-10-21: "animated and glow brightly when you're highlighted... now it's just super dull").
+   Idle dots are small embers; the active one stretches into a lit bar that glows and pulses while its 10s timer fills. */
+.gdots button{width:10px;height:10px;border-radius:999px;border:0;padding:0;background:rgba(255,106,26,.28);position:relative;overflow:hidden;cursor:pointer;
+  transition:width .5s cubic-bezier(.16,1,.3,1),background .4s,box-shadow .4s}
+.gdots button:hover{background:rgba(255,106,26,.55)}
+.gdots button.on{width:44px;background:rgba(255,106,26,.30);box-shadow:0 0 10px rgba(255,106,26,.75),0 0 24px rgba(255,61,0,.45);animation:gpulse 1.6s ease-in-out infinite}
+@keyframes gpulse{0%,100%{box-shadow:0 0 8px rgba(255,106,26,.6),0 0 18px rgba(255,61,0,.35)}50%{box-shadow:0 0 14px rgba(255,179,71,.95),0 0 34px rgba(255,61,0,.6)}}
+
+.gdots button.run::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,var(--heat),var(--ember-2));transform-origin:left;animation:gdot 10s linear forwards}
 @keyframes gdot{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 .gview{position:fixed;inset:0;z-index:300;background:rgba(4,5,6,.94);display:none;align-items:center;justify-content:center;padding:1rem}
 .gview.open{display:flex}
 .gview img{max-width:100%;max-height:92vh;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
 .gview button{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px;width:48px;height:48px;border-radius:50%;border:1px solid var(--line-2);background:rgba(0,0,0,.5);color:var(--ink);font-size:28px;line-height:1;cursor:pointer}
 @media(min-width:900px){.gtrack{padding-left:calc((100vw - 1240px)/2 + 1.25rem)}}
+.garr{display:none}
+@media(min-width:900px){.garr{display:grid;place-items:center;position:absolute;top:calc(50% - 30px);z-index:2;width:52px;height:52px;border-radius:50%;
+  border:1px solid var(--line-2);background:rgba(7,8,9,.78);color:var(--ink);cursor:pointer;transition:background .3s,box-shadow .3s}
+  .garr:hover{background:var(--ember);color:#160800;box-shadow:0 0 22px rgba(255,106,26,.5)}
+  .garr.p{left:max(16px,calc((100vw - 1240px)/2 - 30px))}.garr.n{right:max(16px,calc((100vw - 1240px)/2 - 30px))}
+  .garr svg{width:22px;height:22px}}
 /* a forged seam between sections */
 .sec + .sec,.cband + .sec{border-top:1px solid transparent;border-image:linear-gradient(90deg,transparent,rgba(255,106,26,.45),transparent) 1}
 /* stronger scroll-in: rise, scale and un-blur, children staggered */
@@ -675,7 +699,7 @@ details.dir p{margin:.9rem 0 0}
   <div class="splash-in">
 <span class="mark forge-mark"><span class="back"></span><span class="glow"></span><img class="rglow" src="img/runeglow.png" alt="" aria-hidden="true"><img class="rhot" src="img/runehot.png" alt="" aria-hidden="true"><img class="base" src="img/logo.png" alt="Darksteel Forge Gaming" width="700" height="547" fetchpriority="high"><canvas class="fx"></canvas><canvas class="fx2"></canvas><canvas class="emb"></canvas></span>
     <div class="splash-text">
-    <p class="tag">Pokemon &amp; Magic: The Gathering. Singles, sealed, and the chase cards you actually want.</p>
+    <p class="tag">Magic: The Gathering, Pokemon, One Piece &amp; Riftbound. Singles, sealed, and the chase cards you actually want.</p>
     <button class="enter" id="enter"><i></i> Enter the forge</button>
     </div>
   </div>
@@ -734,6 +758,8 @@ details.dir p{margin:.9rem 0 0}
       <button class="gcard " type="button" data-full="img/gallery/g09.webp"><img src="img/gallery/g09.webp" alt="Top vendors, King of Prussia" loading="lazy" width="600" height="600"></button>
       <button class="gcard tall" type="button" data-full="img/gallery/g10.webp"><img src="img/gallery/g10.webp" alt="Chester County collectibles show, confirmed vendor" loading="lazy" width="600" height="600"></button>
     </div>
+    <button class="garr p" type="button" id="gprev" aria-label="Previous photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 5-7 7 7 7"/></svg></button>
+    <button class="garr n" type="button" id="gnext" aria-label="Next photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 5 7 7-7 7"/></svg></button>
     <div class="gdots" id="gdots"></div>
   </div>
 </section>
@@ -2279,7 +2305,7 @@ const go=i=>{cur=(i+cards.length)%cards.length;const c=cards[cur];tr.scrollTo({l
 const mark=()=>db.forEach((d,j)=>d.classList.toggle("on",j===cur));
 const arm=()=>{clearTimeout(timer);db.forEach(d=>d.classList.remove("run"));if(held||!vis)return;
   const d=db[cur];void d.offsetWidth;d.classList.add("run");timer=setTimeout(()=>go(cur+1),10000)};   /* the fill restarts exactly when the 10s timer does */
-db.forEach((d,i)=>d.addEventListener("click",()=>go(i)));
+db.forEach((d,i)=>d.addEventListener("click",()=>go(i)));document.getElementById("gprev").onclick=()=>go(cur-1);document.getElementById("gnext").onclick=()=>go(cur+1);
 let st;tr.addEventListener("scroll",()=>{clearTimeout(st);st=setTimeout(()=>{const mid=tr.scrollLeft+tr.clientWidth/2;let b=0,bd=1e9;cards.forEach((c,j)=>{const d=Math.abs(c.offsetLeft+c.clientWidth/2-mid);if(d<bd){bd=d;b=j}});if(b!==cur){cur=b;mark();arm()}},120)},{passive:true});
 tr.addEventListener("pointerdown",()=>{held=true;clearTimeout(timer)});tr.addEventListener("pointerup",()=>{held=false;arm()});
 new IntersectionObserver(es=>es.forEach(e=>{vis=e.isIntersecting;if(vis){mark();arm()}else clearTimeout(timer)}),{threshold:.3}).observe(tr);
