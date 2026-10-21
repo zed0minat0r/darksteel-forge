@@ -443,6 +443,34 @@ details.dir p{margin:.9rem 0 0}
 #sell::before{background:radial-gradient(70% 55% at 50% 40%,rgba(255,61,0,.13),transparent 70%)}
 #social::before{background:radial-gradient(50% 60% at 15% 50%,rgba(255,179,71,.08),transparent 70%),radial-gradient(50% 60% at 85% 50%,rgba(255,106,26,.08),transparent 70%)}
 #contactus::before{background:linear-gradient(180deg,transparent,rgba(255,106,26,.07))}
+/* the sword behind the shop story (Matt 2026-10-21). Absolutely placed and screen-blended, so it adds no height and
+   never pushes the text: the flow of the section is exactly what it was. */
+#shop{overflow:hidden}
+.shopsword{position:absolute;z-index:-1;left:50%;top:2%;height:96%;aspect-ratio:768/1344;transform:translateX(-50%);
+  background:url(img/shopsword.webp) center/contain no-repeat;opacity:1;pointer-events:none;
+  -webkit-mask:linear-gradient(180deg,transparent,#000 14%,#000 80%,transparent);mask:linear-gradient(180deg,transparent,#000 14%,#000 80%,transparent);
+  animation:swordglow 6s ease-in-out infinite}
+@keyframes swordglow{0%,100%{filter:brightness(1) drop-shadow(0 0 0 rgba(255,106,26,0))}50%{filter:brightness(1.35) drop-shadow(0 0 30px rgba(255,106,26,.35))}}
+.story{position:relative}
+.story .lead,.story p{text-shadow:0 2px 14px rgba(0,0,0,.9)}
+/* ---------- GALLERY: out at the shows (photos pulled from their own Facebook / Instagram) ---------- */
+#gallery::before{background:radial-gradient(60% 50% at 50% 100%,rgba(255,106,26,.08),transparent 70%)}
+.gal{position:relative}
+.gtrack{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:4px 1.25rem 6px;scroll-padding:0 1.25rem;-webkit-overflow-scrolling:touch}
+.gtrack::-webkit-scrollbar{display:none}
+.gcard{flex:0 0 min(78vw,340px);scroll-snap-align:center;border-radius:14px;overflow:hidden;background:var(--bg2);border:1px solid var(--line);aspect-ratio:1;position:relative;padding:0;cursor:zoom-in}
+.gcard img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s cubic-bezier(.16,1,.3,1)}
+.gcard:hover img{transform:scale(1.04)}
+.gcard.tall img{object-position:center 30%}
+.gdots{display:flex;justify-content:center;gap:8px;margin-top:1.1rem}
+.gdots button{width:26px;height:4px;border-radius:2px;border:0;padding:0;background:var(--line-2);position:relative;overflow:hidden;cursor:pointer}
+.gdots button.on::after{content:"";position:absolute;inset:0;background:var(--ember);transform-origin:left;animation:gdot 10s linear forwards}
+@keyframes gdot{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.gview{position:fixed;inset:0;z-index:300;background:rgba(4,5,6,.94);display:none;align-items:center;justify-content:center;padding:1rem}
+.gview.open{display:flex}
+.gview img{max-width:100%;max-height:92vh;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.gview button{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px;width:48px;height:48px;border-radius:50%;border:1px solid var(--line-2);background:rgba(0,0,0,.5);color:var(--ink);font-size:28px;line-height:1;cursor:pointer}
+@media(min-width:900px){.gtrack{padding-left:calc((100vw - 1240px)/2 + 1.25rem)}}
 /* a forged seam between sections */
 .sec + .sec,.cband + .sec{border-top:1px solid transparent;border-image:linear-gradient(90deg,transparent,rgba(255,106,26,.45),transparent) 1}
 /* stronger scroll-in: rise, scale and un-blur, children staggered */
@@ -643,7 +671,7 @@ details.dir p{margin:.9rem 0 0}
 
 <!-- ============================================================ NAV -->
 <nav id="nav">
-  <a class="brand" href="#top"><img class="swd" src="img/sword.png" alt="" width="72" height="459"><span>Darksteel Forge</span></a>
+  <a class="brand" href="#top"><span>Darksteel Forge</span></a><!-- sword removed from the nav, Matt 2026-10-21: "the text is fine, but the sword looks bad" -->
   <div class="nav-links"><a href="#shop">About</a><a href="#visit">Visit</a><a href="#sell">Sell to us</a><a href="#social">Follow</a><a href="#contactus">Contact</a></div>
   <a class="nav-cta" href="#visit">Visit<span class="lg">&nbsp;the shop</span></a>
 </nav>
@@ -662,11 +690,11 @@ details.dir p{margin:.9rem 0 0}
 
 <!-- ============================================================ ABOUT THE SHOP -->
 <section class="sec" id="shop">
+  <div class="shopsword" aria-hidden="true"></div>
   <div class="wrap">
     <div class="sec-head reveal"><div class="eyebrow">The shop</div><h2 class="metal">Built by collectors, for collectors</h2><div class="rule"></div></div>
     <div class="story">
       <div class="reveal">
-        <img class="storymark" src="img/sword.png" alt="" width="72" height="459">
         <p class="lead">Darksteel Forge started the way most card shops do: a binder, a folding table and too many trades that should have gone the other way. It grew into a stocked inventory of Magic, Pokemon, One Piece and Riftbound singles, sealed product and the chase cards that never seem to be in stock anywhere else.</p>
         <p>Every card that comes through the door is inspected under light, sleeved and stored in a climate-controlled room. Condition is graded honestly, prices track the market daily, and if we do not have the card you want we will source it. Now it is a storefront on Bridge Street in downtown Phoenixville, with play space, weekly events and a buylist counter where you get a real offer on the spot.</p>
       </div>
@@ -675,6 +703,30 @@ details.dir p{margin:.9rem 0 0}
     </div>
   </div>
 </section>
+
+<!-- ============================================================ GALLERY (Matt 2026-10-21: pictures from their Instagram / Facebook) -->
+<section class="sec" id="gallery">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="eyebrow">Out at the shows</div><h2 class="metal">Find us on the floor</h2><div class="rule"></div></div>
+    <p class="sub-lead reveal">The card shows we have vendored and the tables we have set up. Tap any photo to see it full size.</p>
+  </div>
+  <div class="gal">
+    <div class="gtrack" id="gtrack">
+      <button class="gcard " type="button" data-full="img/gallery/g01.webp"><img src="img/gallery/g01.webp" alt="Darksteel Forge table at a card show" loading="lazy" width="600" height="600"></button>
+      <button class="gcard " type="button" data-full="img/gallery/g02.webp"><img src="img/gallery/g02.webp" alt="The show floor" loading="lazy" width="600" height="600"></button>
+      <button class="gcard tall" type="button" data-full="img/gallery/g03.webp"><img src="img/gallery/g03.webp" alt="Cards on the table" loading="lazy" width="600" height="600"></button>
+      <button class="gcard " type="button" data-full="img/gallery/g04.webp"><img src="img/gallery/g04.webp" alt="King of Prussia card show" loading="lazy" width="600" height="600"></button>
+      <button class="gcard " type="button" data-full="img/gallery/g05.webp"><img src="img/gallery/g05.webp" alt="Chester County Card Show, confirmed vendor" loading="lazy" width="600" height="600"></button>
+      <button class="gcard " type="button" data-full="img/gallery/g06.webp"><img src="img/gallery/g06.webp" alt="The Phoenixville Card Show" loading="lazy" width="600" height="600"></button>
+      <button class="gcard " type="button" data-full="img/gallery/g07.webp"><img src="img/gallery/g07.webp" alt="Sports and TCG card show" loading="lazy" width="600" height="600"></button>
+      <button class="gcard " type="button" data-full="img/gallery/g08.webp"><img src="img/gallery/g08.webp" alt="The Ultimate TCG Experience, King of Prussia" loading="lazy" width="600" height="600"></button>
+      <button class="gcard " type="button" data-full="img/gallery/g09.webp"><img src="img/gallery/g09.webp" alt="Top vendors, King of Prussia" loading="lazy" width="600" height="600"></button>
+      <button class="gcard tall" type="button" data-full="img/gallery/g10.webp"><img src="img/gallery/g10.webp" alt="Chester County collectibles show, confirmed vendor" loading="lazy" width="600" height="600"></button>
+    </div>
+    <div class="gdots" id="gdots"></div>
+  </div>
+</section>
+<div class="gview" id="gview" role="dialog" aria-modal="true" aria-label="Photo"><button type="button" id="gclose" aria-label="Close">&times;</button><img id="gimg" alt=""></div>
 
 <!-- ============================================================ TYPE BAND (no cards - owners want less card emphasis) -->
 <div class="tband" aria-hidden="true">
@@ -2200,6 +2252,25 @@ marqueeReady.then(() => document.getElementById("case").hidden ? new Promise(() 
 }).catch(() => { $("#lane").innerHTML = ""; });
 
 
+})();
+</script>
+<script>
+/* gallery: swipe row, auto-advances every 10s while on screen, pauses while touched; tap opens full size */
+(()=>{const tr=document.getElementById("gtrack"),dots=document.getElementById("gdots");if(!tr)return;
+const cards=[...tr.children];dots.innerHTML=cards.map((c,i)=>`<button aria-label="Photo ${i+1}"></button>`).join("");
+const db=[...dots.children];let cur=0,timer=null,held=false,vis=false;
+const go=i=>{cur=(i+cards.length)%cards.length;const c=cards[cur];tr.scrollTo({left:c.offsetLeft-(tr.clientWidth-c.clientWidth)/2,behavior:"smooth"});mark();arm()};
+const mark=()=>db.forEach((d,j)=>{d.classList.remove("on");void d.offsetWidth;d.classList.toggle("on",j===cur)});
+const arm=()=>{clearTimeout(timer);if(!held&&vis)timer=setTimeout(()=>go(cur+1),10000)};
+db.forEach((d,i)=>d.addEventListener("click",()=>go(i)));
+let st;tr.addEventListener("scroll",()=>{clearTimeout(st);st=setTimeout(()=>{const mid=tr.scrollLeft+tr.clientWidth/2;let b=0,bd=1e9;cards.forEach((c,j)=>{const d=Math.abs(c.offsetLeft+c.clientWidth/2-mid);if(d<bd){bd=d;b=j}});if(b!==cur){cur=b;mark();arm()}},120)},{passive:true});
+tr.addEventListener("pointerdown",()=>{held=true;clearTimeout(timer)});tr.addEventListener("pointerup",()=>{held=false;arm()});
+new IntersectionObserver(es=>es.forEach(e=>{vis=e.isIntersecting;if(vis){mark();arm()}else clearTimeout(timer)}),{threshold:.3}).observe(tr);
+const gv=document.getElementById("gview"),gi=document.getElementById("gimg");
+cards.forEach(c=>c.addEventListener("click",()=>{gi.src=c.dataset.full;gi.alt=c.querySelector("img").alt;gv.classList.add("open")}));
+const close=()=>{gv.classList.remove("open");gi.src=""};
+document.getElementById("gclose").addEventListener("click",close);gv.addEventListener("click",e=>{if(e.target===gv)close()});
+addEventListener("keydown",e=>{if(e.key==="Escape"&&gv.classList.contains("open"))close()});
 })();
 </script>
 </body>
