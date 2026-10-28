@@ -68,12 +68,12 @@ canvas.sparks{mix-blend-mode:screen}
 .forge-btn::before,.forge-btn::after{content:"";position:absolute;top:50%;width:26px;height:2px;background:linear-gradient(90deg,transparent,#ffb347)}
 .forge-btn::before{right:100%;margin-right:10px}.forge-btn::after{left:100%;margin-left:10px;transform:scaleX(-1)}
 @keyframes glowpulse{0%,100%{box-shadow:0 0 0 1px rgba(255,200,120,.6),0 10px 40px rgba(255,100,20,.4),inset 0 1px 0 rgba(255,255,255,.6)}50%{box-shadow:0 0 0 1px rgba(255,220,150,.9),0 10px 70px rgba(255,120,30,.75),inset 0 1px 0 rgba(255,255,255,.6)}}
-#s-enter.leaving .bg{animation:none;transition:transform 1.2s cubic-bezier(.6,0,.4,1),filter 1.2s;transform:scale(1.6);filter:brightness(1.9) saturate(1.3)}
-#s-enter.leaving .enter-in{transition:opacity .5s;opacity:0}
+
+#s-enter.leaving .enter-in{transition:opacity .45s;opacity:0}
 /* into the fire: the camera dives at the hearth while it flares white-hot and fills the screen */
 #s-enter .flare{position:absolute;left:var(--hx,72%);top:var(--hy,62%);width:12vmax;height:12vmax;margin:-6vmax 0 0 -6vmax;border-radius:50%;pointer-events:none;opacity:0;transform:scale(.2);
   background:radial-gradient(closest-side,#fff8e6 0%,#ffd27a 25%,#ff7a1a 55%,rgba(255,80,10,0) 100%)}
-#s-enter.leaving .flare{transition:transform 1.25s cubic-bezier(.7,0,.6,1),opacity .5s;opacity:1;transform:scale(22)}
+#s-enter.leaving .flare{transition:transform 1.1s cubic-bezier(.7,0,.6,1) .55s,opacity .6s .55s;opacity:1;transform:scale(22)}
 
 /* ============================================================ 2. THE SCROLL */
 #s-scroll{background:radial-gradient(80% 70% at 50% 45%,#1a1d22 0%,#0b0d10 60%,#050607 100%);overflow:hidden;flex-direction:column;justify-content:flex-start;padding-top:max(1.5vh,env(safe-area-inset-top))}
@@ -683,10 +683,20 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
 
   $("#enterBtn").addEventListener("click", () => {
     if (reduce) return go("about");
+    // the camera pushes in toward the hearth from wherever the slow drift has it right now (no snap),
+    // easing in like a dolly; the fire flares to white over the last part of the move
+    const bg = $("#s-enter .bg");
+    const from = getComputedStyle(bg).transform;
+    bg.style.animation = "none";
+    const dive = bg.animate([{ transform: from === "none" ? "scale(1)" : from, filter: "brightness(1)" }, { transform: "scale(1.55)", filter: "brightness(1.7)" }],
+      { duration: 1650, easing: "cubic-bezier(.5,0,.3,1)", fill: "forwards" });
     scenes.enter.classList.add("leaving");
     scenes.about.classList.add("fromfire");
-    setTimeout(() => { go("about"); setTimeout(() => scenes.enter.classList.remove("leaving"), 1200); }, 1150);
-    setTimeout(() => scenes.about.classList.remove("fromfire"), 3200);
+    setTimeout(() => {
+      go("about");
+      setTimeout(() => { scenes.enter.classList.remove("leaving"); dive.cancel(); bg.style.animation = ""; }, 1200);
+    }, 1550);
+    setTimeout(() => scenes.about.classList.remove("fromfire"), 3600);
   });
   /* warm the next scenes' art in the background so a scene never reveals half-loaded */
   const ready = (src) => { const i = new Image(); i.src = src; return (i.decode ? i.decode() : Promise.resolve()).catch(() => {}); };
