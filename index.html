@@ -6,7 +6,6 @@
 <title>Darksteel Forge Gaming</title>
 <link rel="icon" href="img/favicon.png">
 <meta name="description" content="Darksteel Forge Gaming is downtown Phoenixville's community game store. Magic, Pokemon, One Piece, Riftbound, RPGs, board games and table space to play.">
-<link rel="preload" as="image" href="img/app/forge.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=IM+Fell+English+SC&family=Manrope:wght@400;500;600;700&family=Noto+Sans+Runic&display=swap" rel="stylesheet">
 <style>
@@ -32,34 +31,50 @@ img{display:block;max-width:100%}
 .scene{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;
   transition:opacity .9s ease,visibility 0s linear .9s}
 .scene.on{opacity:1;visibility:visible;transition:opacity .9s ease,visibility 0s}
-canvas.embers{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+canvas.embers,canvas.sparks{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+canvas.sparks{mix-blend-mode:screen}
 .metal{font-family:var(--display);font-weight:700;letter-spacing:.12em;text-transform:uppercase;
   background:linear-gradient(180deg,#f4f6f8 0%,#c9ced4 30%,#7f878f 50%,#d5d9de 62%,#8a929a 80%,#eef0f2 100%);
   -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 rgba(0,0,0,.6))}
 
 /* ============================================================ 1. ENTER THE FORGE */
-#s-enter{background:#050404}
-#s-enter .bg{position:absolute;inset:-4%;background:url(img/app/forge.webp) 62% 50%/cover no-repeat;
-  animation:drift 30s ease-in-out infinite alternate;filter:brightness(.82) saturate(1.05)}
-@keyframes drift{from{transform:scale(1.04) translate(0,0)}to{transform:scale(1.1) translate(-1.5%,-1%)}}
-#s-enter .heat{position:absolute;right:8%;top:28%;width:40%;height:60%;pointer-events:none;mix-blend-mode:screen;
-  background:radial-gradient(50% 50% at 50% 55%,rgba(255,120,30,.35),transparent 70%);animation:flick 2.2s ease-in-out infinite alternate}
-@keyframes flick{0%{opacity:.55}40%{opacity:.85}70%{opacity:.6}100%{opacity:1}}
-#s-enter .shade{position:absolute;inset:0;background:radial-gradient(70% 60% at 50% 40%,transparent 30%,rgba(0,0,0,.55) 100%),linear-gradient(180deg,rgba(0,0,0,.55),transparent 30%,transparent 65%,rgba(0,0,0,.75))}
-.enter-in{position:relative;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1.4rem;padding:0 1.25rem;margin-top:-6vh}
-.enter-in .logo{width:min(560px,82vw);height:auto;filter:brightness(1.7) drop-shadow(0 16px 40px rgba(0,0,0,.85));opacity:0;transform:translateY(14px);animation:rise 1.4s .3s cubic-bezier(.2,.8,.2,1) forwards}
-.enter-in .is{font:400 clamp(1.05rem,2.6vw,1.45rem)/1.3 var(--quill);color:#f1d9b0;letter-spacing:.06em;text-shadow:0 2px 12px #000;opacity:0;animation:rise 1.2s 1s forwards}
+#s-enter{background:#050404;overflow:hidden}
+/* the forge is a living scene: a looping video (fire, smoke, embers) over its own first frame. Wide screens get
+   the landscape cut, tall screens the portrait cut, so the whole forge is always in view. */
+#s-enter .bg{position:absolute;inset:0;transform-origin:var(--hx,72%) var(--hy,62%);animation:drift 40s ease-in-out infinite alternate}
+#s-enter .bg img,#s-enter .bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%}
+#s-enter .bg video{opacity:0;transition:opacity 1.2s}
+#s-enter .bg video.live{opacity:1}
+@keyframes drift{from{transform:scale(1.02)}to{transform:scale(1.07)}}
+#s-enter .heat{position:absolute;left:var(--hx,72%);top:var(--hy,62%);width:70vmax;height:70vmax;transform:translate(-50%,-50%);pointer-events:none;mix-blend-mode:screen;
+  background:radial-gradient(closest-side,rgba(255,120,30,.32),rgba(255,80,10,.08) 55%,transparent);animation:flick 1.7s ease-in-out infinite alternate}
+@keyframes flick{0%{opacity:.5}30%{opacity:.85}55%{opacity:.62}80%{opacity:.95}100%{opacity:.7}}
+#s-enter .beam{position:absolute;inset:-20% -10%;pointer-events:none;mix-blend-mode:screen;opacity:.5;
+  background:linear-gradient(115deg,transparent 30%,rgba(255,190,120,.07) 40%,transparent 48%,transparent 55%,rgba(255,170,90,.05) 62%,transparent 70%);animation:beams 14s ease-in-out infinite alternate}
+@keyframes beams{from{transform:translateX(-4%)}to{transform:translateX(4%)}}
+#s-enter .shade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(80% 70% at 50% 55%,transparent 45%,rgba(0,0,0,.6) 100%),linear-gradient(180deg,rgba(0,0,0,.72) 0%,rgba(0,0,0,.2) 26%,transparent 45%,transparent 70%,rgba(0,0,0,.7) 100%)}
+#s-enter .fadein{position:absolute;inset:0;background:#000;pointer-events:none;animation:unveil 2.2s .1s ease forwards}
+@keyframes unveil{to{opacity:0}}
+.enter-in{position:absolute;inset:0;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+  padding:max(4vh,env(safe-area-inset-top)) 1.25rem max(6vh,env(safe-area-inset-bottom))}
+.enter-in .top{display:flex;flex-direction:column;align-items:center;gap:.6rem}
+.enter-in .logo{width:min(440px,34vw);height:auto;filter:brightness(1.75) drop-shadow(0 12px 30px rgba(0,0,0,.9)) drop-shadow(0 0 24px rgba(255,120,40,.25));opacity:0;transform:translateY(-10px) scale(.96);animation:rise 1.6s .9s cubic-bezier(.2,.8,.2,1) forwards}
+.enter-in .is{font:400 clamp(1rem,1.6vw,1.35rem)/1.3 var(--quill);color:#f1d9b0;letter-spacing:.08em;text-shadow:0 2px 12px #000,0 0 18px rgba(0,0,0,.9);opacity:0;animation:rise 1.2s 1.8s forwards}
+@media (max-aspect-ratio:9/10){.enter-in .logo{width:min(420px,74vw)}}
 @keyframes rise{to{opacity:1;transform:none}}
-.forge-btn{position:relative;margin-top:.6rem;padding:1.05rem 2.4rem;min-height:56px;font:700 1rem/1 var(--display);letter-spacing:.28em;text-transform:uppercase;color:#1b0d04;
+.forge-btn{position:relative;padding:1.05rem 2.4rem;min-height:56px;font:700 1rem/1 var(--display);letter-spacing:.28em;text-transform:uppercase;color:#1b0d04;
   background:linear-gradient(180deg,#ffd27a,#ff8a2a 55%,#c94a0c);border-radius:4px;box-shadow:0 0 0 1px rgba(255,200,120,.6),0 10px 40px rgba(255,100,20,.45),inset 0 1px 0 rgba(255,255,255,.6);
-  opacity:0;animation:rise 1s 1.5s forwards,glowpulse 2.4s 2.5s ease-in-out infinite}
+  opacity:0;animation:rise 1s 2.4s forwards,glowpulse 2.4s 3.4s ease-in-out infinite}
 .forge-btn::before,.forge-btn::after{content:"";position:absolute;top:50%;width:26px;height:2px;background:linear-gradient(90deg,transparent,#ffb347)}
 .forge-btn::before{right:100%;margin-right:10px}.forge-btn::after{left:100%;margin-left:10px;transform:scaleX(-1)}
 @keyframes glowpulse{0%,100%{box-shadow:0 0 0 1px rgba(255,200,120,.6),0 10px 40px rgba(255,100,20,.4),inset 0 1px 0 rgba(255,255,255,.6)}50%{box-shadow:0 0 0 1px rgba(255,220,150,.9),0 10px 70px rgba(255,120,30,.75),inset 0 1px 0 rgba(255,255,255,.6)}}
-#s-enter.leaving .bg{transition:transform 1.1s cubic-bezier(.6,0,.4,1),filter 1.1s;transform:scale(1.35) translate(-6%,-2%);filter:brightness(1.6) saturate(1.3)}
+#s-enter.leaving .bg{animation:none;transition:transform 1.2s cubic-bezier(.6,0,.4,1),filter 1.2s;transform:scale(1.6);filter:brightness(1.9) saturate(1.3)}
+#s-enter.leaving .enter-in{transition:opacity .5s;opacity:0}
 
 /* ============================================================ 2. THE SCROLL */
-#s-scroll{background:radial-gradient(80% 70% at 50% 45%,#1a1d22 0%,#0b0d10 60%,#050607 100%)}
+#s-scroll{background:radial-gradient(80% 70% at 50% 45%,#1a1d22 0%,#0b0d10 60%,#050607 100%);overflow:hidden}
+#s-scroll .forgeglow{position:absolute;inset:-8%;background:url(img/app/forge-wide.jpg) 70% 60%/cover no-repeat;filter:blur(26px) brightness(.32) saturate(1.2);transform:scale(1.1);animation:flick 2.6s ease-in-out infinite alternate}
+#s-scroll .candle{position:absolute;inset:0;pointer-events:none;background:radial-gradient(45% 40% at 50% 55%,rgba(255,170,80,.16),transparent 70%);mix-blend-mode:screen;animation:flick 1.9s ease-in-out infinite alternate}
 .scroll-wrap{position:relative;height:min(94vh,170vw);aspect-ratio:768/1152;max-width:96vw;container-type:inline-size}
 .scroll-wrap img{width:100%;height:100%;
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%),linear-gradient(180deg,transparent 18%,#000 25%,#000 92%,transparent 100%);-webkit-mask-composite:source-in;
@@ -91,6 +106,18 @@ canvas.embers{position:absolute;inset:0;width:100%;height:100%;pointer-events:no
 #s-runes.on .tree .ln{animation:draw 2.2s cubic-bezier(.4,0,.2,1) forwards;animation-delay:var(--d,0s)}
 @keyframes draw{to{stroke-dashoffset:0}}
 .tree .glowline{stroke:rgba(255,200,140,.18);stroke-width:5;filter:blur(3px)}
+.tree .arc{transform-origin:200px 300px;animation:turn 120s linear infinite;opacity:0;transition:opacity 2s 1.6s}
+.tree .arc.r2{animation-duration:180s;animation-direction:reverse}
+#s-runes.on .tree .arc{opacity:1}
+.tree .arc text{font:400 13px/1 var(--rune);fill:rgba(233,220,195,.28);letter-spacing:6px}
+.tree .arc.r2 text{font-size:10px;fill:rgba(180,200,255,.18)}
+.tree .arc circle{fill:none;stroke:rgba(233,220,195,.12);stroke-width:.8}
+@keyframes turn{to{transform:rotate(360deg)}}
+.tree .pulse{fill:none;stroke:#ffe2b0;stroke-width:2.4;stroke-linecap:round;filter:drop-shadow(0 0 4px #ffb347);stroke-dasharray:14 1200;stroke-dashoffset:1214;opacity:0}
+#s-runes.on .tree .pulse{animation:travel 5.5s linear infinite;animation-delay:var(--pd,3s)}
+@keyframes travel{0%{stroke-dashoffset:1214;opacity:0}5%{opacity:1}90%{opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+#s-runes::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(40% 35% at 50% 52%,rgba(120,90,200,.12),transparent 70%),radial-gradient(30% 25% at 30% 30%,rgba(61,255,160,.05),transparent 70%),radial-gradient(30% 25% at 70% 70%,rgba(63,169,255,.05),transparent 70%);animation:nebula 18s ease-in-out infinite alternate}
+@keyframes nebula{from{opacity:.6;transform:scale(1)}to{opacity:1;transform:scale(1.08)}}
 .gem{position:absolute;width:21%;aspect-ratio:1;transform:translate(-50%,-50%) scale(.6);opacity:0;border-radius:50%;
   display:grid;place-items:center;transition:opacity .8s,transform .8s cubic-bezier(.2,1.4,.4,1)}
 #s-runes.on .gem{opacity:1;transform:translate(-50%,-50%) scale(1);transition-delay:var(--gd)}
@@ -116,6 +143,29 @@ canvas.embers{position:absolute;inset:0;width:100%;height:100%;pointer-events:no
 @keyframes coalesce{0%{opacity:0;transform:rotate(var(--a)) translateX(var(--r)) scale(1.4)}25%{opacity:.9}100%{opacity:0;transform:rotate(calc(var(--a) + 140deg)) translateX(0) scale(.3)}}
 .restart{position:absolute;left:1rem;bottom:1rem;font:600 .68rem/1 var(--ui);letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3);padding:.8rem .6rem;min-height:44px}
 .restart:hover{color:var(--ink-2)}
+
+/* ============================================================ RUNE PREVIEW: tapping a rune shows its info first, then a button opens the full page */
+.rinfo{position:fixed;inset:0;z-index:15;display:grid;place-items:center;padding:1rem;visibility:hidden;pointer-events:none}
+.rinfo.on{visibility:visible;pointer-events:auto}
+.rinfo .veil{position:absolute;inset:0;background:radial-gradient(60% 60% at 50% 50%,rgba(0,0,0,.35),rgba(0,0,0,.8));opacity:0;transition:opacity .45s}
+.rinfo.on .veil{opacity:1}
+.rcard{position:relative;width:min(560px,100%);max-height:calc(100dvh - 2rem);overflow-y:auto;border-radius:20px;padding:clamp(1.4rem,4vw,2.2rem);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--c) 10%,#101217),#0a0b0e 70%);border:1px solid color-mix(in srgb,var(--c) 45%,transparent);
+  box-shadow:0 0 0 1px rgba(255,255,255,.04),0 0 60px color-mix(in srgb,var(--c) 30%,transparent),0 30px 80px rgba(0,0,0,.7);
+  opacity:0;transform:translate(var(--fx,0),var(--fy,0)) scale(.2);transition:opacity .35s,transform .55s cubic-bezier(.2,1.1,.3,1)}
+.rinfo.on .rcard{opacity:1;transform:none}
+.rcard::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(70% 40% at 50% 0%,color-mix(in srgb,var(--c) 22%,transparent),transparent 70%)}
+.rcard .x{position:absolute;top:.5rem;right:.5rem;width:44px;height:44px;border-radius:50%;font-size:1.6rem;line-height:1;color:var(--ink-2)}
+.rcard .x:hover{color:#fff}
+.rcard .rg{display:block;font:400 3rem/1 var(--rune);color:#fff;text-shadow:0 0 10px var(--c),0 0 30px var(--c);margin-bottom:.4rem}
+.rcard h2{font-size:clamp(1.6rem,4.5vw,2.2rem);margin:0 0 .3rem}
+.rcard .kick{font:400 1.1rem/1.4 var(--quill);color:#e9dcc3;margin:0 0 1rem}
+.rcard ul{list-style:none;margin:0 0 1.3rem;padding:0;display:grid;gap:.55rem}
+.rcard li{position:relative;padding-left:1.5rem;color:var(--ink-2);opacity:0;transform:translateY(6px);transition:opacity .4s,transform .4s}
+.rcard li b{color:var(--ink)}
+.rcard li::before{content:"";position:absolute;left:.2rem;top:.6em;width:7px;height:7px;transform:rotate(45deg);background:var(--c);box-shadow:0 0 8px var(--c)}
+.rinfo.on .rcard li{opacity:1;transform:none}
+.rcard .go{width:100%;min-height:52px;font:700 .9rem/1 var(--display);letter-spacing:.2em;text-transform:uppercase}
 
 /* ============================================================ RUNE PAGES */
 .page{position:fixed;inset:0;z-index:20;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
@@ -217,18 +267,24 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
 
 <!-- ============================================================ 1. ENTER THE FORGE -->
 <section class="scene" id="s-enter" aria-label="Enter the Forge">
-  <div class="bg"></div><div class="heat"></div><div class="shade"></div>
-  <canvas class="embers" data-n="70"></canvas>
+  <div class="bg"><img id="forgeStill" alt="" fetchpriority="high"><video id="forgeVid" muted loop playsinline preload="auto" aria-hidden="true"></video></div>
+  <div class="beam"></div><div class="heat"></div><div class="shade"></div>
+  <canvas class="embers" data-n="80"></canvas>
+  <canvas class="sparks" id="sparks"></canvas>
   <div class="enter-in">
-    <img class="logo" src="img/logo.png" alt="Darksteel Forge Gaming" width="700" height="547" fetchpriority="high">
-    <p class="is">Darksteel Forge Gaming is&hellip;</p>
+    <div class="top">
+      <img class="logo" src="img/logo.png" alt="Darksteel Forge Gaming" width="700" height="547">
+      <p class="is">Darksteel Forge Gaming is&hellip;</p>
+    </div>
     <button class="forge-btn" type="button" id="enterBtn">Enter the Forge</button>
   </div>
+  <div class="fadein"></div>
 </section>
 
 <!-- ============================================================ 2. THE SCROLL (owner's about-us blurb, verbatim) -->
 <section class="scene" id="s-scroll" aria-label="About Darksteel Forge Gaming">
-  <canvas class="embers" data-n="24"></canvas>
+  <div class="forgeglow"></div><div class="candle"></div>
+  <canvas class="embers" data-n="40"></canvas>
   <div class="scroll-wrap">
     <img src="img/app/scroll.webp" alt="" width="768" height="1152">
     <div class="scroll-text" id="scrollText"><span class="quillgap" aria-hidden="true"></span><p><span class="drop">D</span>arksteel Forge Gaming is downtown Phoenixville's community game store. A safe, welcoming space to gather around the games you love. We specialize in trading card games like Magic: The Gathering, Pokemon, One Piece, and Riftbound, and we carry RPGs, board games, supplies, and plenty of table space to play. Come find your people.</p></div>
@@ -242,6 +298,9 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
   <p class="runes-title">Follow the Runes&hellip;</p>
   <div class="tree">
     <svg viewBox="0 0 400 600" aria-hidden="true">
+      <defs><path id="ringA" d="M200 300 m-262 0 a262 262 0 1 1 524 0 a262 262 0 1 1 -524 0"/><path id="ringB" d="M200 300 m-232 0 a232 232 0 1 1 464 0 a232 232 0 1 1 -464 0"/></defs>
+      <g class="arc"><circle cx="200" cy="300" r="276"/><circle cx="200" cy="300" r="248"/><text><textPath href="#ringA">ᚠᚢᚦᚨᚱᚲᚷᚹ ᚺᚾᛁᛃᛇᛈᛉᛊ ᛏᛒᛖᛗᛚᛜᛞᛟ ᚠᚢᚦᚨᚱᚲᚷᚹ ᚺᚾᛁᛃᛇᛈᛉᛊ ᛏᛒᛖᛗᛚᛜᛞᛟ ᚠᚢᚦᚨᚱᚲᚷᚹ ᚺᚾᛁᛃᛇᛈ</textPath></text></g>
+      <g class="arc r2"><text><textPath href="#ringB">ᛞᛟᛚᛜ ᛗᛖᛒᛏ ᛊᛉᛈᛇ ᛃᛁᚾᚺ ᚹᚷᚲᚱ ᚨᚦᚢᚠ ᛞᛟᛚᛜ ᛗᛖᛒᛏ ᛊᛉᛈᛇ ᛃᛁᚾᚺ ᚹᚷᚲᚱ ᚨᚦᚢᚠ ᛞᛟᛚᛜ ᛗᛖᛒᛏ ᛊᛉᛈᛇ ᛃᛁᚾᚺ ᚹᚷᚲᚱ</textPath></text></g>
       <g class="glowline">
         <path class="ln" style="--l:520" d="M200 20 V545"/>
       </g>
@@ -255,6 +314,9 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
       <path class="ln" style="--l:240;--d:1.5s" d="M182 418 L218 438 L182 458 L218 478 L182 498 M218 418 L182 438 L218 458 L182 478 L218 498"/>
       <path class="ln" style="--l:200;--d:1.6s" d="M120 240 q-22 -6 -30 10 q12 0 18 10 M280 240 q22 -6 30 10 q-12 0 -18 10 M128 412 q-24 4 -26 24 M272 412 q24 4 26 24"/>
       <path class="ln" style="--l:120;--d:1.7s" d="M160 132 q-12 18 4 30 q-14 6 -8 22 M240 132 q12 18 -4 30 q14 6 8 22"/>
+      <path class="pulse" style="--pd:3s" d="M200 20 V545"/>
+      <path class="pulse" style="--pd:4.4s" d="M200 245 L150 300 L200 330 L250 300 Z"/>
+      <circle class="pulse" style="--pd:5.2s" cx="200" cy="320" r="120"/>
     </svg>
     <a class="gem lt" href="#calendar" style="left:30%;top:15.5%;--c:var(--green);--gd:1.6s" aria-label="Calendar"><span class="motes"></span><span class="ring"></span><span class="orb"></span><span class="glyph">ᛃ</span><span class="label">Calendar</span></a>
     <a class="gem lt" href="#games" style="left:70%;top:15.5%;--c:var(--white);--gd:1.8s" aria-label="Games"><span class="motes"></span><span class="ring"></span><span class="orb"></span><span class="glyph">ᛈ</span><span class="label">Games</span></a>
@@ -265,6 +327,15 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
   <p class="runes-foot">&hellip;and Forge Your Game Night</p>
   <button class="restart" type="button" id="restart">Back to the forge</button>
 </section>
+
+<div class="rinfo" id="rinfo" role="dialog" aria-modal="true" aria-labelledby="riTitle">
+  <div class="veil"></div>
+  <div class="rcard"><button class="x" type="button" aria-label="Close">&times;</button>
+    <span class="rg" id="riGlyph"></span><h2 class="metal" id="riTitle"></h2><p class="kick" id="riKick"></p>
+    <ul id="riList"></ul>
+    <a class="btn solid go" id="riGo" href="#">Open</a>
+  </div>
+</div>
 
 <!-- ============================================================ RUNE PAGES -->
 <template id="ptop"><div class="ptop"><a class="back" href="#runes"><b></b><span>Runes</span></a><nav class="pnav" aria-label="Rune pages">
@@ -465,6 +536,56 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
   });
   addEventListener("resize", () => fires.forEach(f => { if (f.cv.closest(".on")) { f.stop(); f.start(); } }));
 
+  /* ---------- the forge: pick the cut that fits the screen, find the hearth on screen, throw sparks from it */
+  const FORGE = {
+    wide: { img: "img/app/forge-wide.jpg", vid: "img/app/forge-wide.mp4", w: 1920, h: 1108, hx: .775, hy: .63 },
+    tall: { img: "img/app/forge-tall.jpg", vid: "img/app/forge-tall.mp4", w: 1080, h: 1872, hx: .545, hy: .6 },
+  };
+  const fs = $("#forgeStill"), fv = $("#forgeVid"), enterEl = $("#s-enter");
+  let cut = null, hearth = { x: 0, y: 0 };
+  const placeForge = () => {
+    const W = innerWidth, H = innerHeight, want = W / H < .9 ? "tall" : "wide";
+    const f = FORGE[want];
+    if (cut !== want) {
+      cut = want; fs.src = f.img; fv.classList.remove("live");
+      fv.src = f.vid; fv.muted = true;
+      fv.play().catch(() => {});
+    }
+    const k = Math.max(W / f.w, H / f.h);
+    hearth = { x: (W - f.w * k) / 2 + f.hx * f.w * k, y: (H - f.h * k) / 2 + f.hy * f.h * k };
+    enterEl.style.setProperty("--hx", hearth.x + "px"); enterEl.style.setProperty("--hy", hearth.y + "px");
+  };
+  fv.addEventListener("timeupdate", () => { if (fv.currentTime > .05) fv.classList.add("live"); });
+  placeForge(); addEventListener("resize", placeForge);
+
+  const sparks = (() => {
+    const cv = $("#sparks"), ctx = cv.getContext("2d"); let ps = [], raf = 0, next = 0, w = 0, h = 0;
+    const size = () => { const d = Math.min(devicePixelRatio || 1, 2); w = cv.clientWidth; h = cv.clientHeight; cv.width = w * d; cv.height = h * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
+    const burst = () => {
+      const n = 26 + Math.random() * 30, sc = Math.min(w, h) / 700;
+      for (let i = 0; i < n; i++) {
+        const a = -Math.PI / 2 + (Math.random() - .5) * 1.5, v = (3 + Math.random() * 7) * sc;
+        ps.push({ x: hearth.x + (Math.random() - .5) * 60 * sc, y: hearth.y - 20 * sc, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, decay: .008 + Math.random() * .018, r: (.8 + Math.random() * 1.6) * sc });
+      }
+    };
+    const step = (t) => {
+      if (t > next) { burst(); next = t + 1600 + Math.random() * 3200; }
+      ctx.clearRect(0, 0, w, h);
+      ctx.globalCompositeOperation = "lighter";
+      for (const p of ps) {
+        const ox = p.x, oy = p.y;
+        p.vy += .07; p.vx *= .992; p.x += p.vx; p.y += p.vy; p.life -= p.decay;
+        const g = Math.max(0, p.life);
+        ctx.strokeStyle = `rgba(255,${150 + g * 90 | 0},${60 * g | 0},${g})`; ctx.lineWidth = p.r;
+        ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(p.x, p.y); ctx.stroke();
+      }
+      ps = ps.filter(p => p.life > 0 && p.y < h + 20);
+      raf = requestAnimationFrame(step);
+    };
+    return { start() { if (reduce || raf) return; size(); next = performance.now() + 2600; raf = requestAnimationFrame(step); }, stop() { cancelAnimationFrame(raf); raf = 0; ps = []; } };
+  })();
+  addEventListener("resize", () => { if (enterEl.classList.contains("on")) { sparks.stop(); sparks.start(); } });
+
   /* ---------- the scroll text writes itself in, word by word */
   const st = $("#scrollText p");
   const drop = st.querySelector(".drop").outerHTML;
@@ -497,6 +618,8 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
     $$(".page").forEach(p => p.classList.toggle("on", p.id === "p-" + name));
     if (isPage) { const p = $("#p-" + name); p.scrollTop = 0; if (name === "calendar") loadCalendar(); if (name === "games") shelf.start(); }
     if (name === "about") writeScroll();
+    if (sceneName === "enter") { sparks.start(); fv.play().catch(() => {}); } else { sparks.stop(); fv.pause(); }
+    if (name !== "runes") ri.classList.remove("on");
     current = name;
   };
   const go = (name) => { if (location.hash !== "#" + name) location.hash = name; else show(name); };
@@ -509,6 +632,64 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
   });
   $("#toRunes").addEventListener("click", () => go("runes"));
   $("#restart").addEventListener("click", () => go("enter"));
+
+  /* ---------- rune preview: a gem opens its info card first (Matt 2026-10-28: "it shouldn't just take them
+     directly to the page"); the card's button opens the full page */
+  const RUNES = {
+    calendar: { kick: "What's on at the forge this week", items: [
+      "<b>Game nights and leagues</b> for the games we carry",
+      "<b>Prereleases and tournaments</b>",
+      "<b>Board game and RPG nights</b> - bring a friend or meet one here",
+      "Every event lives on the store's Google Calendar, always up to date"] },
+    games: { kick: "The games we play, stock and run events for", items: [
+      "<b>Magic: The Gathering</b> and <b>Pokemon</b>",
+      "<b>One Piece Card Game</b> and <b>Riftbound</b>",
+      "<b>RPGs and D&amp;D</b> - manuals, minis and dice",
+      "<b>Board games and supplies</b> - sleeves, binders, playmats",
+      "Links to each game's official site and app"] },
+    gather: { kick: "A place to play, and people to play with", items: [
+      "<b>Plenty of table space</b> to play in downtown Phoenixville",
+      "<b>Our Discord</b> - find a game, trade and hear about events first",
+      "<b>Instagram and Facebook</b> for new stock, pulls and event nights",
+      "<b>Photos</b> from the shop and the shows",
+      "<b>Parking and directions</b> for Bridge Street"] },
+    sell: { kick: "Turn your collection into cash or store credit", items: [
+      "<b>Binders, collections, sealed product</b> or a single chase card",
+      "<b>Tell us what you have</b> with a quick form",
+      "<b>We reply with an offer</b> in cash or store credit (credit pays more)",
+      "<b>Bring it in</b>, we check it, you get paid"] },
+    contact: { kick: "Questions, card hunts, or anything else", items: [
+      "<b>Send us a message</b> - we answer every one",
+      "<b>Email</b> darksteelforge@gmail.com",
+      "<b>Visit</b> Bridge Street, downtown Phoenixville, PA",
+      "<b>Follow</b> @darksteelforgegames on Instagram"] },
+  };
+  const ri = $("#rinfo"), rcard = $(".rcard", ri);
+  let lastGem = null;
+  const openInfo = (gem) => {
+    const name = gem.getAttribute("href").slice(1), d = RUNES[name];
+    lastGem = gem;
+    ri.style.setProperty("--c", getComputedStyle(gem).getPropertyValue("--c"));
+    $("#riGlyph").textContent = $(".glyph", gem).textContent;
+    $("#riTitle").textContent = gem.getAttribute("aria-label");
+    $("#riKick").textContent = d.kick;
+    $("#riList").innerHTML = d.items.map((t, i) => `<li style="transition-delay:${.18 + i * .07}s">${t}</li>`).join("");
+    const go = $("#riGo"); go.href = "#" + name; go.textContent = "Open " + gem.getAttribute("aria-label");
+    // grow the card out of the gem that was tapped
+    const g = gem.getBoundingClientRect();
+    ri.classList.remove("on"); rcard.style.transition = "none";
+    rcard.style.setProperty("--fx", (g.left + g.width / 2 - innerWidth / 2) + "px");
+    rcard.style.setProperty("--fy", (g.top + g.height / 2 - innerHeight / 2) + "px");
+    void rcard.offsetWidth; rcard.style.transition = "";
+    ri.classList.add("on");
+    setTimeout(() => go.focus({ preventScroll: true }), 400);
+  };
+  const closeInfo = () => { ri.classList.remove("on"); if (lastGem) lastGem.focus({ preventScroll: true }); };
+  $$("#s-runes .gem").forEach(g => g.addEventListener("click", e => { e.preventDefault(); openInfo(g); }));
+  $(".veil", ri).addEventListener("click", closeInfo);
+  $(".x", ri).addEventListener("click", closeInfo);
+  $("#riGo").addEventListener("click", () => ri.classList.remove("on"));
+  addEventListener("keydown", e => { if (e.key === "Escape" && ri.classList.contains("on")) closeInfo(); });
 
   /* ---------- calendar: the store's Google Calendar embed, set in #calSlot data-src */
   function loadCalendar() {
