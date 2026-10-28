@@ -77,19 +77,15 @@ canvas.sparks{mix-blend-mode:screen}
 
 /* ============================================================ 2. THE SCROLL */
 #s-scroll{background:radial-gradient(80% 70% at 50% 45%,#1a1d22 0%,#0b0d10 60%,#050607 100%);overflow:hidden}
-#s-scroll .forgeglow{position:absolute;inset:-8%;background:url(img/app/forge-wide.jpg) 70% 60%/cover no-repeat;filter:blur(26px) brightness(.32) saturate(1.2);transform:scale(1.1);animation:flick 2.6s ease-in-out infinite alternate}
+#s-scroll .forgeglow{position:absolute;inset:-8%;background:url(img/app/forge-blur.jpg) 70% 60%/cover no-repeat;animation:flick 2.6s ease-in-out infinite alternate}
 #s-scroll .glowin{position:absolute;inset:0;pointer-events:none;z-index:3;background:radial-gradient(circle at 50% 55%,#fff1d0 0%,#ffb347 35%,#ff6a1a 70%,#7a2a05 100%);opacity:0}
 #s-scroll.on.fromfire .glowin{animation:cooldown 1.6s ease-out forwards}
 @keyframes cooldown{0%{opacity:1}100%{opacity:0}}
-#s-scroll .scroll-wrap::before{content:"";position:absolute;inset:-6% -22%;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,#171b20 0%,#14181d 62%,rgba(15,18,22,0) 100%)}
 #s-scroll .scroll-wrap{z-index:1;transform:scale(.86) translateY(3%);opacity:0;transition:transform 1.4s cubic-bezier(.2,.8,.2,1),opacity 1s}
 #s-scroll.on .scroll-wrap{transform:none;opacity:1;transition-delay:.35s}
 #s-scroll .candle{position:absolute;inset:0;pointer-events:none;background:radial-gradient(45% 40% at 50% 55%,rgba(255,170,80,.16),transparent 70%);mix-blend-mode:screen;animation:flick 1.9s ease-in-out infinite alternate}
-.scroll-wrap{position:relative;height:min(94vh,170vw);aspect-ratio:768/1152;max-width:96vw;container-type:inline-size}
-.scroll-wrap img{width:100%;height:100%;clip-path:inset(0 0 68.5% 0);
-  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 6%,#000 94%,transparent 100%),linear-gradient(180deg,transparent 20%,#000 25%,#000 90%,transparent 96%);-webkit-mask-composite:source-in;
-  mask-image:linear-gradient(90deg,transparent 0,#000 6%,#000 94%,transparent 100%),linear-gradient(180deg,transparent 20%,#000 25%,#000 90%,transparent 96%);mask-composite:intersect;
-  }
+.scroll-wrap{position:relative;left:-.9%;height:min(94vh,170vw);aspect-ratio:768/1152;max-width:96vw;container-type:inline-size}
+.scroll-wrap img{width:100%;height:100%;clip-path:inset(0 0 68.5% 0);filter:drop-shadow(0 18px 30px rgba(0,0,0,.6))}
 /* the unroll is driven frame by frame from JS: the paper is revealed down to a rolled-up cylinder that travels
    down with the edge, turning as it goes, and thins out and lifts off as the last of the paper comes free */
 .roll{position:absolute;left:16.6%;width:68%;height:5.4%;margin-top:-2.7%;top:31.5%;border-radius:12px/50%;pointer-events:none;opacity:0;
@@ -320,7 +316,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
   <div class="forgeglow"></div><div class="candle"></div><div class="glowin"></div>
   <canvas class="embers" data-n="40"></canvas>
   <div class="scroll-wrap">
-    <img src="img/app/scroll.webp" alt="" width="768" height="1152" id="scrollImg">
+    <img src="img/app/scroll-a.webp" alt="" width="768" height="1152" id="scrollImg">
     <div class="rollshade" id="rollShade"></div><div class="roll" id="roll"></div>
     <div class="scroll-text" id="scrollText"><span class="quillgap" aria-hidden="true"></span><p><span class="drop">D</span>arksteel Forge Gaming is downtown Phoenixville's community game store. A safe, welcoming space to gather around the games you love. We specialize in trading card games like Magic: The Gathering, Pokemon, One Piece, and Riftbound, and we carry RPGs, board games, supplies, and plenty of table space to play. Come find your people.</p></div>
   </div>
