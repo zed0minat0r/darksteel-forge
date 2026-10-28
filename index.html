@@ -76,7 +76,7 @@ canvas.sparks{mix-blend-mode:screen}
 #s-enter.leaving .flare{transition:transform 1.25s cubic-bezier(.7,0,.6,1),opacity .5s;opacity:1;transform:scale(22)}
 
 /* ============================================================ 2. THE SCROLL */
-#s-scroll{background:radial-gradient(80% 70% at 50% 45%,#1a1d22 0%,#0b0d10 60%,#050607 100%);overflow:hidden}
+#s-scroll{background:radial-gradient(80% 70% at 50% 45%,#1a1d22 0%,#0b0d10 60%,#050607 100%);overflow:hidden;flex-direction:column;justify-content:flex-start;padding-top:max(1.5vh,env(safe-area-inset-top))}
 #s-scroll .forgeglow{position:absolute;inset:-8%;background:url(img/app/forge-blur.jpg) 70% 60%/cover no-repeat;animation:flick 2.6s ease-in-out infinite alternate}
 #s-scroll .glowin{position:absolute;inset:0;pointer-events:none;z-index:3;background:radial-gradient(circle at 50% 55%,#fff1d0 0%,#ffb347 35%,#ff6a1a 70%,#7a2a05 100%);opacity:0}
 #s-scroll.on.fromfire .glowin{animation:cooldown 1.6s ease-out forwards}
@@ -84,8 +84,8 @@ canvas.sparks{mix-blend-mode:screen}
 #s-scroll .scroll-wrap{z-index:1;transform:scale(.86) translateY(3%);opacity:0;transition:transform 1.4s cubic-bezier(.2,.8,.2,1),opacity 1s}
 #s-scroll.on .scroll-wrap{transform:none;opacity:1;transition-delay:.35s}
 #s-scroll .candle{position:absolute;inset:0;pointer-events:none;background:radial-gradient(45% 40% at 50% 55%,rgba(255,170,80,.16),transparent 70%);mix-blend-mode:screen;animation:flick 1.9s ease-in-out infinite alternate}
-.scroll-wrap{position:relative;left:-.9%;height:min(94vh,170vw);aspect-ratio:768/1152;max-width:96vw;container-type:inline-size}
-.scroll-wrap img{width:100%;height:100%;clip-path:inset(0 0 68.5% 0);filter:drop-shadow(0 18px 30px rgba(0,0,0,.6))}
+.scroll-wrap{--sh:min(100vh,170vw);position:relative;left:-.9%;height:var(--sh);width:calc(var(--sh) * .6667);flex:none;container-type:inline-size;margin-top:calc(var(--sh) * -.235)}
+.scroll-wrap img{width:100%;height:100%;clip-path:inset(0 0 68.5% 0)}
 /* the unroll is driven frame by frame from JS: the paper is revealed down to a rolled-up cylinder that travels
    down with the edge, turning as it goes, and thins out and lifts off as the last of the paper comes free */
 .roll{position:absolute;left:16.6%;width:68%;height:5.4%;margin-top:-2.7%;top:31.5%;border-radius:12px/50%;pointer-events:none;opacity:0;
@@ -95,14 +95,14 @@ canvas.sparks{mix-blend-mode:screen}
   background:repeating-linear-gradient(180deg,transparent 0 3px,rgba(90,60,25,.45) 3px 4px,transparent 4px 9px);background-size:100% 9px;background-position:0 var(--spin,0px)}
 .roll::after{content:"";position:absolute;inset:-1px -3px;border-radius:inherit;background:radial-gradient(60% 120% at 0% 50%,rgba(60,38,14,.75),transparent 60%),radial-gradient(60% 120% at 100% 50%,rgba(60,38,14,.75),transparent 60%)}
 .rollshade{position:absolute;left:16.6%;width:68%;height:8%;top:31.5%;margin-top:-10%;pointer-events:none;opacity:0;background:linear-gradient(180deg,transparent,rgba(70,40,10,.32))}
-.scroll-text{position:absolute;left:21%;right:21%;top:37%;bottom:22%;display:block;
-  font:400 3.4cqw/1.42 var(--quill);color:#3a2410;text-align:left;letter-spacing:.01em}
+.scroll-text{position:absolute;left:21%;right:20%;top:36.5%;bottom:22%;display:block;
+  font:400 3.5cqw/1.45 var(--quill);color:#3a2410;text-align:left;letter-spacing:.01em}
 .scroll-text p{margin:0}
 .scroll-text .quillgap{float:right;width:30%;height:100%;shape-outside:polygon(100% 32%,100% 100%,0 100%);-webkit-shape-outside:polygon(100% 32%,100% 100%,0 100%)}
 .scroll-text .w{opacity:0;transition:opacity .5s ease}
 .scroll-text .w.in{opacity:1}
 .scroll-text .drop{float:left;font:700 3.1em/.85 var(--display);color:#6e1d0f;margin:.04em .08em 0 0}
-.to-runes{position:absolute;z-index:5;left:50%;bottom:3.5%;transform:translateX(-50%);white-space:nowrap;padding:.85rem 1.6rem;min-height:48px;
+.to-runes{position:relative;z-index:5;margin-top:calc(min(100vh,170vw) * -.06);white-space:nowrap;padding:.85rem 1.6rem;min-height:48px;
   font:600 .82rem/1 var(--display);letter-spacing:.26em;text-transform:uppercase;color:#f3d9a8;border:1px solid rgba(243,217,168,.45);border-radius:999px;
   background:rgba(10,8,6,.55);backdrop-filter:blur(6px);opacity:0;transition:opacity .8s,border-color .3s,box-shadow .3s}
 .to-runes.show{opacity:1}
@@ -173,8 +173,8 @@ canvas.sparks{mix-blend-mode:screen}
 .restart:hover{color:var(--ink-2)}
 
 /* ============================================================ RUNE PREVIEW: tapping a rune shows its info first, then a button opens the full page */
-.rinfo{position:fixed;inset:0;z-index:15;display:grid;place-items:center;padding:1rem;visibility:hidden;pointer-events:none}
-.rinfo.on{visibility:visible;pointer-events:auto}
+.rinfo{position:fixed;inset:0;z-index:15;display:grid;place-items:center;padding:1rem;visibility:hidden;pointer-events:none;transition:visibility 0s linear .55s}
+.rinfo.on{visibility:visible;pointer-events:auto;transition:none}
 .rinfo .veil{position:absolute;inset:0;background:radial-gradient(60% 60% at 50% 50%,rgba(0,0,0,.35),rgba(0,0,0,.8));opacity:0;transition:opacity .45s}
 .rinfo.on .veil{opacity:1}
 .rcard{position:relative;width:min(560px,100%);max-height:calc(100dvh - 2rem);overflow-y:auto;border-radius:20px;padding:clamp(1.4rem,4vw,2.2rem);
@@ -223,6 +223,11 @@ canvas.sparks{mix-blend-mode:screen}
 .btn.solid{background:var(--c);color:#06070a;border-color:transparent}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem}
 .note{font-size:.85rem;color:var(--ink-3)}
+
+/* page content rises in once the page has faded up, a beat apart */
+.page .phead,.page .pin > *:not(.phead){opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
+.page.on .phead,.page.on .pin > *{opacity:1;transform:none}
+.page.on .phead{transition-delay:.15s}.page.on .pin > :nth-child(2){transition-delay:.3s}.page.on .pin > :nth-child(3){transition-delay:.42s}.page.on .pin > :nth-child(4){transition-delay:.54s}.page.on .pin > :nth-child(n+5){transition-delay:.66s}
 
 /* calendar */
 .calframe{position:relative;border-radius:14px;padding:10px;background:linear-gradient(135deg,#2a2e34,#0d0f12);box-shadow:0 0 0 1px rgba(61,255,160,.25),0 0 50px rgba(61,255,160,.12)}
