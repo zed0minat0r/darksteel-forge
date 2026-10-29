@@ -102,7 +102,7 @@ canvas.sparks{mix-blend-mode:screen}
 
 /* ============================================================ 2. THE SCROLL */
 #s-scroll{background:radial-gradient(80% 70% at 50% 45%,#1a1d22 0%,#0b0d10 60%,#050607 100%);overflow:hidden;flex-direction:column;justify-content:flex-start;padding-top:max(1.5vh,env(safe-area-inset-top))}
-#s-scroll .forgeglow{position:absolute;inset:-8%;background:url(img/app/forge-blur2.jpg) 70% 60%/cover no-repeat;animation:flick 2.6s ease-in-out infinite alternate}
+#s-scroll .forgeglow{position:absolute;inset:-8%;background:url(img/app/forge-blur.jpg) 70% 60%/cover no-repeat;animation:flick 2.6s ease-in-out infinite alternate}
 #s-scroll .glowin{position:absolute;inset:0;pointer-events:none;z-index:3;opacity:0;display:none}
 #s-scroll.on.fromfire .forgeglow{animation:cool 2.4s ease-out both}
 @keyframes cool{0%{filter:brightness(3.2) saturate(1.2)}100%{filter:none}}
@@ -611,10 +611,10 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
 
   /* ---------- the forge: pick the cut that fits the screen, find the hearth on screen, throw sparks from it */
   const FORGE = {
-    wide: { est: "img/app/estab-wide.mp4?v=1", estImg: "img/app/estab-wide.jpg?v=1", img: "img/app/forge-wide.jpg?v=2", vid: "img/app/forge-w60.mp4?v=1", dive: "img/app/dive-wt2.mp4?v=1", baked: true, w: 1920, h: 1108, hx: .775, hy: .63 },
+    wide: { est: "img/app/estab-wide.mp4?v=1", estImg: "img/app/estab-wide.jpg?v=1", img: "img/app/forge-wide.jpg?v=2", vid: "img/app/forge-w60.mp4?v=1", dive: "img/app/dive-wt.mp4?v=1", baked: true, w: 1920, h: 1108, hx: .775, hy: .63 },
     // phones use the SAME landscape forge and the same dramatic fly-through as desktop, framed on the hearth, so the
     // shot on screen and the shot that plays on Enter are one continuous take
-    tall: { est: "img/app/estab-wide.mp4?v=1", estImg: "img/app/estab-wide.jpg?v=1", img: "img/app/forge-wide.jpg?v=2", vid: "img/app/forge-m60.mp4?v=1", dive: "img/app/dive-pt2.mp4?v=1", diveNative: true, baked: true, w: 1920, h: 1108, hx: .775, hy: .63, px: .77 },
+    tall: { est: "img/app/estab-wide.mp4?v=1", estImg: "img/app/estab-wide.jpg?v=1", img: "img/app/forge-wide.jpg?v=2", vid: "img/app/forge-m60.mp4?v=1", dive: "img/app/dive-pt.mp4?v=1", diveNative: true, baked: true, w: 1920, h: 1108, hx: .775, hy: .63, px: .77 },
   };
   const fs = $("#forgeStill"), fv = $("#forgeVid"), dv = $("#diveVid"), enterEl = $("#s-enter");
   // what the camera is aimed at (fraction of the clip's width) every 0.1s of the fly-through: the anvil while it is
