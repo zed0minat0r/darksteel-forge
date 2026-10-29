@@ -352,7 +352,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
 <section class="scene" id="s-enter" aria-label="Enter the Forge">
   <div class="bg"><img id="forgeStill" alt="" fetchpriority="high"><video id="forgeVid" muted loop playsinline preload="auto" aria-hidden="true"></video><video id="diveVid" muted playsinline preload="none" aria-hidden="true"></video><video id="estVid" muted playsinline preload="auto" aria-hidden="true"></video></div>
   <div class="beam"></div><div class="heat"></div><div class="shade"></div>
-  <canvas class="embers" data-n="80"></canvas>
+  <canvas class="embers" data-n="80" data-share="forge"></canvas>
   <canvas class="sparks" id="sparks"></canvas>
   <div class="enter-in">
     <div class="top">
@@ -368,7 +368,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
 <!-- ============================================================ 2. THE SCROLL (owner's about-us blurb, verbatim) -->
 <section class="scene" id="s-scroll" aria-label="About Darksteel Forge Gaming">
   <div class="glowin"><canvas id="burnCv"></canvas></div>
-  <canvas class="embers" data-n="40"></canvas>
+  <canvas class="embers" data-n="80" data-share="forge"></canvas>
   <div class="scroll-wrap">
     <img src="img/app/scroll-long.webp" alt="" width="768" height="1392" id="scrollImg">
     <div class="rollshade" id="rollShade"></div><div class="roll" id="roll"></div>
@@ -587,16 +587,21 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
   $$(".tree .ln").forEach(el => { try { el.style.setProperty("--l", Math.ceil(el.getTotalLength()) + 1); } catch {} });
 
   /* ---------- embers: one light canvas per scene, only drawn while that scene is showing */
+  // The forge and the scroll share ONE set of embers (data-share), so going from the fire into the scroll the same
+  // embers keep drifting instead of a fresh set appearing; during the crossfade both canvases draw the same particles
+  // and they are only advanced once per frame.
+  const pools = {};
   const fires = $$("canvas.embers").map(cv => {
     const ctx = cv.getContext("2d"), n = +cv.dataset.n, cool = !!cv.dataset.cool;
-    let w = 0, h = 0, ps = [], raf = 0;
+    const pool = cv.dataset.share ? (pools[cv.dataset.share] ||= { ps: [], t: -1 }) : { ps: [], t: -1 };
+    let w = 0, h = 0, raf = 0;
     const size = () => { const d = Math.min(devicePixelRatio || 1, 2); w = cv.clientWidth; h = cv.clientHeight; cv.width = w * d; cv.height = h * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
     const spawn = (p = {}) => Object.assign(p, { x: Math.random() * w, y: h + Math.random() * h * .3, r: .6 + Math.random() * 1.8, v: .25 + Math.random() * .8, s: Math.random() * 6.28, life: 0 });
-    const step = () => {
+    const step = (t) => {
       ctx.clearRect(0, 0, w, h);
-      for (const p of ps) {
-        p.y -= p.v; p.s += .02; p.x += Math.sin(p.s) * .35; p.life++;
-        if (p.y < -10) spawn(p);
+      const advance = pool.t !== t; pool.t = t;
+      for (const p of pool.ps) {
+        if (advance) { p.y -= p.v; p.s += .02; p.x += Math.sin(p.s) * .35; p.life++; if (p.y < -10) spawn(p); }
         const a = Math.min(1, p.life / 40) * Math.max(0, Math.min(1, p.y / h * 1.4));
         ctx.fillStyle = cool ? `rgba(255,214,170,${a * .5})` : `rgba(255,${120 + (p.r * 40 | 0)},40,${a})`;
         ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.29); ctx.fill();
@@ -604,7 +609,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
       raf = requestAnimationFrame(step);
     };
     return {
-      start() { if (reduce || raf) return; size(); if (!ps.length) ps = Array.from({ length: n }, () => { const p = spawn(); p.y = Math.random() * h; return p; }); raf = requestAnimationFrame(step); },
+      start() { if (reduce || raf) return; size(); if (!pool.ps.length) pool.ps = Array.from({ length: n }, () => { const p = spawn(); p.y = Math.random() * h; return p; }); raf = requestAnimationFrame(step); },
       stop() { cancelAnimationFrame(raf); raf = 0; },
       cv,
     };
@@ -809,7 +814,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
     Object.entries(scenes).forEach(([k, el], i) => {
       const on = k === sceneName;
       el.classList.toggle("on", on);
-      fires[i][on ? "start" : "stop"]();
+      if (on) fires[i].start(); else { const f = fires[i]; setTimeout(() => { if (!el.classList.contains("on")) f.stop(); }, 1000); }
     });
     $$(".page").forEach(p => p.classList.toggle("on", p.id === "p-" + name));
     if (isPage) { const p = $("#p-" + name); p.scrollTop = 0; if (name === "calendar") loadCalendar(); if (name === "games") shelf.start(); }
