@@ -59,7 +59,7 @@ canvas.sparks{mix-blend-mode:screen}
 #s-enter.establishing .enter-in .logo{animation-delay:3.4s}
 #s-enter.establishing .enter-in .is{animation-delay:4.2s}
 #s-enter.establishing .forge-btn{animation-delay:4.8s,5.8s}
-#s-enter .bg #diveVid{opacity:0;transition:opacity .2s linear}
+#s-enter .bg #diveVid{opacity:0;transition:opacity .12s linear}
 #s-enter .bg #diveVid.go{opacity:1}
 @keyframes drift{from{transform:scale(1.02)}to{transform:scale(1.07)}}
 #s-enter .heat{position:absolute;left:var(--hx,72%);top:var(--hy,62%);width:70vmax;height:70vmax;transform:translate(-50%,-50%);pointer-events:none;mix-blend-mode:screen;
@@ -74,9 +74,10 @@ canvas.sparks{mix-blend-mode:screen}
 .enter-in{position:absolute;inset:0;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
   padding:max(4vh,env(safe-area-inset-top)) 1.25rem max(6vh,env(safe-area-inset-bottom))}
 .enter-in .top{display:flex;flex-direction:column;align-items:center;gap:.6rem}
-.enter-in .logo{width:min(440px,34vw);height:auto;filter:brightness(1.75) drop-shadow(0 12px 30px rgba(0,0,0,.9)) drop-shadow(0 0 24px rgba(255,120,40,.25));opacity:0;transform:translateY(-10px) scale(.96);animation:rise 1.6s .9s cubic-bezier(.2,.8,.2,1) forwards}
+/* brightness + both shadows are baked into logo-forge.webp (live filters made fading it on tap cost ~70ms); the image carries an 80px shadow margin */
+.enter-in .logo{--lw:min(440px,34vw);width:calc(var(--lw) * 1.2286);max-width:none;margin:calc(var(--lw) * -.1143);height:auto;opacity:0;transform:translateY(-10px) scale(.96);animation:rise 1.6s .9s cubic-bezier(.2,.8,.2,1) forwards}
 .enter-in .is{font:400 clamp(1rem,1.6vw,1.35rem)/1.3 var(--quill);color:#f1d9b0;letter-spacing:.08em;text-shadow:0 2px 12px #000,0 0 18px rgba(0,0,0,.9);opacity:0;animation:rise 1.2s 1.8s forwards}
-@media (max-aspect-ratio:9/10){.enter-in .logo{width:min(420px,74vw)}}
+@media (max-aspect-ratio:9/10){.enter-in .logo{--lw:min(420px,74vw)}}
 @keyframes rise{to{opacity:1;transform:none}}
 .forge-btn{position:relative;padding:1.05rem 2.4rem;min-height:56px;font:700 1rem/1 var(--display);letter-spacing:.28em;text-transform:uppercase;color:#1b0d04;
   background:linear-gradient(180deg,#ffd27a,#ff8a2a 55%,#c94a0c);border-radius:4px;box-shadow:0 0 0 1px rgba(255,200,120,.6),0 10px 40px rgba(255,100,20,.45),inset 0 1px 0 rgba(255,255,255,.6);
@@ -356,7 +357,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
   <canvas class="sparks" id="sparks"></canvas>
   <div class="enter-in">
     <div class="top">
-      <img class="logo" src="img/logo.png" alt="Darksteel Forge Gaming" width="700" height="547">
+      <img class="logo" src="img/app/logo-forge.webp" alt="Darksteel Forge Gaming" width="860" height="706">
       <p class="is">Darksteel Forge Gaming is&hellip;</p>
     </div>
     <button class="forge-btn" type="button" id="enterBtn">Enter the Forge</button>
@@ -649,6 +650,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
     fetch(want).then(r => r.ok ? r.blob() : Promise.reject()).then(b => {
       if (dv.dataset.src !== want) return;
       dv.src = URL.createObjectURL(b); dv.muted = true; dv.preload = "auto"; dv.load();
+      dv.addEventListener("canplay", () => { dv.play().then(() => setTimeout(() => { dv.pause(); dv.currentTime = 0; }, 120)).catch(() => {}); }, { once: true });
     }).catch(() => {}).finally(() => { delete dv.dataset.loading; });
   };
   dv.addEventListener("canplaythrough", () => { diveReady = true; });
@@ -837,9 +839,11 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
     if (dv.getAttribute("src") && dv.readyState >= 2) {
       scenes.enter.classList.add("leaving", "diving");
       scenes.about.classList.add("fromfire");
-      try { dv.currentTime = 0; } catch {}
+      try { if (dv.currentTime > .001) dv.currentTime = 0; } catch {}
+      dv.classList.add("go");                               // frame 0 is already decoded and lines up with the idle shot
       dv.playbackRate = cfg.rate0 || 1;
-      dv.play().catch(() => {});
+      requestAnimationFrame(() => { dv.play().catch(() => {}); });
+      setTimeout(() => fv.pause(), 260);                     // stop decoding the idle loop underneath once it's covered
       const t0 = performance.now();
       let started = false, finished = false, lastT = 0, lastMove = performance.now(), startedAt = 0;
       const finish = () => {
@@ -858,8 +862,8 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
         // safety net: if the clip ever stops advancing mid-move, flare out to the scroll instead of freezing
         if (started && now - lastMove > 450 && t < D - 1.2) return finish();   // (the dark tail barely changes, don't misread it as a stall)
         if (!started) {
-          if (t > .04) { started = true; dv.classList.add("go"); }
-          else if (performance.now() - t0 > 700) { scenes.enter.classList.remove("diving"); dv.pause(); finished = true; return zoomIn(); }
+          if (t > .04) started = true;
+          else if (performance.now() - t0 > 700) { scenes.enter.classList.remove("diving"); dv.classList.remove("go"); dv.pause(); fv.play().catch(() => {}); finished = true; return zoomIn(); }
         }
         if (started) {
           if (cfg.px && !cfg.diveNative) { if (!startedAt) startedAt = performance.now(); dv.style.objectPosition = panFor(fireX((performance.now() - startedAt) / 1000)).toFixed(3) + "% 50%"; }
