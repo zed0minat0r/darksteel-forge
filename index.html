@@ -582,10 +582,17 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
   const fs = $("#forgeStill"), fv = $("#forgeVid"), dv = $("#diveVid"), enterEl = $("#s-enter");
   let diveReady = false;
   // the fly-into-the-fire clip is fetched quietly once the loop is playing (iOS needs a play() to fetch)
+  // The whole clip is downloaded into memory first (fetch -> blob URL). A partly-buffered video is what froze on
+  // iPhone half a second into the move; played from memory it cannot stall.
+  let diving = false;
   const primeDive = () => {
-    if (!dv.dataset.src || dv.getAttribute("src")) return;
-    dv.src = dv.dataset.src; dv.muted = true; dv.preload = "auto";
-    dv.play().then(() => { dv.pause(); dv.currentTime = 0; }).catch(() => {});
+    if (!dv.dataset.src || dv.getAttribute("src") || dv.dataset.loading) return;
+    dv.dataset.loading = "1";
+    const want = dv.dataset.src;
+    fetch(want).then(r => r.ok ? r.blob() : Promise.reject()).then(b => {
+      if (dv.dataset.src !== want) return;
+      dv.src = URL.createObjectURL(b); dv.muted = true; dv.preload = "auto"; dv.load();
+    }).catch(() => {}).finally(() => { delete dv.dataset.loading; });
   };
   dv.addEventListener("canplaythrough", () => { diveReady = true; });
   dv.addEventListener("loadeddata", () => { if (dv.readyState >= 3) diveReady = true; });
@@ -597,6 +604,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
       cut = want; fs.src = f.img; fv.classList.remove("live");
       fv.src = f.vid; fv.muted = true;
       fv.play().catch(() => {});
+      if (dv.src.startsWith("blob:")) URL.revokeObjectURL(dv.src);
       dv.removeAttribute("src"); dv.dataset.src = f.dive; diveReady = false;
     }
     // each cut has its own fly-through that starts on this exact frame, so the shot simply starts moving
@@ -738,17 +746,29 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
     // fetching - that was the "sits there for 3 seconds"), and the cut to the scroll is driven by the clip's own
     // clock, not a timer. If it has not started within 700ms the image push-in below runs instead.
     const cfg = FORGE[cut];
-    if (dv.getAttribute("src")) {
+    if (dv.getAttribute("src") && dv.readyState >= 2) {
       scenes.enter.classList.add("leaving", "diving");
       scenes.about.classList.add("fromfire");
       try { dv.currentTime = 0; } catch {}
       dv.playbackRate = cfg.rate0 || 1;
       dv.play().catch(() => {});
       const t0 = performance.now();
-      let started = false, finished = false;
+      let started = false, finished = false, lastT = 0, lastMove = performance.now();
+      const finish = () => {
+        finished = true;
+        scenes.enter.classList.add("flaring");
+        setTimeout(() => {
+          go("about");
+          setTimeout(() => { scenes.enter.classList.remove("leaving", "diving", "flaring"); dv.classList.remove("go"); dv.pause(); dv.playbackRate = 1; try { dv.currentTime = 0; } catch {} }, 1200);
+          setTimeout(() => scenes.about.classList.remove("fromfire"), 2600);
+        }, scenes.enter.classList.contains("flaring") ? 350 : 900);
+      };
       const watch = () => {
         if (finished) return;
-        const t = dv.currentTime, D = dv.duration || 5;
+        const t = dv.currentTime, D = dv.duration || 5, now = performance.now();
+        if (t !== lastT) { lastT = t; lastMove = now; }
+        // safety net: if the clip ever stops advancing mid-move, flare out to the scroll instead of freezing
+        if (started && now - lastMove > 450) return finish();
         if (!started) {
           if (t > .04) { started = true; dv.classList.add("go"); }
           else if (performance.now() - t0 > 700) { scenes.enter.classList.remove("diving"); dv.pause(); finished = true; return zoomIn(); }
