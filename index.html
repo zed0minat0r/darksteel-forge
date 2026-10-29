@@ -45,7 +45,17 @@ canvas.sparks{mix-blend-mode:screen}
 #s-enter .bg img,#s-enter .bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%}
 #s-enter .bg video{opacity:0;transition:opacity 1.2s}
 #s-enter .bg video.live{opacity:1}
-#s-enter .bg #diveVid{opacity:0;transition:opacity .45s ease;object-position:var(--dvx,50%) 55%}
+/* opening shot: starts close on the forge's left side and pulls back across the room to the full scene, whose last
+   frame is the idle loop's first frame - so load -> idle -> Enter is one continuous camera move */
+#s-enter .bg #estVid{opacity:0}
+#s-enter.establishing .bg #estVid{opacity:1}
+#s-enter.establishing .bg #forgeVid,#s-enter.establishing .bg #forgeStill{opacity:0}
+#s-enter.establishing .heat,#s-enter.establishing .beam,#s-enter.establishing canvas.sparks{opacity:0}
+#s-enter .heat,#s-enter .beam,#s-enter canvas.sparks{transition:opacity 1.2s ease}
+#s-enter.establishing .enter-in .logo{animation-delay:3.4s}
+#s-enter.establishing .enter-in .is{animation-delay:4.2s}
+#s-enter.establishing .forge-btn{animation-delay:4.8s,5.8s}
+#s-enter .bg #diveVid{opacity:0;transition:opacity .45s ease}
 #s-enter .bg #diveVid.go{opacity:1}
 @keyframes drift{from{transform:scale(1.02)}to{transform:scale(1.07)}}
 #s-enter .heat{position:absolute;left:var(--hx,72%);top:var(--hy,62%);width:70vmax;height:70vmax;transform:translate(-50%,-50%);pointer-events:none;mix-blend-mode:screen;
@@ -304,7 +314,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
 
 <!-- ============================================================ 1. ENTER THE FORGE -->
 <section class="scene" id="s-enter" aria-label="Enter the Forge">
-  <div class="bg"><img id="forgeStill" alt="" fetchpriority="high"><video id="forgeVid" muted loop playsinline preload="auto" aria-hidden="true"></video><video id="diveVid" muted playsinline preload="none" aria-hidden="true"></video></div>
+  <div class="bg"><img id="forgeStill" alt="" fetchpriority="high"><video id="forgeVid" muted loop playsinline preload="auto" aria-hidden="true"></video><video id="diveVid" muted playsinline preload="none" aria-hidden="true"></video><video id="estVid" muted playsinline preload="auto" aria-hidden="true"></video></div>
   <div class="beam"></div><div class="heat"></div><div class="shade"></div>
   <canvas class="embers" data-n="80"></canvas>
   <canvas class="sparks" id="sparks"></canvas>
@@ -564,8 +574,8 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
 
   /* ---------- the forge: pick the cut that fits the screen, find the hearth on screen, throw sparks from it */
   const FORGE = {
-    wide: { img: "img/app/forge-wide.jpg?v=2", vid: "img/app/forge-wide.mp4?v=2", dive: "img/app/dive-wide2.mp4?v=1", w: 1920, h: 1108, hx: .775, hy: .63 },
-    tall: { img: "img/app/forge-tall.jpg?v=2", vid: "img/app/forge-tall.mp4?v=2", dive: "img/app/dive-m.mp4?v=1", w: 1080, h: 1870, hx: .545, hy: .6 },
+    wide: { est: "img/app/estab-wide.mp4?v=1", estImg: "img/app/estab-wide.jpg?v=1", img: "img/app/forge-wide.jpg?v=2", vid: "img/app/forge-wide.mp4?v=2", dive: "img/app/dive-wide2.mp4?v=1", w: 1920, h: 1108, hx: .775, hy: .63 },
+    tall: { est: "img/app/estab-tall.mp4?v=1", estImg: "img/app/estab-tall.jpg?v=1", img: "img/app/forge-tall.jpg?v=2", vid: "img/app/forge-tall.mp4?v=2", dive: "img/app/dive-tall2.mp4?v=1", w: 1080, h: 1870, hx: .545, hy: .6 },
   };
   const fs = $("#forgeStill"), fv = $("#forgeVid"), dv = $("#diveVid"), enterEl = $("#s-enter");
   let diveReady = false;
@@ -588,12 +598,33 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
       dv.removeAttribute("src"); dv.dataset.src = f.dive; diveReady = false;
     }
     // each cut has its own fly-through that starts on this exact frame, so the shot simply starts moving
-    enterEl.style.setProperty("--dvx", want === "tall" ? "77%" : "50%");   // interim: phones still frame the landscape clip on the hearth
     const k = Math.max(W / f.w, H / f.h);
     hearth = { x: (W - f.w * k) / 2 + f.hx * f.w * k, y: (H - f.h * k) / 2 + f.hy * f.h * k };
     enterEl.style.setProperty("--hx", hearth.x + "px"); enterEl.style.setProperty("--hy", hearth.y + "px");
   };
   fv.addEventListener("timeupdate", () => { if (fv.currentTime > .05) { fv.classList.add("live"); if (!dv.getAttribute("src")) setTimeout(primeDive, 800); } });
+
+  // the opening shot plays once, only on a first load straight onto the forge
+  const ev = $("#estVid");
+  let estDone = false;
+  const endEstab = () => {
+    if (estDone) return; estDone = true;
+    fv.currentTime = 0; fv.play().catch(() => {});
+    enterEl.classList.remove("establishing");
+    setTimeout(() => { ev.pause(); ev.removeAttribute("src"); ev.load(); }, 300);
+  };
+  const EST_READY = false;   // flips on once the opening-shot clips are uploaded
+  if (EST_READY && !reduce && (location.hash === "" || location.hash === "#enter")) {
+    const f = FORGE[cut];
+    enterEl.classList.add("establishing");
+    ev.poster = f.estImg; ev.src = f.est; ev.muted = true;
+    ev.addEventListener("ended", endEstab);
+    ev.addEventListener("error", endEstab);
+    ev.play().catch(endEstab);
+    // if the clip never actually starts (autoplay refused, slow network), fall back to the still scene
+    setTimeout(() => { if (!estDone && ev.currentTime < .1) endEstab(); }, 3500);
+    setTimeout(endEstab, 9000);
+  } else estDone = true;
   // the rune temple behind the sigil, same wide/tall choice
   const TEMPLE = { wide: { img: "img/app/temple-wide.jpg?v=2", vid: "img/app/temple-wide.mp4?v=2" }, tall: { img: "img/app/temple-tall.jpg?v=2", vid: "img/app/temple-tall.mp4?v=2" } };
   const ts = $("#templeStill"), tv = $("#templeVid"); let tcut = null;
@@ -618,7 +649,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
       }
     };
     const step = (t) => {
-      if (t > next) { burst(); next = t + 1600 + Math.random() * 3200; }
+      if (t > next && estDone) { burst(); next = t + 1600 + Math.random() * 3200; }
       ctx.clearRect(0, 0, w, h);
       ctx.globalCompositeOperation = "lighter";
       for (const p of ps) {
