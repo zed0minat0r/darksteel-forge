@@ -580,6 +580,16 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
     tall: { est: "img/app/estab-wide.mp4?v=1", estImg: "img/app/estab-wide.jpg?v=1", img: "img/app/forge-wide.jpg?v=2", vid: "img/app/forge-wide-m.mp4?v=1", dive: "img/app/dive-m3.mp4?v=1", w: 1920, h: 1108, hx: .775, hy: .63, px: .77 },
   };
   const fs = $("#forgeStill"), fv = $("#forgeVid"), dv = $("#diveVid"), enterEl = $("#s-enter");
+  // what the camera is aimed at (fraction of the clip's width) every 0.1s of the fly-through: the anvil while it is
+  // in shot (read off the frames), handing over to the fire (measured centroid) as the anvil drops out at ~2.5-3.3s.
+  // On a phone only a slice of the landscape shot is visible, so the slice is panned to keep that subject centred.
+  const FIRE_X = [0.67, 0.668, 0.666, 0.664, 0.662, 0.66, 0.658, 0.656, 0.654, 0.652, 0.65, 0.64, 0.63, 0.62, 0.61, 0.6, 0.59, 0.58, 0.57, 0.56, 0.55, 0.54, 0.53, 0.52, 0.51, 0.5, 0.483, 0.47, 0.47, 0.48, 0.492, 0.505, 0.51, 0.511, 0.508, 0.505, 0.506, 0.505, 0.503, 0.502];
+  const fireX = (t) => { const i = Math.min(FIRE_X.length - 1, Math.max(0, t * 10)), a = Math.floor(i), b = Math.min(FIRE_X.length - 1, a + 1); return FIRE_X[a] + (FIRE_X[b] - FIRE_X[a]) * (i - a); };
+  const panFor = (fx) => {   // object-position % that puts image-x fx at the centre of the screen
+    const W = innerWidth, H = innerHeight, f = FORGE[cut], IW = Math.max(W, H * f.w / f.h);
+    if (IW <= W + 1) return 50;
+    return Math.max(0, Math.min(100, (fx * IW - W / 2) / (IW - W) * 100));
+  };
   let diveReady = false;
   // the fly-into-the-fire clip is fetched quietly once the loop is playing (iOS needs a play() to fetch)
   // The whole clip is downloaded into memory first (fetch -> blob URL). A partly-buffered video is what froze on
@@ -608,7 +618,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
       dv.removeAttribute("src"); dv.dataset.src = f.dive; diveReady = false;
     }
     // each cut has its own fly-through that starts on this exact frame, so the shot simply starts moving
-    const k = Math.max(W / f.w, H / f.h), px = f.px ?? .5;
+    const k = Math.max(W / f.w, H / f.h), px = f.px ? panFor(FIRE_X[0]) / 100 : .5;
     enterEl.style.setProperty("--fpx", px * 100 + "%");
     hearth = { x: (W - f.w * k) * px + f.hx * f.w * k, y: (H - f.h * k) / 2 + f.hy * f.h * k };
     enterEl.style.setProperty("--hx", hearth.x + "px"); enterEl.style.setProperty("--hy", hearth.y + "px");
@@ -774,12 +784,13 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
           else if (performance.now() - t0 > 700) { scenes.enter.classList.remove("diving"); dv.pause(); finished = true; return zoomIn(); }
         }
         if (started) {
+          if (cfg.px) dv.style.objectPosition = panFor(fireX(t)).toFixed(2) + "% 50%";
           if (cfg.rampAt && t > cfg.rampAt && dv.playbackRate !== 1) dv.playbackRate = 1;
           if (t > D - 1.15) scenes.enter.classList.add("flaring");
           if (t > D - .35 || dv.ended) {
             finished = true;
             go("about");
-            setTimeout(() => { scenes.enter.classList.remove("leaving", "diving", "flaring"); dv.classList.remove("go"); dv.pause(); dv.playbackRate = 1; try { dv.currentTime = 0; } catch {} }, 1200);
+            setTimeout(() => { scenes.enter.classList.remove("leaving", "diving", "flaring"); dv.classList.remove("go"); dv.pause(); dv.playbackRate = 1; dv.style.objectPosition = ""; try { dv.currentTime = 0; } catch {} }, 1200);
             setTimeout(() => scenes.about.classList.remove("fromfire"), 2600);
             return;
           }
