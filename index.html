@@ -584,7 +584,10 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
   // in shot (read off the frames), handing over to the fire (measured centroid) as the anvil drops out at ~2.5-3.3s.
   // On a phone only a slice of the landscape shot is visible, so the slice is panned to keep that subject centred.
   const FIRE_X = [0.67, 0.668, 0.666, 0.664, 0.662, 0.66, 0.658, 0.656, 0.654, 0.652, 0.65, 0.64, 0.63, 0.62, 0.61, 0.6, 0.59, 0.58, 0.57, 0.56, 0.55, 0.54, 0.53, 0.52, 0.51, 0.5, 0.483, 0.47, 0.47, 0.48, 0.492, 0.505, 0.51, 0.511, 0.508, 0.505, 0.506, 0.505, 0.503, 0.502];
-  const fireX = (t) => { const i = Math.min(FIRE_X.length - 1, Math.max(0, t * 10)), a = Math.floor(i), b = Math.min(FIRE_X.length - 1, a + 1); return FIRE_X[a] + (FIRE_X[b] - FIRE_X[a]) * (i - a); };
+  // One smooth, monotonic pan from the anvil to the fire (the per-frame measurements jitter, and on iOS the video
+  // clock advances in steps, which made the frame-by-frame pan shake). Driven by wall-clock time since the clip
+  // started moving, eased in and out.
+  const fireX = (t) => { const D = 3.9, k = Math.min(1, Math.max(0, t / D)), e = k * k * (3 - 2 * k); return FIRE_X[0] + (FIRE_X[FIRE_X.length - 1] - FIRE_X[0]) * e; };
   const panFor = (fx) => {   // object-position % that puts image-x fx at the centre of the screen
     const W = innerWidth, H = innerHeight, f = FORGE[cut], IW = Math.max(W, H * f.w / f.h);
     if (IW <= W + 1) return 50;
@@ -763,7 +766,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
       dv.playbackRate = cfg.rate0 || 1;
       dv.play().catch(() => {});
       const t0 = performance.now();
-      let started = false, finished = false, lastT = 0, lastMove = performance.now();
+      let started = false, finished = false, lastT = 0, lastMove = performance.now(), startedAt = 0;
       const finish = () => {
         finished = true;
         scenes.enter.classList.add("flaring");
@@ -784,7 +787,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
           else if (performance.now() - t0 > 700) { scenes.enter.classList.remove("diving"); dv.pause(); finished = true; return zoomIn(); }
         }
         if (started) {
-          if (cfg.px) dv.style.objectPosition = panFor(fireX(t)).toFixed(2) + "% 50%";
+          if (cfg.px) { if (!startedAt) startedAt = performance.now(); dv.style.objectPosition = panFor(fireX((performance.now() - startedAt) / 1000)).toFixed(3) + "% 50%"; }
           if (cfg.rampAt && t > cfg.rampAt && dv.playbackRate !== 1) dv.playbackRate = 1;
           if (t > D - 1.15) scenes.enter.classList.add("flaring");
           if (t > D - .35 || dv.ended) {
