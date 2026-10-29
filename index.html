@@ -30,6 +30,7 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
 img{display:block;max-width:100%}
 .scene{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;
   transition:opacity .9s ease,visibility 0s linear .9s}
+.scene:not(.on) *,.page:not(.on) *{animation-play-state:paused!important}
 .scene.on{opacity:1;visibility:visible;transition:opacity .9s ease,visibility 0s}
 canvas.embers,canvas.sparks{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 canvas.sparks{mix-blend-mode:screen}
@@ -175,8 +176,10 @@ canvas.sparks{mix-blend-mode:screen}
 .gem .orb{position:absolute;inset:0;border-radius:50%;
   background:radial-gradient(circle at 36% 30%,rgba(255,255,255,.85) 0 6%,transparent 22%),radial-gradient(circle at 50% 55%,var(--c) 0%,color-mix(in srgb,var(--c) 45%,#000) 62%,#050505 100%);
   box-shadow:0 0 18px var(--c),0 0 46px color-mix(in srgb,var(--c) 55%,transparent),inset 0 -8px 18px rgba(0,0,0,.6);
-  animation:breathe 3.4s ease-in-out infinite;animation-delay:var(--gd)}
-@keyframes breathe{0%,100%{box-shadow:0 0 14px var(--c),0 0 34px color-mix(in srgb,var(--c) 45%,transparent),inset 0 -8px 18px rgba(0,0,0,.6)}50%{box-shadow:0 0 24px var(--c),0 0 70px color-mix(in srgb,var(--c) 70%,transparent),inset 0 -8px 18px rgba(0,0,0,.6)}}
+}
+.gem .motes::after{content:"";position:absolute;inset:22%;border-radius:50%;pointer-events:none;background:radial-gradient(closest-side,color-mix(in srgb,var(--c) 70%,transparent),transparent);
+  opacity:.25;will-change:opacity;animation:breathe 6s ease-in-out infinite;animation-delay:var(--gd)}
+@keyframes breathe{0%,100%{opacity:.2}50%{opacity:.75}}
 .gem .ring{position:absolute;inset:-14%;border-radius:50%;pointer-events:none;
   background:conic-gradient(from 0deg,transparent 0 12%,color-mix(in srgb,var(--c) 80%,#fff) 16%,transparent 24% 46%,color-mix(in srgb,var(--c) 80%,#fff) 52%,transparent 60% 78%,color-mix(in srgb,var(--c) 80%,#fff) 84%,transparent 92%);
   -webkit-mask:radial-gradient(closest-side,transparent 78%,#000 82%,#000 92%,transparent 100%);mask:radial-gradient(closest-side,transparent 78%,#000 82%,#000 92%,transparent 100%);
@@ -188,25 +191,22 @@ canvas.sparks{mix-blend-mode:screen}
 /* ---- resonance: each gem sends out slow shockwave rings, staggered so the tree "hums" gem to gem */
 .gem::before,.gem::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;border:2px solid color-mix(in srgb,var(--c) 85%,#fff);
   box-shadow:0 0 14px var(--c),inset 0 0 10px var(--c);opacity:0}
-#s-runes.on .gem::before{animation:shock 3.6s cubic-bezier(.2,.6,.3,1) infinite;animation-delay:calc(var(--gd) + 1s)}
-#s-runes.on .gem::after{animation:shock 3.6s cubic-bezier(.2,.6,.3,1) infinite;animation-delay:calc(var(--gd) + 2.8s)}
-@keyframes shock{0%{transform:scale(1);opacity:.85}100%{transform:scale(2.5);opacity:0}}
+#s-runes.on .gem::before{will-change:transform,opacity;animation:shock 9s linear infinite;animation-delay:calc(var(--gd) * 2.2 - 2s)}
+.gem::after{display:none}
+@keyframes shock{0%{transform:scale(1);opacity:.8;animation-timing-function:cubic-bezier(.2,.6,.3,1)}22%{transform:scale(2.5);opacity:0}100%{transform:scale(2.5);opacity:0}}
 /* ---- the sigil resonates: a soft blurred copy breathes behind it, and waves of light run out through the gold */
-.tree .sigil.aura{filter:blur(10px) brightness(2.4) saturate(1.6);mix-blend-mode:screen;opacity:0}
-#s-runes.on .tree .sigil.aura{animation:aura 4.2s ease-in-out infinite;animation-delay:3s}
-@keyframes aura{0%,100%{opacity:.25}50%{opacity:.7}}
-@property --rr{syntax:'<percentage>';inherits:false;initial-value:0%}
-.tree .sigil.wave{filter:brightness(2.6) saturate(1.5) drop-shadow(0 0 6px #ffcf7a);mix-blend-mode:screen;opacity:0;
-  -webkit-mask-image:radial-gradient(circle at 50% 50%,transparent calc(var(--rr) - 7%),#000 var(--rr),transparent calc(var(--rr) + 7%));
-  mask-image:radial-gradient(circle at 50% 50%,transparent calc(var(--rr) - 7%),#000 var(--rr),transparent calc(var(--rr) + 7%))}
-#s-runes.on .tree .sigil.wave{animation:wave 4.2s cubic-bezier(.3,.1,.4,1) infinite;animation-delay:3.4s}
-@keyframes wave{0%{--rr:0%;opacity:1}85%{opacity:1}100%{--rr:80%;opacity:0}}
+.tree .sigil.aura{mix-blend-mode:screen;opacity:0;will-change:opacity}
+#s-runes.on .tree .sigil.aura{animation:aura 8s ease-in-out infinite;animation-delay:3s}
+@keyframes aura{0%,100%{opacity:.2}50%{opacity:.6}}
+.tree .sigil.wave{mix-blend-mode:screen;opacity:0;will-change:opacity}
+#s-runes.on .tree .sigil.wave{animation:wave 9s ease-in-out infinite;animation-delay:4.5s}
+@keyframes wave{0%{opacity:0}8%{opacity:.85}22%{opacity:0}100%{opacity:0}}
 /* ---- light falling on the sigil from above */
 .tree::before{content:"";position:absolute;left:10%;right:10%;top:-30%;bottom:20%;pointer-events:none;mix-blend-mode:screen;opacity:0;
   background:conic-gradient(from 180deg at 50% 0%,transparent 160deg,rgba(255,220,160,.10) 172deg,rgba(255,235,190,.16) 180deg,rgba(255,220,160,.10) 188deg,transparent 200deg);
   -webkit-mask-image:linear-gradient(180deg,#000 30%,transparent);mask-image:linear-gradient(180deg,#000 30%,transparent);transition:opacity 2s 2s}
-#s-runes.on .tree::before{opacity:1;animation:beam 7s ease-in-out infinite alternate}
-@keyframes beam{from{filter:brightness(.8)}to{filter:brightness(1.3)}}
+#s-runes.on .tree::before{opacity:1;will-change:opacity;animation:beam 10s ease-in-out infinite alternate}
+@keyframes beam{from{opacity:.6}to{opacity:1}}
 canvas.glyphs{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;mix-blend-mode:screen}
 .gem:hover,.gem:focus-visible{outline:none}
 .gem:hover .orb,.gem:focus-visible .orb{animation-duration:1.2s;filter:brightness(1.25)}
@@ -385,8 +385,8 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
       <g class="arc"><circle cx="200" cy="300" r="276"/><circle cx="200" cy="300" r="248"/><text><textPath href="#ringA">ᚠᚢᚦᚨᚱᚲᚷᚹ ᚺᚾᛁᛃᛇᛈᛉᛊ ᛏᛒᛖᛗᛚᛜᛞᛟ ᚠᚢᚦᚨᚱᚲᚷᚹ ᚺᚾᛁᛃᛇᛈᛉᛊ ᛏᛒᛖᛗᛚᛜᛞᛟ ᚠᚢᚦᚨᚱᚲᚷᚹ ᚺᚾᛁᛃᛇᛈ</textPath></text></g>
       <g class="arc r2"><text><textPath href="#ringB">ᛞᛟᛚᛜ ᛗᛖᛒᛏ ᛊᛉᛈᛇ ᛃᛁᚾᚺ ᚹᚷᚲᚱ ᚨᚦᚢᚠ ᛞᛟᛚᛜ ᛗᛖᛒᛏ ᛊᛉᛈᛇ ᛃᛁᚾᚺ ᚹᚷᚲᚱ ᚨᚦᚢᚠ ᛞᛟᛚᛜ ᛗᛖᛒᛏ ᛊᛉᛈᛇ ᛃᛁᚾᚺ ᚹᚷᚲᚱ</textPath></text></g>
     </svg>
-    <img class="sigil aura" src="img/app/sigil-a.webp" alt="" width="1248" height="1872" aria-hidden="true">
-    <img class="sigil wave" src="img/app/sigil-a.webp" alt="" width="1248" height="1872" aria-hidden="true">
+    <img class="sigil aura" src="img/app/sigil-aura.webp" alt="" width="624" height="936" aria-hidden="true">
+    <img class="sigil wave" src="img/app/sigil-bright.webp" alt="" width="936" height="1404" aria-hidden="true">
     <img class="sigil" src="img/app/sigil-a.webp" alt="" width="1248" height="1872">
     <img class="sigil hot" src="img/app/sigil-a.webp" alt="" width="1248" height="1872" aria-hidden="true">
     <a class="gem lt" href="#calendar" style="left:28.8%;top:18.7%;--c:var(--green);--gd:1.9s" aria-label="Calendar"><span class="motes"></span><span class="ring"></span><span class="orb"></span><span class="glyph">ᛃ</span><span class="label">Calendar</span></a>
@@ -685,7 +685,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
     setTimeout(endEstab, 9000);
   } else estDone = true;
   // the rune temple behind the sigil, same wide/tall choice
-  const TEMPLE = { wide: { img: "img/app/temple-wide.jpg?v=2", vid: "img/app/temple-wide.mp4?v=2" }, tall: { img: "img/app/temple-tall.jpg?v=2", vid: "img/app/temple-tall.mp4?v=2" } };
+  const TEMPLE = { wide: { img: "img/app/temple-wide.jpg?v=2", vid: "img/app/temple-w60.mp4?v=1" }, tall: { img: "img/app/temple-tall.jpg?v=2", vid: "img/app/temple-t60.mp4?v=1" } };
   const ts = $("#templeStill"), tv = $("#templeVid"); let tcut = null;
   const placeTemple = () => {
     const want = innerWidth / innerHeight < .9 ? "tall" : "wide";
@@ -732,17 +732,25 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
     const spawn = (p = {}, fresh) => Object.assign(p, { x: Math.random() * w, y: fresh ? Math.random() * h : h + 20, s: 12 + Math.random() * 16, v: .18 + Math.random() * .35,
       ch: RUNES[Math.random() * RUNES.length | 0], c: COLS[Math.random() * COLS.length | 0], ph: Math.random() * 6.28, life: 0, max: 600 + Math.random() * 700 });
     const size = () => { const d = Math.min(devicePixelRatio || 1, 2); w = cv.clientWidth; h = cv.clientHeight; cv.width = w * d; cv.height = h * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
+    const sprites = new Map();
+    const sprite = (ch, c) => {
+      const k = ch + c; if (sprites.has(k)) return sprites.get(k);
+      const o = document.createElement("canvas"), S = 64; o.width = o.height = S; const x = o.getContext("2d");
+      x.font = "34px 'Noto Sans Runic', sans-serif"; x.textAlign = "center"; x.textBaseline = "middle";
+      x.shadowColor = `rgba(${c},1)`; x.shadowBlur = 12; x.fillStyle = `rgba(${c},1)`; x.fillText(ch, S / 2, S / 2);
+      sprites.set(k, o); return o;
+    };
     const step = () => {
       ctx.clearRect(0, 0, w, h);
       for (const p of ps) {
         p.y -= p.v; p.ph += .015; p.life++; if (p.life > p.max || p.y < -30) spawn(p);
-        const a = Math.sin(Math.PI * Math.min(1, p.life / p.max)) * (.45 + .25 * Math.sin(p.ph * 2));
-        ctx.font = `${p.s}px 'Noto Sans Runic', sans-serif`; ctx.shadowColor = `rgba(${p.c},1)`; ctx.shadowBlur = 14;
-        ctx.fillStyle = `rgba(${p.c},${a})`; ctx.fillText(p.ch, p.x + Math.sin(p.ph) * 8, p.y);
+        ctx.globalAlpha = Math.max(0, Math.sin(Math.PI * Math.min(1, p.life / p.max)) * (.45 + .25 * Math.sin(p.ph * 2)));
+        const sz = p.s * 1.9; ctx.drawImage(sprite(p.ch, p.c), p.x + Math.sin(p.ph) * 8 - sz / 2, p.y - sz / 2, sz, sz);
       }
+      ctx.globalAlpha = 1;
       raf = requestAnimationFrame(step);
     };
-    return { start() { if (reduce || raf) return; size(); if (!ps.length) ps = Array.from({ length: innerWidth < 600 ? 16 : 26 }, () => spawn({}, true)); raf = requestAnimationFrame(step); },
+    return { start() { if (reduce || raf) return; size(); if (!ps.length) ps = Array.from({ length: innerWidth < 600 ? 12 : 20 }, () => spawn({}, true)); raf = requestAnimationFrame(step); },
              stop() { cancelAnimationFrame(raf); raf = 0; } };
   })();
 
