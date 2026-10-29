@@ -185,6 +185,29 @@ canvas.sparks{mix-blend-mode:screen}
 .gem .glyph{position:relative;font:400 clamp(1.3rem,4.6vh,2.4rem)/1 var(--rune);color:#fff;text-shadow:0 0 6px #fff,0 0 16px var(--c),0 0 30px var(--c)}
 .gem .label{position:absolute;top:104%;left:50%;transform:translateX(-50%);white-space:nowrap;font:600 clamp(.72rem,1.7vh,.95rem)/1 var(--display);letter-spacing:.22em;text-transform:uppercase;color:#f1e6d2;text-shadow:0 0 10px #000,0 0 14px color-mix(in srgb,var(--c) 60%,transparent)}
 .gem.lt .label{top:auto;bottom:104%}
+/* ---- resonance: each gem sends out slow shockwave rings, staggered so the tree "hums" gem to gem */
+.gem::before,.gem::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;border:2px solid color-mix(in srgb,var(--c) 85%,#fff);
+  box-shadow:0 0 14px var(--c),inset 0 0 10px var(--c);opacity:0}
+#s-runes.on .gem::before{animation:shock 3.6s cubic-bezier(.2,.6,.3,1) infinite;animation-delay:calc(var(--gd) + 1s)}
+#s-runes.on .gem::after{animation:shock 3.6s cubic-bezier(.2,.6,.3,1) infinite;animation-delay:calc(var(--gd) + 2.8s)}
+@keyframes shock{0%{transform:scale(1);opacity:.85}100%{transform:scale(2.5);opacity:0}}
+/* ---- the sigil resonates: a soft blurred copy breathes behind it, and waves of light run out through the gold */
+.tree .sigil.aura{filter:blur(10px) brightness(2.4) saturate(1.6);mix-blend-mode:screen;opacity:0}
+#s-runes.on .tree .sigil.aura{animation:aura 4.2s ease-in-out infinite;animation-delay:3s}
+@keyframes aura{0%,100%{opacity:.25}50%{opacity:.7}}
+@property --rr{syntax:'<percentage>';inherits:false;initial-value:0%}
+.tree .sigil.wave{filter:brightness(2.6) saturate(1.5) drop-shadow(0 0 6px #ffcf7a);mix-blend-mode:screen;opacity:0;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,transparent calc(var(--rr) - 7%),#000 var(--rr),transparent calc(var(--rr) + 7%));
+  mask-image:radial-gradient(circle at 50% 50%,transparent calc(var(--rr) - 7%),#000 var(--rr),transparent calc(var(--rr) + 7%))}
+#s-runes.on .tree .sigil.wave{animation:wave 4.2s cubic-bezier(.3,.1,.4,1) infinite;animation-delay:3.4s}
+@keyframes wave{0%{--rr:0%;opacity:1}85%{opacity:1}100%{--rr:80%;opacity:0}}
+/* ---- light falling on the sigil from above */
+.tree::before{content:"";position:absolute;left:10%;right:10%;top:-30%;bottom:20%;pointer-events:none;mix-blend-mode:screen;opacity:0;
+  background:conic-gradient(from 180deg at 50% 0%,transparent 160deg,rgba(255,220,160,.10) 172deg,rgba(255,235,190,.16) 180deg,rgba(255,220,160,.10) 188deg,transparent 200deg);
+  -webkit-mask-image:linear-gradient(180deg,#000 30%,transparent);mask-image:linear-gradient(180deg,#000 30%,transparent);transition:opacity 2s 2s}
+#s-runes.on .tree::before{opacity:1;animation:beam 7s ease-in-out infinite alternate}
+@keyframes beam{from{filter:brightness(.8)}to{filter:brightness(1.3)}}
+canvas.glyphs{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;mix-blend-mode:screen}
 .gem:hover,.gem:focus-visible{outline:none}
 .gem:hover .orb,.gem:focus-visible .orb{animation-duration:1.2s;filter:brightness(1.25)}
 .gem:hover .ring,.gem:focus-visible .ring{animation-duration:2.2s;opacity:1}
@@ -354,6 +377,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
 <section class="scene" id="s-runes" aria-label="Follow the Runes">
   <div class="tbg"><img id="templeStill" alt=""><video id="templeVid" muted loop playsinline preload="none" aria-hidden="true"></video></div><div class="tshade"></div>
   <canvas class="embers" data-n="30" data-cool="1"></canvas>
+  <canvas class="glyphs" id="glyphs"></canvas>
   <p class="runes-title">Follow the Runes&hellip;</p>
   <div class="tree">
     <svg viewBox="0 0 400 600" aria-hidden="true">
@@ -361,6 +385,8 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
       <g class="arc"><circle cx="200" cy="300" r="276"/><circle cx="200" cy="300" r="248"/><text><textPath href="#ringA">ᚠᚢᚦᚨᚱᚲᚷᚹ ᚺᚾᛁᛃᛇᛈᛉᛊ ᛏᛒᛖᛗᛚᛜᛞᛟ ᚠᚢᚦᚨᚱᚲᚷᚹ ᚺᚾᛁᛃᛇᛈᛉᛊ ᛏᛒᛖᛗᛚᛜᛞᛟ ᚠᚢᚦᚨᚱᚲᚷᚹ ᚺᚾᛁᛃᛇᛈ</textPath></text></g>
       <g class="arc r2"><text><textPath href="#ringB">ᛞᛟᛚᛜ ᛗᛖᛒᛏ ᛊᛉᛈᛇ ᛃᛁᚾᚺ ᚹᚷᚲᚱ ᚨᚦᚢᚠ ᛞᛟᛚᛜ ᛗᛖᛒᛏ ᛊᛉᛈᛇ ᛃᛁᚾᚺ ᚹᚷᚲᚱ ᚨᚦᚢᚠ ᛞᛟᛚᛜ ᛗᛖᛒᛏ ᛊᛉᛈᛇ ᛃᛁᚾᚺ ᚹᚷᚲᚱ</textPath></text></g>
     </svg>
+    <img class="sigil aura" src="img/app/sigil-a.webp" alt="" width="1248" height="1872" aria-hidden="true">
+    <img class="sigil wave" src="img/app/sigil-a.webp" alt="" width="1248" height="1872" aria-hidden="true">
     <img class="sigil" src="img/app/sigil-a.webp" alt="" width="1248" height="1872">
     <img class="sigil hot" src="img/app/sigil-a.webp" alt="" width="1248" height="1872" aria-hidden="true">
     <a class="gem lt" href="#calendar" style="left:28.8%;top:18.7%;--c:var(--green);--gd:1.9s" aria-label="Calendar"><span class="motes"></span><span class="ring"></span><span class="orb"></span><span class="glyph">ᛃ</span><span class="label">Calendar</span></a>
@@ -699,6 +725,27 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
   })();
   addEventListener("resize", () => { if (enterEl.classList.contains("on")) { sparks.stop(); sparks.start(); } });
 
+  /* ---------- runes: glowing rune glyphs drift up through the temple, in the five gem colours */
+  const glyphs = (() => {
+    const cv = $("#glyphs"), ctx = cv.getContext("2d"); let raf = 0, ps = [], w = 0, h = 0;
+    const RUNES = "ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛞᛟ", COLS = ["61,255,160", "233,241,255", "255,74,58", "63,169,255", "180,107,255", "255,190,110"];
+    const spawn = (p = {}, fresh) => Object.assign(p, { x: Math.random() * w, y: fresh ? Math.random() * h : h + 20, s: 12 + Math.random() * 16, v: .18 + Math.random() * .35,
+      ch: RUNES[Math.random() * RUNES.length | 0], c: COLS[Math.random() * COLS.length | 0], ph: Math.random() * 6.28, life: 0, max: 600 + Math.random() * 700 });
+    const size = () => { const d = Math.min(devicePixelRatio || 1, 2); w = cv.clientWidth; h = cv.clientHeight; cv.width = w * d; cv.height = h * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
+    const step = () => {
+      ctx.clearRect(0, 0, w, h);
+      for (const p of ps) {
+        p.y -= p.v; p.ph += .015; p.life++; if (p.life > p.max || p.y < -30) spawn(p);
+        const a = Math.sin(Math.PI * Math.min(1, p.life / p.max)) * (.45 + .25 * Math.sin(p.ph * 2));
+        ctx.font = `${p.s}px 'Noto Sans Runic', sans-serif`; ctx.shadowColor = `rgba(${p.c},1)`; ctx.shadowBlur = 14;
+        ctx.fillStyle = `rgba(${p.c},${a})`; ctx.fillText(p.ch, p.x + Math.sin(p.ph) * 8, p.y);
+      }
+      raf = requestAnimationFrame(step);
+    };
+    return { start() { if (reduce || raf) return; size(); if (!ps.length) ps = Array.from({ length: innerWidth < 600 ? 16 : 26 }, () => spawn({}, true)); raf = requestAnimationFrame(step); },
+             stop() { cancelAnimationFrame(raf); raf = 0; } };
+  })();
+
   /* ---------- the scroll text writes itself in, word by word */
   const st = $("#scrollText p");
   const drop = st.querySelector(".drop").outerHTML;
@@ -754,7 +801,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
     if (isPage) { const p = $("#p-" + name); p.scrollTop = 0; if (name === "calendar") loadCalendar(); if (name === "games") shelf.start(); }
     if (name === "about") { setUnroll(0); animateUnroll(0, 1, UNROLL_MS, UNROLL_START); writeScroll(); }
     if (sceneName === "enter") { sparks.start(); fv.play().catch(() => {}); } else { sparks.stop(); fv.pause(); }
-    if (sceneName === "runes") tv.play().catch(() => {}); else tv.pause();
+    if (sceneName === "runes") { tv.play().catch(() => {}); glyphs.start(); } else { tv.pause(); glyphs.stop(); }
     if (name !== "runes") ri.classList.remove("on");
     current = name;
   };
