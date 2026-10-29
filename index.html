@@ -31,7 +31,8 @@ img{display:block;max-width:100%}
 .scene{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;
   transition:opacity .9s ease,visibility 0s linear .9s}
 .scene:not(.on) *,.page:not(.on) *{animation-play-state:paused!important}
-html.handoff .scene{transition:opacity .5s ease,visibility 0s!important}
+html.handoff .scene{transition:opacity .5s ease,visibility 0s linear .5s!important}
+html.handoff .scene.on{transition:opacity .5s ease,visibility 0s!important}
 html.handoff #s-scroll .forgeglow{animation:none!important}
 .scene.on{opacity:1;visibility:visible;transition:opacity .9s ease,visibility 0s}
 canvas.embers,canvas.sparks{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
@@ -98,7 +99,7 @@ canvas.sparks{mix-blend-mode:screen}
 #s-enter.flaring .whiteout{display:none}
 @keyframes whiteout{0%,35%{opacity:0}100%{opacity:1}}
 #s-enter canvas.burst{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;mix-blend-mode:screen}
-#s-enter.diving .heat,#s-enter.diving .beam,#s-enter.diving canvas.sparks{transition:opacity .4s;opacity:0}
+#s-enter.diving .heat,#s-enter.diving .beam,#s-enter.diving canvas.sparks{transition:opacity 2.5s ease-in;opacity:0}
 
 /* ============================================================ 2. THE SCROLL */
 #s-scroll{background:radial-gradient(80% 70% at 50% 45%,#1a1d22 0%,#0b0d10 60%,#050607 100%);overflow:hidden;flex-direction:column;justify-content:flex-start;padding-top:max(1.5vh,env(safe-area-inset-top))}
@@ -109,6 +110,7 @@ canvas.sparks{mix-blend-mode:screen}
 #s-scroll .glowin canvas{width:100%;height:100%;display:block}
 #s-scroll .scroll-wrap{z-index:1;transform:scale(.86) translateY(3%);opacity:0;transition:transform 1.4s cubic-bezier(.2,.8,.2,1),opacity 1s}
 #s-scroll.on .scroll-wrap{transform:none;opacity:1;transition-delay:.35s}
+html.handoff #s-scroll .scroll-wrap{transition:opacity .5s ease;transform:none}
 #s-scroll .candle{position:absolute;inset:0;pointer-events:none;background:radial-gradient(45% 40% at 50% 55%,rgba(255,170,80,.16),transparent 70%);mix-blend-mode:screen;animation:flick 1.9s ease-in-out infinite alternate}
 .scroll-wrap{--sh:min(104vh,180vw);position:relative;left:-.9%;height:var(--sh);width:calc(var(--sh) * .5517);flex:none;container-type:inline-size;margin-top:calc(var(--sh) * -.2)}
 .scroll-wrap img{width:100%;height:100%;clip-path:inset(0 0 73.9% 0)}
@@ -786,13 +788,13 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
   });
   const UNROLL_START = 1100, UNROLL_MS = 2600;
 
-  const writeScroll = () => {
+  const writeScroll = (startAt = UNROLL_START) => {
     const ws = $$(".w", st); ws.forEach(w => w.classList.remove("in")); $("#toRunes").classList.remove("show");
     clearTimeout(writeTimer);
     if (reduce) { ws.forEach(w => w.classList.add("in")); $("#toRunes").classList.add("show"); return; }
     let i = 0;
     const next = () => { if (i < ws.length) { ws[i++].classList.add("in"); writeTimer = setTimeout(next, 70); } else $("#toRunes").classList.add("show"); };
-    writeTimer = setTimeout(next, UNROLL_START + UNROLL_MS - 200);
+    writeTimer = setTimeout(next, startAt + UNROLL_MS - 200);
   };
 
   /* ---------- router: #enter, #about (the scroll), #runes, and one hash per rune page */
@@ -811,7 +813,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
     });
     $$(".page").forEach(p => p.classList.toggle("on", p.id === "p-" + name));
     if (isPage) { const p = $("#p-" + name); p.scrollTop = 0; if (name === "calendar") loadCalendar(); if (name === "games") shelf.start(); }
-    if (name === "about") { setUnroll(0); animateUnroll(0, 1, UNROLL_MS, UNROLL_START); writeScroll(); }
+    if (name === "about") { const fromClip = document.documentElement.classList.contains("handoff"); setUnroll(0); animateUnroll(0, 1, UNROLL_MS, fromClip ? 200 : UNROLL_START); writeScroll(fromClip ? 200 : UNROLL_START); }
     if (sceneName === "enter") { sparks.start(); fv.play().catch(() => {}); } else { sparks.stop(); fv.pause(); }
     if (sceneName === "runes") { tv.play().catch(() => {}); glyphs.start(); } else { tv.pause(); glyphs.stop(); }
     if (name !== "runes") ri.classList.remove("on");
@@ -849,7 +851,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
         const t = dv.currentTime, D = dv.duration || 5, now = performance.now();
         if (t !== lastT) { lastT = t; lastMove = now; }
         // safety net: if the clip ever stops advancing mid-move, flare out to the scroll instead of freezing
-        if (started && now - lastMove > 450) return finish();
+        if (started && now - lastMove > 450 && t < D - 1.2) return finish();   // (the dark tail barely changes, don't misread it as a stall)
         if (!started) {
           if (t > .04) { started = true; dv.classList.add("go"); }
           else if (performance.now() - t0 > 700) { scenes.enter.classList.remove("diving"); dv.pause(); finished = true; return zoomIn(); }
@@ -858,11 +860,11 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
           if (cfg.px && !cfg.diveNative) { if (!startedAt) startedAt = performance.now(); dv.style.objectPosition = panFor(fireX((performance.now() - startedAt) / 1000)).toFixed(3) + "% 50%"; }
           if (cfg.rampAt && t > cfg.rampAt && dv.playbackRate !== 1) dv.playbackRate = 1;
           if (!cfg.baked && t > D - 1.15 && !scenes.enter.classList.contains("flaring")) scenes.enter.classList.add("flaring");
-          if (t > D - (cfg.baked ? .06 : .35) || dv.ended) {
+          if (t > D - (cfg.baked ? .5 : .35) || dv.ended) {
             finished = true;
             if (cfg.baked) document.documentElement.classList.add("handoff");   // the clip already ends on the scroll scene: swap instantly
             go("about");
-            setTimeout(() => document.documentElement.classList.remove("handoff"), 300);
+            setTimeout(() => document.documentElement.classList.remove("handoff"), 1200);
             setTimeout(() => { scenes.enter.classList.remove("leaving", "diving", "flaring"); dv.classList.remove("go"); dv.pause(); dv.playbackRate = 1; dv.style.objectPosition = ""; try { dv.currentTime = 0; } catch {} }, 1200);
             setTimeout(() => scenes.about.classList.remove("fromfire"), 2600);
             return;
