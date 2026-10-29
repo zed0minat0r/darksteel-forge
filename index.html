@@ -574,8 +574,8 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
 
   /* ---------- the forge: pick the cut that fits the screen, find the hearth on screen, throw sparks from it */
   const FORGE = {
-    wide: { est: "img/app/estab-wide.mp4?v=1", estImg: "img/app/estab-wide.jpg?v=1", img: "img/app/forge-wide.jpg?v=2", vid: "img/app/forge-wide.mp4?v=2", dive: "img/app/dive-wide2.mp4?v=1", w: 1920, h: 1108, hx: .775, hy: .63 },
-    tall: { est: "img/app/estab-tall.mp4?v=1", estImg: "img/app/estab-tall.jpg?v=1", img: "img/app/forge-tall.jpg?v=2", vid: "img/app/forge-tall.mp4?v=2", dive: "img/app/dive-tall2.mp4?v=1", w: 1080, h: 1870, hx: .545, hy: .6 },
+    wide: { est: "img/app/estab-wide.mp4?v=1", estImg: "img/app/estab-wide.jpg?v=1", img: "img/app/forge-wide.jpg?v=2", vid: "img/app/forge-wide.mp4?v=2", dive: "img/app/dive-wide.mp4?v=1", w: 1920, h: 1108, hx: .775, hy: .63 },
+    tall: { est: "img/app/estab-tall.mp4?v=1", estImg: "img/app/estab-tall.jpg?v=1", img: "img/app/forge-tall.jpg?v=2", vid: "img/app/forge-tall.mp4?v=2", dive: "img/app/dive-tall2.mp4?v=1", rate0: 1.9, rampAt: 1.7, w: 1080, h: 1870, hx: .545, hy: .6 },
   };
   const fs = $("#forgeStill"), fv = $("#forgeVid"), dv = $("#diveVid"), enterEl = $("#s-enter");
   let diveReady = false;
@@ -730,21 +730,45 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
 
   $("#enterBtn").addEventListener("click", () => {
     if (reduce) return go("about");
-    if (diveReady || dv.readyState >= 3) {
-      // a real camera move: a rendered fly-through from this exact shot into the fire, then the flare
+    // a real camera move: a rendered fly-through from this exact shot into the fire, then the flare.
+    // The clip only takes over once frames are actually advancing (iOS can stall a video it has not finished
+    // fetching - that was the "sits there for 3 seconds"), and the cut to the scroll is driven by the clip's own
+    // clock, not a timer. If it has not started within 700ms the image push-in below runs instead.
+    const cfg = FORGE[cut];
+    if (dv.getAttribute("src")) {
       scenes.enter.classList.add("leaving", "diving");
       scenes.about.classList.add("fromfire");
-      dv.currentTime = 0; dv.play().catch(() => {});
-      dv.classList.add("go");
-      const D = (dv.duration || 4) * 1000;
-      setTimeout(() => scenes.enter.classList.add("flaring"), Math.max(0, D - 1100));
-      setTimeout(() => {
-        go("about");
-        setTimeout(() => { scenes.enter.classList.remove("leaving", "diving", "flaring"); dv.classList.remove("go"); dv.pause(); dv.currentTime = 0; }, 1200);
-      }, Math.max(600, D - 350));
-      setTimeout(() => scenes.about.classList.remove("fromfire"), D + 2000);
+      try { dv.currentTime = 0; } catch {}
+      dv.playbackRate = cfg.rate0 || 1;
+      dv.play().catch(() => {});
+      const t0 = performance.now();
+      let started = false, finished = false;
+      const watch = () => {
+        if (finished) return;
+        const t = dv.currentTime, D = dv.duration || 5;
+        if (!started) {
+          if (t > .04) { started = true; dv.classList.add("go"); }
+          else if (performance.now() - t0 > 700) { scenes.enter.classList.remove("diving"); dv.pause(); finished = true; return zoomIn(); }
+        }
+        if (started) {
+          if (cfg.rampAt && t > cfg.rampAt && dv.playbackRate !== 1) dv.playbackRate = 1;
+          if (t > D - 1.15) scenes.enter.classList.add("flaring");
+          if (t > D - .35 || dv.ended) {
+            finished = true;
+            go("about");
+            setTimeout(() => { scenes.enter.classList.remove("leaving", "diving", "flaring"); dv.classList.remove("go"); dv.pause(); dv.playbackRate = 1; try { dv.currentTime = 0; } catch {} }, 1200);
+            setTimeout(() => scenes.about.classList.remove("fromfire"), 2600);
+            return;
+          }
+        }
+        requestAnimationFrame(watch);
+      };
+      requestAnimationFrame(watch);
       return;
     }
+    zoomIn();
+  });
+  function zoomIn() {
     // fallback (clip not loaded yet): the camera pushes in toward the hearth from wherever the slow drift has it right now (no snap),
     // easing in like a dolly; the fire flares to white over the last part of the move
     const bg = $("#s-enter .bg");
@@ -759,7 +783,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
       setTimeout(() => { scenes.enter.classList.remove("leaving"); dive.cancel(); bg.style.animation = ""; }, 1200);
     }, 1550);
     setTimeout(() => scenes.about.classList.remove("fromfire"), 3600);
-  });
+  }
   /* warm the next scenes' art in the background so a scene never reveals half-loaded */
   const ready = (src) => { const i = new Image(); i.src = src; return (i.decode ? i.decode() : Promise.resolve()).catch(() => {}); };
   const runesArt = () => Promise.all([ready("img/app/sigil-a.webp"), ready(ts.currentSrc || ts.src)]);
