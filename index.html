@@ -31,6 +31,8 @@ img{display:block;max-width:100%}
 .scene{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;
   transition:opacity .9s ease,visibility 0s linear .9s}
 .scene:not(.on) *,.page:not(.on) *{animation-play-state:paused!important}
+html.handoff .scene{transition:opacity .5s ease,visibility 0s!important}
+html.handoff #s-scroll .forgeglow{animation:none!important}
 .scene.on{opacity:1;visibility:visible;transition:opacity .9s ease,visibility 0s}
 canvas.embers,canvas.sparks{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 canvas.sparks{mix-blend-mode:screen}
@@ -612,7 +614,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
     wide: { est: "img/app/estab-wide.mp4?v=1", estImg: "img/app/estab-wide.jpg?v=1", img: "img/app/forge-wide.jpg?v=2", vid: "img/app/forge-w60.mp4?v=1", dive: "img/app/dive-w60.mp4?v=1", w: 1920, h: 1108, hx: .775, hy: .63 },
     // phones use the SAME landscape forge and the same dramatic fly-through as desktop, framed on the hearth, so the
     // shot on screen and the shot that plays on Enter are one continuous take
-    tall: { est: "img/app/estab-wide.mp4?v=1", estImg: "img/app/estab-wide.jpg?v=1", img: "img/app/forge-wide.jpg?v=2", vid: "img/app/forge-m60.mp4?v=1", dive: "img/app/dive-p60.mp4?v=1", diveNative: true, w: 1920, h: 1108, hx: .775, hy: .63, px: .77 },
+    tall: { est: "img/app/estab-wide.mp4?v=1", estImg: "img/app/estab-wide.jpg?v=1", img: "img/app/forge-wide.jpg?v=2", vid: "img/app/forge-m60.mp4?v=1", dive: "img/app/dive-pt.mp4?v=1", diveNative: true, baked: true, w: 1920, h: 1108, hx: .775, hy: .63, px: .77 },
   };
   const fs = $("#forgeStill"), fv = $("#forgeVid"), dv = $("#diveVid"), enterEl = $("#s-enter");
   // what the camera is aimed at (fraction of the clip's width) every 0.1s of the fly-through: the anvil while it is
@@ -853,10 +855,12 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
         if (started) {
           if (cfg.px && !cfg.diveNative) { if (!startedAt) startedAt = performance.now(); dv.style.objectPosition = panFor(fireX((performance.now() - startedAt) / 1000)).toFixed(3) + "% 50%"; }
           if (cfg.rampAt && t > cfg.rampAt && dv.playbackRate !== 1) dv.playbackRate = 1;
-          if (t > D - 1.15 && !scenes.enter.classList.contains("flaring")) scenes.enter.classList.add("flaring");
-          if (t > D - .35 || dv.ended) {
+          if (!cfg.baked && t > D - 1.15 && !scenes.enter.classList.contains("flaring")) scenes.enter.classList.add("flaring");
+          if (t > D - (cfg.baked ? .06 : .35) || dv.ended) {
             finished = true;
+            if (cfg.baked) document.documentElement.classList.add("handoff");   // the clip already ends on the scroll scene: swap instantly
             go("about");
+            setTimeout(() => document.documentElement.classList.remove("handoff"), 300);
             setTimeout(() => { scenes.enter.classList.remove("leaving", "diving", "flaring"); dv.classList.remove("go"); dv.pause(); dv.playbackRate = 1; dv.style.objectPosition = ""; try { dv.currentTime = 0; } catch {} }, 1200);
             setTimeout(() => scenes.about.classList.remove("fromfire"), 2600);
             return;
