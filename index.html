@@ -319,7 +319,7 @@ canvas.glyphs{position:absolute;inset:0;width:100%;height:100%;pointer-events:no
 .soc b{display:block}.soc span{font-size:.85rem;color:var(--ink-2)}
 .gal{display:flex;gap:.8rem;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:.6rem;scrollbar-width:none;margin-top:1rem}
 .gal::-webkit-scrollbar{display:none}
-.gal img{flex:0 0 clamp(220px,32vw,320px);aspect-ratio:1;object-fit:cover;border-radius:12px;scroll-snap-align:start;border:1px solid var(--line)}
+.gal img{flex:0 0 clamp(220px,32vw,320px);height:auto;aspect-ratio:1;object-fit:cover;border-radius:12px;scroll-snap-align:start;border:1px solid var(--line)}
 .park ul{margin:.4rem 0 0;padding-left:1.1rem}.park li{margin:.5rem 0;color:var(--ink-2)}.park li b{color:var(--ink)}
 .mapbox{border-radius:12px;overflow:hidden;border:1px solid var(--line);min-height:260px}
 .mapbox iframe{display:block;width:100%;height:100%;min-height:260px;border:0;filter:invert(.9) hue-rotate(180deg) saturate(.6)}
@@ -344,6 +344,28 @@ form{display:grid;gap:1rem}
 .cinfo p{margin:.3rem 0;color:var(--ink-2)}
 .cinfo a{color:var(--ink)}
 footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1rem 3rem}
+/* 2026-11-17 build-out from their socials */
+.sub{text-align:center;margin:3.2rem auto 1.3rem;max-width:40rem}
+.sub h2{font-size:clamp(1.2rem,3.4vw,1.5rem)}
+.sub p{color:var(--ink-2);margin:.7rem auto 0}
+.tl{display:grid;gap:1rem;max-width:760px;margin:0 auto}
+.ev{display:grid;grid-template-columns:110px 1fr;gap:1.1rem;align-items:center;text-align:left}
+.ev img{width:110px;height:110px;object-fit:cover;border-radius:10px;border:1px solid var(--line);display:block}
+.ev time{display:block;font:600 .72rem/1.3 var(--ui);letter-spacing:.18em;text-transform:uppercase;color:var(--c)}
+.ev b{display:block;font:600 1rem/1.3 var(--display);letter-spacing:.05em;margin:.3rem 0 .25rem}
+.ev span{display:block;font-size:.88rem;color:var(--ink-2)}
+@media (max-width:480px){.ev{grid-template-columns:84px 1fr;gap:.9rem}.ev img{width:84px;height:84px}}
+.follow{display:flex;flex-wrap:wrap;justify-content:center;gap:.7rem;margin-top:1.4rem}
+.tcgp{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.2rem;margin-top:1.4rem;--c:#ff8a3d;border-color:color-mix(in srgb,#ff8a3d 45%,transparent);background:linear-gradient(120deg,rgba(255,138,61,.16),rgba(255,255,255,.02))}
+.tcgp p{margin:0}
+@media (max-width:700px){.tcgp,.discord{flex-direction:column;text-align:center}}
+.build{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;margin-top:1.1rem}
+.build figure{margin:0;position:relative}
+.build img{width:100%;height:auto;aspect-ratio:1;object-fit:cover;border-radius:12px;border:1px solid var(--line);display:block}
+.build figcaption{position:absolute;left:.6rem;bottom:.6rem;right:.6rem;font:600 .68rem/1.3 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.9)}
+.stamp{display:inline-block;font:600 .7rem/1 var(--ui);letter-spacing:.2em;text-transform:uppercase;color:var(--c);border:1px solid color-mix(in srgb,var(--c) 55%,transparent);border-radius:99px;padding:.45rem .8rem;margin-bottom:.8rem}
+.inperson{text-align:center;margin-top:1.4rem}
+.inperson p{color:var(--ink-2);margin:0 auto 1rem;max-width:34rem}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.2s!important}}
 </style>
 </head>
@@ -424,6 +446,16 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
       <!-- CALENDAR_EMBED: paste the store's Google Calendar embed URL into data-src (Calendar settings > Integrate calendar > Embed code src) -->
       <div class="calpending" id="calSlot" data-src=""><div><b style="color:var(--green);font-family:var(--display);letter-spacing:.12em">The store calendar goes here</b><p class="note" style="margin-top:.6rem">Their Google Calendar will be embedded in this frame, exactly as it looks in Google.</p></div></div>
     </div>
+    <div class="sub"><h2 class="metal">Out at the shows</h2><p>While the Bridge Street shop is being built, you can find our table at card shows around the area. Here's where we've been lately. New dates go up on Instagram and Facebook first.</p></div>
+    <div class="tl">
+      <div class="panel ev"><img src="img/gallery/g05.webp" alt="Chester County Card Show, TCG Edition poster" loading="lazy" width="110" height="110"><div><time datetime="2026-10-04">Sun &middot; Oct 4</time><b>Chester County Card Show, TCG Edition</b><span>250+ tables of TCG at the Sturzebecker Health Science Center, West Chester. We brought a fresh pile of Pokemon.</span></div></div>
+      <div class="panel ev"><img src="img/gallery/g07.webp" alt="Sports and TCG Card Show poster, Souderton" loading="lazy" width="110" height="110"><div><time datetime="2026-09-26">Sat &middot; Sept 26</time><b>Sports &amp; TCG Card Show, Souderton</b><span>Our first time branching out to the Perseverance Volunteer Fire Company show.</span></div></div>
+      <div class="panel ev"><img src="img/gallery/g08.webp" alt="The Ultimate TCG Experience card show poster" loading="lazy" width="110" height="110"><div><time datetime="2026-09-18">Fri &middot; Sept 18</time><b>Apex TCG Show, King of Prussia</b><span>A Friday night, 5 to 10pm. Riftbound was played and we restocked on playable staples.</span></div></div>
+      <div class="panel ev"><img src="img/gallery/g06.webp" alt="The Phoenixville Card Show poster" loading="lazy" width="110" height="110"><div><time datetime="2026-09-05">Sat &middot; Sept 5</time><b>The Phoenixville Card Show</b><span>Right at home at the Kimberton Fire Company, 9am to 4pm.</span></div></div>
+      <div class="panel ev"><img src="img/gallery/g09.webp" alt="Apex TCG Show vendor spotlight featuring Darksteel Forge" loading="lazy" width="110" height="110"><div><time datetime="2026-08-29">Sat &middot; Aug 29</time><b>Apex TCG Show at The Alloy</b><span>A vendor spotlight at King of Prussia, with new One Piece and Pokemon in the cases.</span></div></div>
+      <div class="panel ev"><img src="img/gallery/g10.webp" alt="Chester County Collectibles Show poster" loading="lazy" width="110" height="110"><div><time datetime="2026-07-18">Sat &middot; July 18</time><b>Chester County Collectibles Show</b><span>250+ booths at the Sturzebecker Health Science Center in West Chester.</span></div></div>
+    </div>
+    <div class="follow"><a class="btn" href="https://www.instagram.com/darksteelforgegames" target="_blank" rel="noopener">Next dates on Instagram</a><a class="btn" href="https://www.facebook.com/p/Darksteel-Forge-Gaming-61588901174551/" target="_blank" rel="noopener">Follow on Facebook</a></div>
   </div>
   <footer class="pfoot">Darksteel Forge Gaming &middot; Bridge Street, Phoenixville, PA</footer>
 </section>
@@ -441,6 +473,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
       <div class="panel game" style="--gc:#d8b45a"><div class="word">One Piece<small>Card Game</small></div>
         <div class="links"><a class="btn" href="https://en.onepiece-cardgame.com/" target="_blank" rel="noopener">Official site</a><a class="btn" href="https://www.bandai-tcg-plus.com/" target="_blank" rel="noopener">Bandai TCG+ app</a></div></div>
     </div>
+    <div class="panel tcgp"><div><h2>Shop our singles online</h2><p class="note">Can't wait for the shop to open? Our singles are listed on TCGplayer, ready to ship.</p></div><a class="btn solid" href="https://www.tcgplayer.com/sellers/DarkSteelForgeGames/82103f25" target="_blank" rel="noopener">Our TCGplayer store</a></div>
     <div class="shelf">
       <h2 class="metal" style="font-size:1.3rem">Also on our shelves</h2>
       <div class="srow" id="srow">
@@ -469,6 +502,18 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
       <a class="panel soc" href="https://www.facebook.com/p/Darksteel-Forge-Gaming-61588901174551/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.1h-3.1V8.9c0-.9.3-1.5 1.6-1.5h1.6V4.6c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.4H7.8V14h2.7v8h3z"/></svg><div><b>Facebook</b><span>Darksteel Forge Gaming</span></div></a>
     </div>
 
+    <div class="panel" style="margin-top:1.4rem;text-align:center">
+      <span class="stamp">Now building &middot; Bridge Street</span>
+      <h2>The Forge is getting a home</h2>
+      <p style="color:var(--ink-2);margin:0 auto;max-width:38rem">Our space on Bridge Street in downtown Phoenixville is being built out right now. Soon it will hold the cases, the play tables and game nights. Follow along on Instagram as it comes together.</p>
+      <div class="build">
+        <figure><img src="img/social/shop1.webp" alt="Shaking hands on the new shop" loading="lazy" width="1000" height="1000"><figcaption>Making it official</figcaption></figure>
+        <figure><img src="img/social/shop2.webp" alt="The main room of the new shop during the build-out" loading="lazy" width="1000" height="1000"><figcaption>The main room</figcaption></figure>
+        <figure><img src="img/social/shop3.webp" alt="Floors and columns being redone" loading="lazy" width="1000" height="1000"><figcaption>Floors and columns</figcaption></figure>
+        <figure><img src="img/social/shop4.webp" alt="The back of the shop with fresh paint" loading="lazy" width="1000" height="1000"><figcaption>Fresh paint</figcaption></figure>
+      </div>
+    </div>
+
     <div class="panel" style="margin-top:1.4rem">
       <h2>Community nights</h2>
       <p style="color:var(--ink-2);margin:0">League nights, prereleases, casual Commander, board game nights and more, every week. See the <a href="#calendar" style="color:var(--green)">calendar</a> for what is on.</p>
@@ -480,7 +525,7 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
         <img src="img/gallery/g08.webp" alt="The Ultimate TCG Experience, King of Prussia" loading="lazy" width="600" height="600">
         <img src="img/gallery/g03.webp" alt="Cards on the table" loading="lazy" width="600" height="600">
       </div>
-      <p class="note" style="margin:.4rem 0 0">Photos of the shop and game nights coming soon.</p>
+      <p class="note" style="margin:.4rem 0 0">Game night photos coming once the doors open.</p>
     </div>
 
     <div class="grid2" style="margin-top:1.4rem">
@@ -531,6 +576,14 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
         <p class="note" style="margin:0">Have photos? Reply to our email with them and the offer comes back faster.</p>
       </form>
     </div>
+    <div class="sub" style="margin-top:2.4rem"><h2 class="metal">What we're buying</h2><p>Singles, sealed boxes, whole collections, bulk and graded cards from the games we carry.</p></div>
+    <div class="games">
+      <div class="panel game" style="--gc:#ffcb05"><div class="word">Pokemon<small>Singles &middot; sealed &middot; collections</small></div></div>
+      <div class="panel game" style="--gc:#d8b45a"><div class="word">One Piece<small>Singles &middot; sealed &middot; collections</small></div></div>
+      <div class="panel game" style="--gc:#ff7a2e"><div class="word">Magic<small>Singles &middot; sealed &middot; collections</small></div></div>
+      <div class="panel game" style="--gc:#e9a63a"><div class="word">Riftbound<small>Playable staples</small></div></div>
+    </div>
+    <div class="inperson"><p>Rather talk it over face to face? Until the shop opens, come find our table at a card show and ask us.</p><a class="btn" href="#calendar">Where we'll be</a></div>
   </div>
   <footer class="pfoot">Darksteel Forge Gaming &middot; Bridge Street, Phoenixville, PA</footer>
 </section>
@@ -554,7 +607,8 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
         <p>Bridge Street<br>Phoenixville, PA 19460</p>
         <p class="note">Street number and opening hours coming soon.</p>
         <p style="margin-top:1rem"><a href="mailto:contact@darksteelforgegames.com">contact@darksteelforgegames.com</a></p>
-        <p><a href="https://www.instagram.com/darksteelforgegames" target="_blank" rel="noopener">Instagram</a> &middot; <a href="https://www.facebook.com/p/Darksteel-Forge-Gaming-61588901174551/" target="_blank" rel="noopener">Facebook</a></p>
+        <p><a href="https://www.instagram.com/darksteelforgegames" target="_blank" rel="noopener">Instagram</a> &middot; <a href="https://www.facebook.com/p/Darksteel-Forge-Gaming-61588901174551/" target="_blank" rel="noopener">Facebook</a> &middot; <a href="https://www.tcgplayer.com/sellers/DarkSteelForgeGames/82103f25" target="_blank" rel="noopener">TCGplayer</a></p>
+        <p class="note" style="margin-top:1rem">The shop is still being built. Until it opens, catch us at a card show. Dates are on the <a href="#calendar" style="color:var(--purple)">calendar</a>.</p>
         <p style="margin-top:1rem"><a class="btn" href="https://www.google.com/maps/dir/?api=1&amp;destination=Bridge+St,+Phoenixville,+PA+19460" target="_blank" rel="noopener">Get directions</a></p>
       </div>
     </div>
