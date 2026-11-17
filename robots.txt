@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /classic.html
+
+Sitemap: https://darksteelforgegames.com/sitemap.xml
