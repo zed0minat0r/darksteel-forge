@@ -132,15 +132,17 @@ html.handoff #s-scroll .scroll-wrap{transition:opacity .5s ease;transform:none}
 .scroll-wrap img{width:100%;height:100%;clip-path:inset(0 0 73.9% 0)}
 /* the unroll is driven frame by frame from JS: the paper is revealed down to a rolled-up cylinder that travels
    down with the edge, turning as it goes, and thins out and lifts off as the last of the paper comes free */
-.roll{position:absolute;left:16.6%;width:68%;height:4.5%;margin-top:-2.25%;top:26.1%;border-radius:12px/50%;pointer-events:none;opacity:0;
-  background:linear-gradient(180deg,#6b4520 0%,#b9833f 15%,#e9b56b 35%,#f5cf8f 47%,#dba862 62%,#a2702f 82%,#5a3a15 100%);
+.roll{position:absolute;left:17.4%;width:66.4%;height:4.5%;margin-top:-2.25%;top:26.1%;border-radius:10px/50%;pointer-events:none;opacity:0;
+  /* the rolled-up paper reuses the painted top roll from the scroll art itself (rows 22-26.5%), so the two rolls match */
+  background:linear-gradient(180deg,rgba(40,20,4,.35),transparent 22%,transparent 70%,rgba(40,20,4,.45)),
+    url(img/app/scroll-long.webp) 51.8% 23.05%/150.6% auto no-repeat,#c99a5c;
   box-shadow:0 10px 14px -4px rgba(0,0,0,.55),0 2px 3px rgba(0,0,0,.4)}
-.roll::before{content:"";position:absolute;inset:0;border-radius:inherit;opacity:.35;mix-blend-mode:multiply;
+.roll::before{content:"";position:absolute;inset:0;border-radius:inherit;opacity:.2;mix-blend-mode:multiply;
   background:repeating-linear-gradient(180deg,transparent 0 3px,rgba(90,60,25,.45) 3px 4px,transparent 4px 9px);background-size:100% 9px;background-position:0 var(--spin,0px)}
 .roll::after{content:"";position:absolute;inset:-1px -3px;border-radius:inherit;background:radial-gradient(60% 120% at 0% 50%,rgba(60,38,14,.75),transparent 60%),radial-gradient(60% 120% at 100% 50%,rgba(60,38,14,.75),transparent 60%)}
 .rollshade{position:absolute;left:16.6%;width:68%;height:6.6%;top:26.1%;margin-top:-8.3%;pointer-events:none;opacity:0;background:linear-gradient(180deg,transparent,rgba(70,40,10,.32))}
-.scroll-text{position:absolute;left:21%;right:20%;top:30.5%;bottom:20.5%;display:block;
-  font:400 4.05cqw/1.62 var(--quill);color:#3a2410;text-align:left;letter-spacing:.01em}
+.scroll-text{position:absolute;left:21.5%;right:21.5%;top:30.5%;bottom:20.5%;display:block;
+  font:400 4.2cqw/1.5 var(--quill);color:#3a2410;text-align:left;letter-spacing:.01em}
 .scroll-text p{margin:0}
 .scroll-text .quillgap{float:right;width:30%;height:100%;shape-outside:polygon(100% 60%,100% 100%,0 100%);-webkit-shape-outside:polygon(100% 60%,100% 100%,0 100%)}
 .scroll-text .w{opacity:0;transition:opacity .5s ease}
@@ -977,7 +979,9 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
   addEventListener("load", () => setTimeout(() => { ready("img/app/scroll-long.webp"); runesArt(); }, 600));
   $("#toRunes").addEventListener("click", async () => {
     $("#toRunes").classList.remove("show"); $$(".w", st).forEach(w => w.classList.remove("in"));
-    await Promise.all([animateUnroll(1, 0, 900), Promise.race([runesArt(), new Promise(r => setTimeout(r, 1800))])]);
+    // the runes start fading in while the paper is still rolling up, so there is no beat of empty black between them
+    animateUnroll(1, 0, 900);
+    await Promise.all([new Promise(r => setTimeout(r, 520)), Promise.race([runesArt(), new Promise(r => setTimeout(r, 1800))])]);
     go("runes");
   });
   $("#restart").addEventListener("click", () => go("enter"));
