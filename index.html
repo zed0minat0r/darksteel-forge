@@ -46,6 +46,8 @@ img{display:block;max-width:100%}
 .scene{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;
   transition:opacity .9s ease,visibility 0s linear .9s}
 .scene:not(.on) *,.page:not(.on) *{animation-play-state:paused!important}
+/* a scene or page that is fading out never takes a tap meant for the one fading in */
+.scene:not(.on),.page:not(.on){pointer-events:none}
 .scene.on{opacity:1;visibility:visible;transition:opacity .9s ease,visibility 0s}
 canvas.embers,canvas.sparks{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 canvas.sparks{mix-blend-mode:screen}
@@ -216,6 +218,7 @@ canvas.glyphs{position:absolute;inset:0;width:100%;height:100%;pointer-events:no
 .back b{font:400 1.25rem/1 var(--rune);color:var(--c);text-shadow:0 0 10px var(--c)}
 .pnav{display:flex;gap:.25rem}
 @media (max-width:420px){.pnav{gap:.15rem}.pnav a{width:38px;height:38px}.ptop{padding-inline:.6rem}}
+@media (max-width:359px){.forge-btn{white-space:nowrap;padding:1rem 1.5rem;letter-spacing:.2em;font-size:.9rem}.back span{display:none}.pnav a{width:36px;height:36px}.ptop{gap:.4rem}}
 .pnav a{display:grid;place-items:center;width:40px;height:40px;flex:none;border-radius:50%;text-decoration:none;font:400 1.05rem/1 var(--rune);color:var(--rc);
   border:1px solid color-mix(in srgb,var(--rc) 35%,transparent);opacity:.7;transition:opacity .2s,box-shadow .2s}
 .pnav a:hover,.pnav a.cur{opacity:1;box-shadow:0 0 14px color-mix(in srgb,var(--rc) 60%,transparent)}
