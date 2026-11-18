@@ -322,6 +322,26 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
 .ev span{display:block;font-size:.88rem;color:var(--ink-2)}
 @media (max-width:480px){.ev{grid-template-columns:84px 1fr;gap:.9rem}.ev img{width:84px;height:84px}}
 .follow{display:flex;flex-wrap:wrap;justify-content:center;gap:.7rem;margin-top:1.4rem}
+/* Games: the TCGplayer store banner, top of the page (Matt 2026-11-18: "more dramatic and eye catching") */
+.singles{position:relative;display:block;overflow:hidden;isolation:isolate;text-align:center;text-decoration:none;color:#fff;border-radius:18px;
+  padding:clamp(2.2rem,7vw,3.6rem) clamp(1.2rem,4vw,2.6rem);margin:0 0 2.8rem;border:1px solid rgba(255,150,60,.6);
+  box-shadow:0 0 0 1px rgba(255,120,30,.18),0 24px 60px rgba(0,0,0,.65),0 0 70px rgba(255,100,20,.28)}
+.singles .sbg{position:absolute;inset:0;z-index:-3;background:url(img/app/forge-wide.jpg?v=4) 82% 62%/cover no-repeat;filter:brightness(.6) saturate(1.25);transform:scale(1.06);transition:transform 4s cubic-bezier(.2,.8,.2,1)}
+.singles::before{content:"";position:absolute;inset:0;z-index:-2;background:radial-gradient(85% 80% at 50% 105%,rgba(255,110,20,.42),transparent 62%),linear-gradient(180deg,rgba(6,5,4,.78),rgba(6,5,4,.38) 45%,rgba(6,5,4,.82))}
+.singles .sglow{position:absolute;inset:0;z-index:-1;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(40% 50% at 50% 100%,rgba(255,140,40,.55),transparent 70%);animation:flick 2.2s ease-in-out infinite alternate}
+.singles::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 38%,rgba(255,225,170,.16) 50%,transparent 62%);background-size:260% 100%;animation:shine 5.5s ease-in-out infinite}
+@keyframes shine{0%,35%{background-position:130% 0}100%{background-position:-30% 0}}
+.singles .kick{display:inline-block;font:600 .72rem/1 var(--ui);letter-spacing:.26em;text-transform:uppercase;color:#ffd08f;border:1px solid rgba(255,190,110,.55);border-radius:99px;padding:.55rem .95rem;background:rgba(0,0,0,.4)}
+.singles b{display:block;margin:1.1rem 0 .8rem;font:700 clamp(1.9rem,6.6vw,3.3rem)/1.08 var(--display);letter-spacing:.07em;text-transform:uppercase;
+  background:linear-gradient(180deg,#fff7e4 0%,#ffd98a 38%,#ff9a3a 68%,#ffe0a8 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 2px 0 rgba(0,0,0,.7)) drop-shadow(0 0 22px rgba(255,120,30,.5))}
+.singles .sub{display:block;max-width:32rem;margin:0 auto 1.7rem;color:#f3e6d0;font-size:1.02rem;text-shadow:0 1px 10px #000}
+.singles .cta{display:inline-flex;align-items:center;justify-content:center;min-height:56px;padding:1rem 2.1rem;border-radius:6px;font:700 .95rem/1 var(--display);letter-spacing:.2em;text-transform:uppercase;color:#1b0d04;
+  background:linear-gradient(180deg,#ffd27a,#ff8a2a 55%,#c94a0c);animation:glowpulse 2.4s ease-in-out infinite;transition:transform .25s}
+.singles:hover .sbg,.singles:focus-visible .sbg{transform:scale(1.14)}
+.singles:hover .cta,.singles:focus-visible .cta{transform:translateY(-2px)}
+.singles:focus-visible{outline:2px solid #ffd27a;outline-offset:3px}
+@media (max-width:420px){.singles .cta{padding:1rem 1.3rem;letter-spacing:.14em;font-size:.85rem}}
 .tcgp{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.2rem;margin-top:1.4rem;--c:#ff8a3d;border-color:color-mix(in srgb,#ff8a3d 45%,transparent);background:linear-gradient(120deg,rgba(255,138,61,.16),rgba(255,255,255,.02))}
 .tcgp p{margin:0}
 @media (max-width:700px){.tcgp,.discord{flex-direction:column;text-align:center}}
@@ -414,6 +434,13 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
 <section class="page" id="p-games" data-glyph="ᛈ" style="--c:var(--white)" aria-label="Games">
   <div class="pin">
     <div class="phead"><span class="gl">ᛈ</span><h1 class="metal">Games</h1><div class="rule"></div><p>The trading card games we play and stock, with where to learn them and the apps to track your collection.</p></div>
+    <a class="singles" href="https://www.tcgplayer.com/sellers/DarkSteelForgeGames/82103f25" target="_blank" rel="noopener">
+      <span class="sbg" aria-hidden="true"></span><span class="sglow" aria-hidden="true"></span>
+      <span class="kick">Online store &middot; TCGplayer</span>
+      <b>Shop our singles online</b>
+      <span class="sub">Can't wait for the shop to open? Our singles are listed on TCGplayer, ready to ship.</span>
+      <span class="cta">Browse our singles &rarr;</span>
+    </a>
     <div class="games">
       <div class="panel game" style="--gc:#ff7a2e"><div class="word">Magic<small>The Gathering</small></div>
         <div class="links"><a class="btn" href="https://magic.wizards.com/en" target="_blank" rel="noopener">Official site</a><a class="btn" href="https://magic.wizards.com/en/products/companion-app" target="_blank" rel="noopener">Companion app</a></div></div>
@@ -424,7 +451,6 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
       <div class="panel game" style="--gc:#d8b45a"><div class="word">One Piece<small>Card Game</small></div>
         <div class="links"><a class="btn" href="https://en.onepiece-cardgame.com/" target="_blank" rel="noopener">Official site</a><a class="btn" href="https://www.bandai-tcg-plus.com/" target="_blank" rel="noopener">Bandai TCG+ app</a></div></div>
     </div>
-    <div class="panel tcgp"><div><h2>Shop our singles online</h2><p class="note">Can't wait for the shop to open? Our singles are listed on TCGplayer, ready to ship.</p></div><a class="btn solid" href="https://www.tcgplayer.com/sellers/DarkSteelForgeGames/82103f25" target="_blank" rel="noopener">Our TCGplayer store</a></div>
     <div class="shelf">
       <h2 class="metal" style="font-size:1.3rem">Also on our shelves</h2>
       <div class="srow" id="srow">
@@ -595,10 +621,10 @@ footer.pfoot{text-align:center;color:var(--ink-3);font-size:.8rem;padding:2rem 1
 
   /* ---------- the forge: pick the cut that fits the screen, find the hearth on screen, throw sparks from it */
   const FORGE = {
-    wide: { img: "img/app/forge-wide.jpg?v=3", vid: "img/app/forge-w60.mp4?v=2", w: 1920, h: 1108, hx: .775, hy: .63 },
+    wide: { img: "img/app/forge-wide.jpg?v=4", vid: "img/app/forge-w60.mp4?v=3", w: 1920, h: 1108, hx: .775, hy: .63 },
     // phones use the SAME landscape forge and the same dramatic fly-through as desktop, framed on the hearth, so the
     // shot on screen and the shot that plays on Enter are one continuous take
-    tall: { img: "img/app/forge-wide.jpg?v=3", vid: "img/app/forge-m60.mp4?v=2", w: 1920, h: 1108, hx: .775, hy: .63, px: .77 },
+    tall: { img: "img/app/forge-wide.jpg?v=4", vid: "img/app/forge-m60.mp4?v=3", w: 1920, h: 1108, hx: .775, hy: .63, px: .77 },
   };
   const fs = $("#forgeStill"), fv = $("#forgeVid"), enterEl = $("#s-enter");
   // what the camera is aimed at (fraction of the clip's width) every 0.1s of the fly-through: the anvil while it is
